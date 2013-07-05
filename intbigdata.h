@@ -1,9 +1,9 @@
 ////////////////
-//intbigdata.h, Calculate big number, environment: C++03 x86
+//intbigdata.h, calculate big number, environment: C++03 x86
 //craft by endrollex, 2012.10.03
 //http://endrollex.com/
 //ATTENTION: This is a immature project with very simple arithemtic method,
-//           that means the IntBigdata.h is not very efficiently.
+//           that means the intbigdata.h is not very efficiently.
 ////////////////
 ////////////////
 #ifndef INTBIGDATA_H
@@ -26,82 +26,82 @@ using std::cerr;
 using std::endl;
 //
 typedef vector<char>::size_type unsigntp;
-class IntBigdata_error
+class intbigdata_error
 {
 public:
-	IntBigdata_error() {};
-	~IntBigdata_error() {};
-	const char *what() const {return "IntBigdata.h: divide or mod by zero";}
+	intbigdata_error() {};
+	~intbigdata_error() {};
+	const char *what() const {return "intbigdata.h: divide or mod by zero";}
 };
 //
-class IntBigdata
+class intbigdata
 {
 public:
 	//Constructors:
-	IntBigdata(): b_sign(true), bigint(1, 0) {};
-	IntBigdata(const std::string &str1);//structure form string, can deal with scientific notation
-	IntBigdata(const int &us1_o);
-	IntBigdata(const char *cstr1);
-	IntBigdata(const unsigned &us1_o, const int &dummy);//explicit convert unsigned to IntBigdata
-	~IntBigdata() {};
+	intbigdata(): b_sign(true), bigint(1, 0) {};
+	intbigdata(const std::string &str1);//structure form string, can deal with scientific notation
+	intbigdata(const int &us1_o);
+	intbigdata(const char *cstr1);
+	intbigdata(const unsigned &us1_o, const int &dummy);//explicit convert unsigned to intbigdata
+	~intbigdata() {};
 	//Traditional arithmetics:
-	IntBigdata add(const IntBigdata &bus2) const;
-	IntBigdata sub(const IntBigdata &bus2) const;
-	IntBigdata mul(const IntBigdata &bus2) const;
-	IntBigdata div(const IntBigdata &bus2) const;
-	IntBigdata mod(const IntBigdata &bus2) const;
+	intbigdata add(const intbigdata &bus2) const;
+	intbigdata sub(const intbigdata &bus2) const;
+	intbigdata mul(const intbigdata &bus2) const;
+	intbigdata div(const intbigdata &bus2) const;
+	intbigdata mod(const intbigdata &bus2) const;
 	//Power functions:
-	IntBigdata pow(const IntBigdata &bus2) const;//exponent's value is a int, cannot too big
-	IntBigdata sqrt() const;//ignore sign, assume positive number
+	intbigdata pow(const intbigdata &bus2) const;//exponent's value is a int, cannot too big
+	intbigdata sqrt() const;//ignore sign, assume positive number
 	//Exponential and logarithmic functions:
 	//
 	//Operators:
 	operator int() const;
 	operator string() const;
-	friend std::istream &operator>>(std::istream &in, IntBigdata &bus1);
-	friend std::ostream &operator<<(std::ostream &out, const IntBigdata &bus1);
+	friend std::istream &operator>>(std::istream &in, intbigdata &bus1);
+	friend std::ostream &operator<<(std::ostream &out, const intbigdata &bus1);
 	//memo: defining own copy constructors need string and also int, otherwise will cause ambiguous with copy 0
 	//use synthesized copy constructors to save code lines
 	//
-	//overload operators: between IntBigdata and int, ATTENTION: unsigned must be explicit conversion
-	IntBigdata &operator+=(const IntBigdata &bus2) {return *this = this->add(bus2);}
-	IntBigdata &operator-=(const IntBigdata &bus2) {return *this = this->sub(bus2);}
-	IntBigdata &operator*=(const IntBigdata &bus2) {return *this = this->mul(bus2);}
-	IntBigdata &operator/=(const IntBigdata &bus2) {return *this = this->div(bus2);}
-	IntBigdata &operator%=(const IntBigdata &bus2) {return *this = this->mod(bus2);}
-	friend bool operator==(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.who_big(bus2) == 0;}
-	friend bool operator==(const IntBigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == 0;}
-	friend bool operator==(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).who_big(bus2) == 0;}
-	friend bool operator!=(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.who_big(bus2) != 0;}
-	friend bool operator!=(const IntBigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != 0;}
-	friend bool operator!=(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).who_big(bus2) != 0;}
-	friend bool operator>(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.who_big(bus2) == 1;}
-	friend bool operator>(const IntBigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == 1;}
-	friend bool operator>(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).who_big(bus2) == 1;}
-	friend bool operator>=(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.who_big(bus2) != -1;}
-	friend bool operator>=(const IntBigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != -1;}
-	friend bool operator>=(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).who_big(bus2) != -1;}
-	friend bool operator<(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.who_big(bus2) == -1;}
-	friend bool operator<(const IntBigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == -1;}
-	friend bool operator<(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).who_big(bus2) == -1;}
-	friend bool operator<=(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.who_big(bus2) != 1;}
-	friend bool operator<=(const IntBigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != 1;}
-	friend bool operator<=(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).who_big(bus2) != 1;}
-	IntBigdata &operator++();
-	IntBigdata &operator--();
-	IntBigdata operator++(int);
-	IntBigdata operator--(int);
-	IntBigdata &operator+() {return *this;}
-	IntBigdata &operator-() {b_sign = !b_sign; return *this;}
+	//overload operators: between intbigdata and int, ATTENTION: unsigned must be explicit conversion
+	intbigdata &operator+=(const intbigdata &bus2) {return *this = this->add(bus2);}
+	intbigdata &operator-=(const intbigdata &bus2) {return *this = this->sub(bus2);}
+	intbigdata &operator*=(const intbigdata &bus2) {return *this = this->mul(bus2);}
+	intbigdata &operator/=(const intbigdata &bus2) {return *this = this->div(bus2);}
+	intbigdata &operator%=(const intbigdata &bus2) {return *this = this->mod(bus2);}
+	friend bool operator==(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) == 0;}
+	friend bool operator==(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == 0;}
+	friend bool operator==(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == 0;}
+	friend bool operator!=(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) != 0;}
+	friend bool operator!=(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != 0;}
+	friend bool operator!=(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != 0;}
+	friend bool operator>(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) == 1;}
+	friend bool operator>(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == 1;}
+	friend bool operator>(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == 1;}
+	friend bool operator>=(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) != -1;}
+	friend bool operator>=(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != -1;}
+	friend bool operator>=(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != -1;}
+	friend bool operator<(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) == -1;}
+	friend bool operator<(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == -1;}
+	friend bool operator<(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == -1;}
+	friend bool operator<=(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) != 1;}
+	friend bool operator<=(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != 1;}
+	friend bool operator<=(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != 1;}
+	intbigdata &operator++();
+	intbigdata &operator--();
+	intbigdata operator++(int);
+	intbigdata operator--(int);
+	intbigdata &operator+() {return *this;}
+	intbigdata &operator-() {b_sign = !b_sign; return *this;}
 	//Modifiers:
 	void assign(const std::vector<char> &di2, const bool &bsn, const char &check_data);//inconvenience
-	void assign(const IntBigdata &bus2);
+	void assign(const intbigdata &bus2);
 	void assign(const std::string &str1);
 	void assign(const int &us1);
 	void assign_unsigned(const unsigned &us1);//to avoid ambiguous with int
-	void swap(IntBigdata &bus2);
+	void swap(intbigdata &bus2);
 	void clear();//to assign 0
-	//IntBigdata operators:
+	//intbigdata operators:
 	std::string scientific(const int &i_point) const;//scientific notation
 	int save_file(const std::string file_name_o, const std::string file_msg_o) const;
 	int load_file(const string &file_name);
@@ -116,8 +116,8 @@ private:
 	std::vector<char> bigint;
 	//sample: if int i = 190, convert to vector<char> d: 091
 	//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
-	IntBigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
-	IntBigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};//debug
+	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
+	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};//debug
 	//Traditional arithmetics:
 	template <typename Tve> std::vector<char> add_f(const Tve &di2) const;
 	template <typename Tve> void sub_fself(const Tve &di2);
@@ -130,34 +130,34 @@ private:
 	//Compare:
 	template <typename Tve> int abso_big(const Tve &di2) const;
 	template <typename Tve, typename Tve2> int abso_big_fordiv(const Tve &di1, const Tve2 &di2) const;
-	int who_big(const IntBigdata &bus2) const;
+	int who_big(const intbigdata &bus2) const;
 	bool is_zero() const;
 	void fix_data();
 	bool is_not_corrupt() const;
 };
 //nonmember operators overload
-//overload operators: between IntBigdata and int, ATTENTION: unsigned must be explicit conversion
-inline IntBigdata operator+(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.add(bus2);}
-inline IntBigdata operator+(const IntBigdata &bus1, const int &ib2) {return bus1.add(ib2);}
-inline IntBigdata operator+(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).add(bus2);}
-inline IntBigdata operator-(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.sub(bus2);}
-inline IntBigdata operator-(const IntBigdata &bus1, const int &ib2) {return bus1.sub(ib2);}
-inline IntBigdata operator-(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).sub(bus2);}
-inline IntBigdata operator*(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.mul(bus2);}
-inline IntBigdata operator*(const IntBigdata &bus1, const int &ib2) {return bus1.mul(ib2);}
-inline IntBigdata operator*(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).mul(bus2);}
-inline IntBigdata operator/(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.div(bus2);}
-inline IntBigdata operator/(const IntBigdata &bus1, const int &ib2) {return bus1.div(ib2);}
-inline IntBigdata operator/(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).div(bus2);}
-inline IntBigdata operator%(const IntBigdata &bus1, const IntBigdata &bus2) {return bus1.mod(bus2);}
-inline IntBigdata operator%(const IntBigdata &bus1, const int &ib2) {return bus1.mod(ib2);}
-inline IntBigdata operator%(const int &ib1, const IntBigdata &bus2) {return IntBigdata(ib1).mod(bus2);}
+//overload operators: between intbigdata and int, ATTENTION: unsigned must be explicit conversion
+inline intbigdata operator+(const intbigdata &bus1, const intbigdata &bus2) {return bus1.add(bus2);}
+inline intbigdata operator+(const intbigdata &bus1, const int &ib2) {return bus1.add(ib2);}
+inline intbigdata operator+(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).add(bus2);}
+inline intbigdata operator-(const intbigdata &bus1, const intbigdata &bus2) {return bus1.sub(bus2);}
+inline intbigdata operator-(const intbigdata &bus1, const int &ib2) {return bus1.sub(ib2);}
+inline intbigdata operator-(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).sub(bus2);}
+inline intbigdata operator*(const intbigdata &bus1, const intbigdata &bus2) {return bus1.mul(bus2);}
+inline intbigdata operator*(const intbigdata &bus1, const int &ib2) {return bus1.mul(ib2);}
+inline intbigdata operator*(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).mul(bus2);}
+inline intbigdata operator/(const intbigdata &bus1, const intbigdata &bus2) {return bus1.div(bus2);}
+inline intbigdata operator/(const intbigdata &bus1, const int &ib2) {return bus1.div(ib2);}
+inline intbigdata operator/(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).div(bus2);}
+inline intbigdata operator%(const intbigdata &bus1, const intbigdata &bus2) {return bus1.mod(bus2);}
+inline intbigdata operator%(const intbigdata &bus1, const int &ib2) {return bus1.mod(ib2);}
+inline intbigdata operator%(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).mod(bus2);}
 // __  (\_ 
 //(_ \ ( '> 
 //  ) \/_)=
 //  (_(_ )_ member
 //structure2 vector
-IntBigdata::IntBigdata(const vector<char> &di1, const bool &bsn = true, const char &check_data = 'y')
+intbigdata::intbigdata(const vector<char> &di1, const bool &bsn = true, const char &check_data = 'y')
 {
 	//sign
 	b_sign = bsn;
@@ -167,7 +167,7 @@ IntBigdata::IntBigdata(const vector<char> &di1, const bool &bsn = true, const ch
 	if (check_data != 'n') this->fix_data();
 }
 //structure3 string
-IntBigdata::IntBigdata(const std::string &str1)
+intbigdata::intbigdata(const std::string &str1)
 {
 	//"0123456789" will check converting
 	string s_number("0123456789"), s_expo;
@@ -187,7 +187,7 @@ IntBigdata::IntBigdata(const std::string &str1)
 		string s_expo(str1, s_ixe+1), str1_p;
 		s_expo += '#';
 		//fix string data
-		int ibuff = 0, i_expo = static_cast<int>(IntBigdata(s_expo));
+		int ibuff = 0, i_expo = static_cast<int>(intbigdata(s_expo));
 		s_ixp = string::npos;
 		for (s_ixn = 0; s_ixn != s_ixe; ++s_ixn) {
 			//point
@@ -205,7 +205,7 @@ IntBigdata::IntBigdata(const std::string &str1)
 		}
 		else for (int ix = 0; ix != ibuff; ++ix) str1_p += '0';
 		str1_p += '#';
-		*this = IntBigdata(str1_p);
+		*this = intbigdata(str1_p);
 		//sign
 		if (str1[0] == '-') b_sign = false;	
 	}
@@ -227,7 +227,7 @@ IntBigdata::IntBigdata(const std::string &str1)
 	}
 }
 //structure4 int
-IntBigdata::IntBigdata(const int &us1_o)
+intbigdata::intbigdata(const int &us1_o)
 {
 	int ibuff, us1;
 	//sign
@@ -237,13 +237,13 @@ IntBigdata::IntBigdata(const int &us1_o)
 	if (us1_o == 0) bigint.push_back(0);
 }
 //structure5 c style string
-IntBigdata::IntBigdata(const char *cstr1)
+intbigdata::intbigdata(const char *cstr1)
 {
 	string str1(cstr1);
-	*this = IntBigdata(str1);
+	*this = intbigdata(str1);
 }
 //structure6 unsigned
-IntBigdata::IntBigdata(const unsigned &us1_o, const int &dummy)
+intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 {
 	unsigned ibuff, us1;
 	//sign
@@ -257,7 +257,7 @@ IntBigdata::IntBigdata(const unsigned &us1_o, const int &dummy)
 ////////////////
 ////////////////
 template <typename Tve>//Tve: vector<char>, deque<char>...
-vector<char> IntBigdata::add_f(const Tve &di2) const
+vector<char> intbigdata::add_f(const Tve &di2) const
 {
 	vector<char> de_res;
 	int ip3 = 0, ip1, ip2, ipadd;
@@ -282,7 +282,7 @@ vector<char> IntBigdata::add_f(const Tve &di2) const
 ////////////////
 ////////////////original
 template <typename Tve>
-void IntBigdata::sub_fself(const Tve &di2)
+void intbigdata::sub_fself(const Tve &di2)
 {
 	vector<char>::iterator d_it1 = bigint.begin();
 	typename Tve::const_iterator d_it2 = di2.begin();
@@ -310,7 +310,7 @@ void IntBigdata::sub_fself(const Tve &di2)
 ////////////////when operator-= call this function will cause a little performance loss
 ////////////////from sub_fself
 template <typename Tve>
-vector<char> IntBigdata::sub_f(const Tve &di2) const
+vector<char> intbigdata::sub_f(const Tve &di2) const
 {
 	vector<char> ret(bigint);
 	vector<char>::iterator d_it1 = ret.begin();
@@ -340,7 +340,7 @@ vector<char> IntBigdata::sub_f(const Tve &di2) const
 ////////////////
 ////////////////from sub_fself
 template <typename Tve>
-void IntBigdata::sub_fself_contra(Tve &di1) const
+void intbigdata::sub_fself_contra(Tve &di1) const
 {
 	typename Tve::iterator d_it1 = di1.begin();
 	vector<char>::const_iterator d_it2 = bigint.begin();
@@ -368,7 +368,7 @@ void IntBigdata::sub_fself_contra(Tve &di1) const
 ////////////////
 ////////////////from sub_fself
 template <typename Tve, typename Tve2>
-void IntBigdata::sub_ffordiv(Tve &di1, const Tve2 &di2) const
+void intbigdata::sub_ffordiv(Tve &di1, const Tve2 &di2) const
 {
 	typename Tve::iterator d_it1 = di1.begin();
 	typename Tve2::const_iterator d_it2 = di2.begin();
@@ -396,7 +396,7 @@ void IntBigdata::sub_ffordiv(Tve &di1, const Tve2 &di2) const
 ////////////////
 ////////////////original
 template <typename Tve>
-vector<char> IntBigdata::mul_f(const Tve &di2) const
+vector<char> intbigdata::mul_f(const Tve &di2) const
 {
 	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
 	vector<char> de_res;
@@ -439,7 +439,7 @@ vector<char> IntBigdata::mul_f(const Tve &di2) const
 ////////////////
 ////////////////from mul_f
 template <typename Tve>
-void IntBigdata::mul_fself(const Tve &di2)
+void intbigdata::mul_fself(const Tve &di2)
 {
 	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
 	vector<char> de_res;
@@ -483,10 +483,10 @@ void IntBigdata::mul_fself(const Tve &di2)
 ////////////////
 ////////////////
 template <typename Tve>
-vector<char> IntBigdata::div_f(const Tve &di2, const bool &b_is_mod) const
+vector<char> intbigdata::div_f(const Tve &di2, const bool &b_is_mod) const
 {
 	unsigntp difsize = bigint.size()-di2.size()+1;
-	IntBigdata dummy_empty;
+	intbigdata dummy_empty;
 	//deque
 	deque<char> bu1(bigint.begin()+difsize, bigint.end()), de_res;
 	vector<char> di_p(bigint.begin(), bigint.begin()+difsize), ve_res;
@@ -521,7 +521,7 @@ vector<char> IntBigdata::div_f(const Tve &di2, const bool &b_is_mod) const
 ////////////////
 ////////////////original
 template <typename Tve>
-int IntBigdata::abso_big(const Tve &di2) const
+int intbigdata::abso_big(const Tve &di2) const
 {
 	if (bigint.size() > di2.size()) return 1;
 	if (bigint.size() < di2.size()) return -1;
@@ -539,7 +539,7 @@ int IntBigdata::abso_big(const Tve &di2) const
 ////////////////
 ////////////////from abso_big
 template <typename Tve, typename Tve2>
-int IntBigdata::abso_big_fordiv(const Tve &di1, const Tve2 &di2) const
+int intbigdata::abso_big_fordiv(const Tve &di1, const Tve2 &di2) const
 {
 	if (di1.size() > di2.size()) return 1;
 	if (di1.size() < di2.size()) return -1;
@@ -553,7 +553,7 @@ int IntBigdata::abso_big_fordiv(const Tve &di1, const Tve2 &di2) const
 	return 0;
 }
 //who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
-inline int IntBigdata::who_big(const IntBigdata &bus2) const
+inline int intbigdata::who_big(const intbigdata &bus2) const
 {
 	//sign
 	if (b_sign == true && bus2.b_sign == false) {return 1;}
@@ -563,7 +563,7 @@ inline int IntBigdata::who_big(const IntBigdata &bus2) const
 	return i_who_big;
 }
 //is_zero
-inline bool IntBigdata::is_zero() const
+inline bool intbigdata::is_zero() const
 {
 	if (bigint.size() == 1 && bigint[0] == 0) return true;
 	//skip check sign
@@ -572,62 +572,62 @@ inline bool IntBigdata::is_zero() const
 //arithmetic encapsulate
 //add, sub, mul, div, pow, mod
 //add
-inline IntBigdata IntBigdata::add(const IntBigdata &bus2) const
+inline intbigdata intbigdata::add(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
-	if (b_sign == bus2.b_sign) return IntBigdata(this->add_f(bus2.bigint), b_sign, 'n');
+	if (b_sign == bus2.b_sign) return intbigdata(this->add_f(bus2.bigint), b_sign, 'n');
 	else {
 		i_absob = this->abso_big(bus2.bigint);
-		if (i_absob == 1) return IntBigdata(this->sub_f(bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return IntBigdata(bus2.sub_f(bigint), bus2.b_sign, 'n');
+		if (i_absob == 1) return intbigdata(this->sub_f(bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(bus2.sub_f(bigint), bus2.b_sign, 'n');
 	}
-	return IntBigdata();
+	return intbigdata();
 }
 //sub
-inline IntBigdata IntBigdata::sub(const IntBigdata &bus2) const
+inline intbigdata intbigdata::sub(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
-	if (b_sign != bus2.b_sign) return IntBigdata(this->add_f(bus2.bigint), b_sign, 'n');
+	if (b_sign != bus2.b_sign) return intbigdata(this->add_f(bus2.bigint), b_sign, 'n');
 	else {
 		i_absob = this->abso_big(bus2.bigint);
-		if (i_absob == 1) return IntBigdata(this->sub_f(bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return IntBigdata(bus2.sub_f(bigint), !bus2.b_sign, 'n');
+		if (i_absob == 1) return intbigdata(this->sub_f(bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(bus2.sub_f(bigint), !bus2.b_sign, 'n');
 	}
-	return IntBigdata();
+	return intbigdata();
 }
 //mul
-inline IntBigdata IntBigdata::mul(const IntBigdata &bus2) const
+inline intbigdata intbigdata::mul(const intbigdata &bus2) const
 {
 	//sign
-	return IntBigdata(this->mul_f(bus2.bigint), b_sign == bus2.b_sign, 'n');
+	return intbigdata(this->mul_f(bus2.bigint), b_sign == bus2.b_sign, 'n');
 }
 //div
-inline IntBigdata IntBigdata::div(const IntBigdata &bus2) const
+inline intbigdata intbigdata::div(const intbigdata &bus2) const
 {
-	if (bus2.is_zero()) throw IntBigdata_error();
+	if (bus2.is_zero()) throw intbigdata_error();
 	int iabsobig = this->abso_big(bus2.bigint);
-	if (iabsobig == -1) return IntBigdata();
+	if (iabsobig == -1) return intbigdata();
 	//sign
-	return IntBigdata(this->div_f(bus2.bigint, false), b_sign == bus2.b_sign, 'n');
+	return intbigdata(this->div_f(bus2.bigint, false), b_sign == bus2.b_sign, 'n');
 }
 //mod
-inline IntBigdata IntBigdata::mod(const IntBigdata &bus2) const
+inline intbigdata intbigdata::mod(const intbigdata &bus2) const
 {
-	if (bus2.is_zero()) throw IntBigdata_error();
+	if (bus2.is_zero()) throw intbigdata_error();
 	int iabsobig = this->abso_big(bus2.bigint);
 	if (iabsobig == -1) {return *this;}	
 	//sign
-	IntBigdata ret(this->div_f(bus2.bigint, true), b_sign, 'n');
+	intbigdata ret(this->div_f(bus2.bigint, true), b_sign, 'n');
 	if (ret.is_zero()) ret.b_sign = true;
 	return ret;
 }
 //pow, exponent's value is a int
 //large result of pow spends some time
-inline IntBigdata IntBigdata::pow(const IntBigdata &bus2) const
+inline intbigdata intbigdata::pow(const intbigdata &bus2) const
 {
-	IntBigdata ret;
+	intbigdata ret;
 	int ixpow = static_cast<int>(bus2);
 	if (ixpow == 0) {ret.bigint[0] = 1; return ret;}
 	//sign
@@ -642,20 +642,20 @@ inline IntBigdata IntBigdata::pow(const IntBigdata &bus2) const
 }
 ////////////////deque use
 //sqrt, method: digit-by-digit calculation
-IntBigdata IntBigdata::sqrt() const
+intbigdata intbigdata::sqrt() const
 {
 	//deque
 	deque<char> rema;//remainder
 	vector<char>::const_reverse_iterator v_it = bigint.rbegin();
 	//sign
-	if (b_sign == false) cerr << "IntBigdata.h: imaginary number" << endl;
+	if (b_sign == false) cerr << "intbigdata.h: imaginary number" << endl;
 	//initialize value
 	if (bigint.size()%2 == 1) {rema.push_front(0); rema.push_front(*v_it++);}
 	else {rema.push_front(*v_it++); rema.push_front(*v_it++);}
 	int i_temp = rema[0]+rema[1]*10, ix = 0;
 	while (ix*ix <= i_temp) ++ix;
 	if (ix != 0) --ix;
-	IntBigdata ib_rootsqr(ix*ix), ib_20, ib_20p, di_temp, ib_root_res;
+	intbigdata ib_rootsqr(ix*ix), ib_20, ib_20p, di_temp, ib_root_res;
 	//deque
 	deque<char> de_root(1, ix);
 	ib_20.bigint.push_back(2);
@@ -707,16 +707,16 @@ IntBigdata IntBigdata::sqrt() const
 }
 //operator int()
 ////////////////original
-IntBigdata::operator int() const
+intbigdata::operator int() const
 {
 	//int, 32-bit, -2147483648 to 2147483647
 	//the const -2147483648 some compiler warning (cc1plus), so ignore
 	string s_max("2147483647");
-	IntBigdata ibd_max(s_max);
+	intbigdata ibd_max(s_max);
 	vector<char>::const_reverse_iterator v_it;
 	int get_int = 0;
 	if (this->abso_big(ibd_max.bigint) == 1) {
-		//cerr << IntBigdata.h: out of range << endl;
+		//cerr << intbigdata.h: out of range << endl;
 		ibd_max.bigint = this->div_f(ibd_max.bigint, true);
 		v_it = ibd_max.bigint.rbegin();
 		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
@@ -730,7 +730,7 @@ IntBigdata::operator int() const
 	return get_int;
 }
 //operator string()
-IntBigdata::operator string() const
+intbigdata::operator string() const
 {
 	string s_number("0123456789"), str_res, s_buff;
 	vector<char>::const_reverse_iterator rit_de;
@@ -742,7 +742,7 @@ IntBigdata::operator string() const
 	return str_res;
 }
 //istream &operator>>
-istream &operator>>(istream &in, IntBigdata &bus1)
+istream &operator>>(istream &in, intbigdata &bus1)
 {
 	string s_number("0123456789"), str1;
 	string::size_type s_ix;
@@ -767,7 +767,7 @@ istream &operator>>(istream &in, IntBigdata &bus1)
 	return in;
 }
 //ostream &operator<<
-ostream &operator<<(ostream &out, const IntBigdata &bus1)
+ostream &operator<<(ostream &out, const intbigdata &bus1)
 {
 	vector<char>::const_reverse_iterator rit_de = bus1.bigint.rbegin();
 	//sign
@@ -776,37 +776,37 @@ ostream &operator<<(ostream &out, const IntBigdata &bus1)
 	return out;
 }
 //operator++
-inline IntBigdata &IntBigdata::operator++()
+inline intbigdata &intbigdata::operator++()
 {
-	IntBigdata bu_d;
+	intbigdata bu_d;
 	bu_d.bigint[0] = 1;
 	return *this = this->add(bu_d);
 }
 //operator--
-inline IntBigdata &IntBigdata::operator--()
+inline intbigdata &intbigdata::operator--()
 {
-	IntBigdata bu_d;
+	intbigdata bu_d;
 	bu_d.bigint[0] = 1;
 	return *this = this->sub(bu_d);
 }
 //operator++(int) postfix
-inline IntBigdata IntBigdata::operator++(int)
+inline intbigdata intbigdata::operator++(int)
 {
-	IntBigdata ret(bigint, b_sign, 'n'), bu_d;
+	intbigdata ret(bigint, b_sign, 'n'), bu_d;
 	bu_d.bigint[0] = 1;
 	*this = this->add(bu_d);
 	return ret;
 }
 //operator--(int) postfix
-inline IntBigdata IntBigdata::operator--(int)
+inline intbigdata intbigdata::operator--(int)
 {
-	IntBigdata ret(bigint, b_sign, 'n'), bu_d;
+	intbigdata ret(bigint, b_sign, 'n'), bu_d;
 	bu_d.bigint[0] = 1;
 	*this = this->sub(bu_d);
 	return ret;
 }
 //assign1
-inline void IntBigdata::assign(const vector<char> &di2, const bool &bsn = true, const char &check_data = 'y')
+inline void intbigdata::assign(const vector<char> &di2, const bool &bsn = true, const char &check_data = 'y')
 {
 	//sign
 	b_sign = bsn;
@@ -816,29 +816,29 @@ inline void IntBigdata::assign(const vector<char> &di2, const bool &bsn = true, 
 	if (check_data != 'n') this->fix_data();
 }
 //assign2 overload
-inline void IntBigdata::assign(const IntBigdata &bus2)
+inline void intbigdata::assign(const intbigdata &bus2)
 {
 	//sign
 	b_sign = bus2.b_sign;
 	bigint = bus2.bigint;
 }
 //assign3 overload
-inline void IntBigdata::assign(const string &str1)
+inline void intbigdata::assign(const string &str1)
 {
-	*this = IntBigdata(str1);
+	*this = intbigdata(str1);
 }
 //assign4 overload 
-inline void IntBigdata::assign(const int &us1)
+inline void intbigdata::assign(const int &us1)
 {
-	*this = IntBigdata(us1);
+	*this = intbigdata(us1);
 }
 //assign_unsigned
-void IntBigdata::assign_unsigned(const unsigned &us1)
+void intbigdata::assign_unsigned(const unsigned &us1)
 {
-	*this = IntBigdata(us1, 1);
+	*this = intbigdata(us1, 1);
 }
 //swap
-inline void IntBigdata::swap(IntBigdata &bus2)
+inline void intbigdata::swap(intbigdata &bus2)
 {
 	bigint.swap(bus2.bigint);
 	bool b_temp = b_sign;
@@ -846,13 +846,13 @@ inline void IntBigdata::swap(IntBigdata &bus2)
 	bus2.b_sign = b_temp;	
 }
 //clear, assign 0
-inline void IntBigdata::clear()
+inline void intbigdata::clear()
 {
 	bigint.assign(1, 0);
 	b_sign = true;
 }
 //scientific
-string IntBigdata::scientific(const int &i_point = 6) const
+string intbigdata::scientific(const int &i_point = 6) const
 {
 	string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
@@ -863,7 +863,7 @@ string IntBigdata::scientific(const int &i_point = 6) const
 	if ((unsigned)i_point > ixsz) i1_get = ixsz;
 	//sign
 	if (b_sign == false) s_scient += '-';
-	IntBigdata i_round;
+	intbigdata i_round;
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
@@ -887,16 +887,16 @@ string IntBigdata::scientific(const int &i_point = 6) const
 	return s_scient;
 }
 //save_file
-int IntBigdata::save_file(const string file_name_o = "auto", const string file_msg_o = "nomessage") const
+int intbigdata::save_file(const string file_name_o = "auto", const string file_msg_o = "nomessage") const
 {
 	string file_name(file_name_o), file_msg("//");
 	if (file_name == "auto") {
-		file_name.assign("IntBigdata_");
+		file_name.assign("intbigdata_");
 		file_name += this->scientific(6);
 		file_name += ".txt";
 	}
 	ofstream outfile(file_name.c_str());
-	if (!outfile) {cerr << "IntBigdata.h: open file failed" << endl; return -1;}
+	if (!outfile) {cerr << "intbigdata.h: open file failed" << endl; return -1;}
 	if (file_msg_o != "nomessage") {
 		file_msg += file_msg_o;
 		outfile << file_msg << endl;
@@ -910,13 +910,13 @@ int IntBigdata::save_file(const string file_name_o = "auto", const string file_m
 	return 0;
 }
 //load_file
-int IntBigdata::load_file(const string &file_name)
+int intbigdata::load_file(const string &file_name)
 {
 	string::size_type pos1, pos2;
 	int i_iscomment = 0;
 	string s_line, s_lineadd;
 	ifstream infile(file_name.c_str());
-	if (!infile) {cerr << "IntBigdata.h: open file faile" << endl; return -1;}
+	if (!infile) {cerr << "intbigdata.h: open file faile" << endl; return -1;}
 	while (getline(infile, s_line)) {
 		//ignore comments
 		pos1 = s_line.find("//");
@@ -935,27 +935,27 @@ int IntBigdata::load_file(const string &file_name)
 		if (i_iscomment != 2 && s_line.size() != 0) s_lineadd += s_line;
 		if (i_iscomment == 1) i_iscomment = 2;
 	}
-	*this = IntBigdata(s_lineadd);
+	*this = intbigdata(s_lineadd);
 	infile.close();
 	infile.clear();
 	return 0;
 }
 //get_int
-int IntBigdata::get_int() const
+int intbigdata::get_int() const
 {
 	return int(*this);
 }
 //get_unsigned
 ////////////////from int()
-unsigned IntBigdata::get_unsigned() const
+unsigned intbigdata::get_unsigned() const
 {
 	//unsigned, 32-bit, 0 to 4294967295
 	string s_max("4294967295");
-	IntBigdata ibd_max(s_max);
+	intbigdata ibd_max(s_max);
 	vector<char>::const_reverse_iterator v_it;
 	unsigned get_int = 0;
 	if (this->abso_big(ibd_max.bigint) == 1) {
-		//cerr << IntBigdata.h: out of range << endl;
+		//cerr << intbigdata.h: out of range << endl;
 		ibd_max.bigint = this->div_f(ibd_max.bigint, true);
 		v_it = ibd_max.bigint.rbegin();
 		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
@@ -969,22 +969,22 @@ unsigned IntBigdata::get_unsigned() const
 	return get_int;
 }
 //get_string
-string IntBigdata::get_string() const
+string intbigdata::get_string() const
 {
 	return string(*this);
 }
 //size
-inline unsigntp IntBigdata::size()
+inline unsigntp intbigdata::size()
 {
 	return bigint.size();
 }
 //max_size
-inline unsigntp IntBigdata::max_size()
+inline unsigntp intbigdata::max_size()
 {
 	return bigint.max_size();
 }
 //fix_data
-void IntBigdata::fix_data()
+void intbigdata::fix_data()
 {
 	if (bigint.empty()) bigint.push_back(0);
 	vector<char>::reverse_iterator rit_de = bigint.rbegin();
@@ -1000,7 +1000,7 @@ void IntBigdata::fix_data()
 	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
 }
 //is_not_corrupt
-bool IntBigdata::is_not_corrupt() const
+bool intbigdata::is_not_corrupt() const
 {
 	if (bigint.empty()) return false;
 	vector<char>::const_reverse_iterator rit_de = bigint.rbegin();
