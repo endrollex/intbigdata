@@ -214,8 +214,12 @@ intbigdata::intbigdata(const std::string &str1)
 		//sign
 		if (str1[0] == '-') b_sign = false;
 		else b_sign = true;
+		//point
+		s_ixp = str1.find_first_of('.');
+		if (s_ixp == string::npos) s_ixp = 0;
+		else s_ixp = str1.size()-s_ixp;
 		string::const_reverse_iterator s_it;
-		for (s_it = str1.rbegin(); s_it != str1.rend(); ++s_it) {
+		for (s_it = str1.rbegin()+s_ixp; s_it != str1.rend(); ++s_it) {
 			s_ixn = s_number.find(*s_it);
 			if (s_ixn != string::npos) bigint.push_back(s_ixn);
 		}
