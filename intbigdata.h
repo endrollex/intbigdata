@@ -214,7 +214,7 @@ intbigdata::intbigdata(const std::string &str1)
 		//sign
 		if (str1[0] == '-') b_sign = false;
 		else b_sign = true;
-		//point
+		//point, no need trim
 		s_ixp = str1.find_first_of('.');
 		if (s_ixp == string::npos) s_ixp = 0;
 		else s_ixp = str1.size()-s_ixp;
