@@ -56,6 +56,8 @@ public:
 	intbigf(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
 	
 	
+	//
+	bool is_zero() const;
 	
 };
 
@@ -67,7 +69,7 @@ intbigf::intbigf(const std::string &str1)
 	string s_number("0123456789"), s_expo;
 	bool b_do_e = false, ignore_e = true;
 	//judge scientific notation
-	string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp;
+	string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp, s_ixbu;
 	//'#', hide parameter, force ignore scientific notation
 	if (str1[str1.size()-1] != '#') {
 		s_ixe = str1.find_first_of("Ee");
@@ -78,65 +80,56 @@ intbigf::intbigf(const std::string &str1)
 	}
 	//scientific notation, 0 <= exponent <= 2147483647
 	if (!ignore_e) {
-		;
+		bigint.assign(1, 0);
+		poi = 0;
+		ext = 0;
+		
+		
+		
+		
 	}
 	//normal number
 	else {
-		
-		//
-		
-		
-		int ibuff = 0;
 		s_ixp = 0;
+		s_ixbu = 0;
 		//sign
 		if (str1[0] == '-') b_sign = false;
 		else b_sign = true;
-		
 		//trim
-		
 		for (s_ixn = str1.size(); s_ixn != 0; --s_ixn) {
-			
-			cout << "# " << str1[s_ixn-1] << endl;
-			
 			//point
 			s_ixn2 = s_number.find(str1[s_ixn-1]);
-			if (s_ixn2 != string::npos) {bigint.push_back(s_ixn2); ++ibuff;}
-			if (s_ixp == 0 && str1[s_ixn-1] == '.') s_ixp = ibuff;
+			if (s_ixn2 != string::npos) {bigint.push_back(s_ixn2); ++s_ixbu;}
+			if (s_ixp == 0 && str1[s_ixn-1] == '.') s_ixp = s_ixbu;
 		}
-		
-		s_ixp = ibuff-s_ixp;
 		if (bigint.empty()) bigint.push_back(0);
-		
-		ibuff = 0;
-		
 		//remove zero
-		
 		if (s_ixp != 0) {
+			s_ixp = s_ixbu-s_ixp;
+			s_ixbu = 0;
 			vector<char>::const_reverse_iterator v_it;
 			for (v_it = bigint.rbegin(); v_it != bigint.rend(); ++v_it) {
-				
 				if (*v_it != 0) break;
-				++ibuff;
-				if (ibuff == s_ixp) break;
-				cout << "ibuff " << ibuff << ' ' << (int)(*(v_it+1)) << endl;
-				
+				++s_ixbu;
+				if (s_ixbu == s_ixp) break;
 			}
 		}
 		else while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
-		
-		
-		poi = s_ixp-ibuff;
-		
-		
-		for (int ix = 0; ix != ibuff; ++ix) bigint.pop_back();
-		
-		//
+		poi = static_cast<int>(s_ixp)-static_cast<int>(s_ixbu);
+		ext = 0;
+		if (s_ixp != 0) {
+			for (unsigned ix = 0; ix != s_ixbu; ++ix) bigint.pop_back();
+			s_ixbu = 0;
+			while (bigint.back() == 0 && bigint.size() != 1) {bigint.pop_back(); --ext;}
+			//is_zero
+			if (bigint.size() == 1 && bigint[0] == 0) ext = 0;
+			while (bigint[s_ixbu] == 0 && bigint.size() != 1) ++s_ixbu;
+			vector<char>::const_iterator v_it2 = bigint.begin();
+			bigint.erase(v_it2, v_it2+s_ixbu);
+		}
 		//zero no sign
 		if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
-		
-		ext = 0;
 	}
-	
 }
 
 
@@ -178,6 +171,17 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 	if (bus1.b_sign == false) out << '-';
 	while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
 	return out;
+}
+
+
+
+
+//is_zero
+inline bool intbigf::is_zero() const
+{
+	if (bigint.size() == 1 && bigint[0] == 0) return true;
+	//skip check sign
+	return false;
 }
 
 
