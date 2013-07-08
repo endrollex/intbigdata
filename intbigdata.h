@@ -190,10 +190,10 @@ intbigdata::intbigdata(const std::string &str1)
 		int ibuff = 0, i_expo = static_cast<int>(intbigdata(s_expo));
 		s_ixp = string::npos;
 		for (s_ixn = 0; s_ixn != s_ixe; ++s_ixn) {
-			//point
-			if (ibuff == 0 && str1[s_ixn] == '.') {s_ixp = s_ixn; ibuff = 1;}
 			s_ixn2 = s_number.find(str1[s_ixn]);
-			if (s_ixn2 != string::npos) str1_p += str1[s_ixn];
+			if (s_ixn2 != string::npos) {str1_p += str1[s_ixn]; ++ibuff;}
+			//point
+			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = ibuff;
 		}
 		if (s_ixp != string::npos) ibuff = str1_p.size()-s_ixp;
 		ibuff = i_expo-ibuff;
