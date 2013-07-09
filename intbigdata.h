@@ -187,16 +187,16 @@ intbigdata::intbigdata(const std::string &str1)
 		string s_expo(str1, s_ixe+1), str1_p;
 		s_expo += '#';
 		//fix string data
-		int ibuff = 0, i_expo = static_cast<int>(intbigdata(s_expo));
+		int i_expo = static_cast<int>(intbigdata(s_expo)), ibuff;
 		s_ixp = string::npos;
 		for (s_ixn = 0; s_ixn != s_ixe; ++s_ixn) {
 			s_ixn2 = s_number.find(str1[s_ixn]);
-			if (s_ixn2 != string::npos) {str1_p += str1[s_ixn]; ++ibuff;}
+			if (s_ixn2 != string::npos) str1_p += str1[s_ixn];
 			//point
-			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = static_cast<unsigned>(ibuff);
+			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = str1_p.size();
 		}
-		--ibuff;
 		if (s_ixp != string::npos) ibuff = static_cast<int>(str1_p.size()-s_ixp);
+		else ibuff = str1_p.size()-1;
 		ibuff = i_expo-ibuff;
 		if (str1_p.size() == 0) str1_p += '1';
 		if (ibuff < 0) {
