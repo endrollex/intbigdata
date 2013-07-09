@@ -82,60 +82,16 @@ intbigf::intbigf(const std::string &str1)
 	if (!ignore_e) {
 		
 		
-		
-		
-		string s_expo(str1, s_ixe+1), str1_p;
+		string s_expo(str1, s_ixe+1), str1_p(str1, 0, s_ixe);
 		s_expo += '#';
 		//fix string data
-		int ibuff = 0, i_expo = static_cast<int>(intbigdata(s_expo));
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		s_ixp = string::npos;
-		for (s_ixn = 0; s_ixn != s_ixe; ++s_ixn) {
-			s_ixn2 = s_number.find(str1[s_ixn]);
-			if (s_ixn2 != string::npos) {str1_p += str1[s_ixn]; ++ibuff;}
-			//point
-			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = static_cast<unsigned>(ibuff);
-		}
-		if (s_ixp != string::npos) ibuff = static_cast<int>(str1_p.size()-s_ixp);
-		ibuff = i_expo-ibuff;
-		if (str1_p.size() == 0) str1_p += '1';
-		
-		
-		
-		intbigf ibf_t(str1_p);
-		
-		
-		cout << ibf_t << endl;
-		
-		cout << ibf_t.b_poi << endl;
-		cout << ibf_t.b_exp << endl;
-		
-		
-		
-		
-		if (ibuff < 0) {
-			ibuff = static_cast<int>(str1_p.size())+ibuff;
-			if (ibuff > 0) str1_p.assign(str1_p, 0, ibuff);
-			else str1_p.assign("0");
-		}
-		else for (int ix = 0; ix != ibuff; ++ix) str1_p += '0';
+		int i_expo = static_cast<int>(intbigdata(s_expo));
 		str1_p += '#';
 		*this = intbigf(str1_p);
-		//sign
-		if (str1[0] == '-') b_sign = false;
+		b_exp += i_expo;
 		
 		
 		
-		b_poi = 0;
-		b_exp = 0;
 		
 		
 		
@@ -154,7 +110,7 @@ intbigf::intbigf(const std::string &str1)
 			s_ixn2 = s_number.find(str1[s_ixn-1]);
 			if (s_ixn2 != string::npos) {bigint.push_back(s_ixn2); ++s_ixbu;}
 			if (s_ixp == 0 && str1[s_ixn-1] == '.') s_ixp = s_ixbu;
-		}		
+		}
 		if (bigint.empty()) bigint.push_back(0);
 		//remove zero
 		if (s_ixp != 0) {
@@ -166,9 +122,12 @@ intbigf::intbigf(const std::string &str1)
 				++s_ixbu;
 				if (s_ixbu == s_ixp) break;
 			}
+			b_poi = static_cast<int>(s_ixp-s_ixbu);
 		}
-		else while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
-		b_poi = static_cast<int>(s_ixp-s_ixbu);
+		else {
+			b_poi = static_cast<int>(s_ixbu-s_ixp);
+			while (bigint.back() == 0 && bigint.size() != 1) {bigint.pop_back(); --b_poi;}
+		}
 		b_exp = 0;
 		if (s_ixp != 0) {
 			for (unsigned ix = 0; ix != s_ixbu; ++ix) bigint.pop_back();
