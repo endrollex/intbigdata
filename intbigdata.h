@@ -193,9 +193,9 @@ intbigdata::intbigdata(const std::string &str1)
 			s_ixn2 = s_number.find(str1[s_ixn]);
 			if (s_ixn2 != string::npos) {str1_p += str1[s_ixn]; ++ibuff;}
 			//point
-			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = ibuff;
+			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = static_cast<unsigned>(ibuff);
 		}
-		if (s_ixp != string::npos) ibuff = str1_p.size()-s_ixp;
+		if (s_ixp != string::npos) ibuff = static_cast<int>(str1_p.size()-s_ixp);
 		ibuff = i_expo-ibuff;
 		if (str1_p.size() == 0) str1_p += '1';
 		if (ibuff < 0) {
@@ -207,7 +207,7 @@ intbigdata::intbigdata(const std::string &str1)
 		str1_p += '#';
 		*this = intbigdata(str1_p);
 		//sign
-		if (str1[0] == '-') b_sign = false;	
+		if (str1[0] == '-') b_sign = false;
 	}
 	//normal number
 	else {
