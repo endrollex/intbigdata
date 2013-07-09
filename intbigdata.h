@@ -195,6 +195,7 @@ intbigdata::intbigdata(const std::string &str1)
 			//point
 			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = static_cast<unsigned>(ibuff);
 		}
+		--ibuff;
 		if (s_ixp != string::npos) ibuff = static_cast<int>(str1_p.size()-s_ixp);
 		ibuff = i_expo-ibuff;
 		if (str1_p.size() == 0) str1_p += '1';
