@@ -80,8 +80,6 @@ intbigf::intbigf(const std::string &str1)
 	}
 	//scientific notation, 0 <= exponent <= 2147483647
 	if (!ignore_e) {
-		
-		
 		string s_expo(str1, s_ixe+1), str1_p(str1, 0, s_ixe);
 		s_expo += '#';
 		//fix string data
@@ -89,13 +87,6 @@ intbigf::intbigf(const std::string &str1)
 		str1_p += '#';
 		*this = intbigf(str1_p);
 		b_exp += i_expo;
-		
-		
-		
-		
-		
-		
-		
 	}
 	//normal number
 	else {
@@ -133,15 +124,22 @@ intbigf::intbigf(const std::string &str1)
 			for (unsigned ix = 0; ix != s_ixbu; ++ix) bigint.pop_back();
 			s_ixbu = 0;
 			while (bigint.back() == 0 && bigint.size() != 1) {bigint.pop_back(); --b_exp;}
-			//is_zero
-			if (bigint.size() == 1 && bigint[0] == 0) b_exp = 0;
+			
+			
+			
+			
+			
 			while (bigint[s_ixbu] == 0 && bigint.size() != 1) ++s_ixbu;
 			vector<char>::const_iterator v_it2 = bigint.begin();
 			bigint.erase(v_it2, v_it2+s_ixbu);
 		}
 		//zero no sign
-		if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
+		if (bigint.size() == 1 && bigint[0] == 0) {b_sign = true; b_poi = 1; b_exp = 0;}
 	}
+	
+	cout << "p " << b_poi << endl;
+	cout << "e " << b_exp << endl;
+	
 }
 
 
@@ -153,8 +151,7 @@ intbigf::intbigf(const std::string &str1)
 //istream &operator>>
 istream &operator>>(istream &in, intbigf &bus1)
 {
-	string s_number("0123456789"), str1;
-	string::size_type s_ix;
+	string str1;
 	bus1.bigint.clear();
 	in >> str1;
 	//sign
@@ -162,17 +159,15 @@ istream &operator>>(istream &in, intbigf &bus1)
 	if (str1[0] == '-') bus1.b_sign = false;
 	string::reverse_iterator s_it = str1.rbegin();
 	if (in) {
-		for (; s_it != str1.rend(); ++s_it) {
-			s_ix = s_number.find(*s_it);
-			if (s_ix != string::npos) bus1.bigint.push_back(s_ix);
-		}
-		if (bus1.bigint.size() == 0) bus1.bigint.push_back(0);
-		//remove zero
-		while (bus1.bigint.back() == 0 && bus1.bigint.size() != 1) bus1.bigint.pop_back();
-		//zero no sign
-		if (bus1.bigint.size() == 1 && bus1.bigint[0] == 0 && bus1.b_sign == false) bus1.b_sign = true;
+		
+		
+		
+		
+		bus1 = intbigf(str1);
 	}
 	else bus1.bigint.push_back(0);
+	
+
 	return in;
 }
 //ostream &operator<<
@@ -181,10 +176,29 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 	vector<char>::const_reverse_iterator rit_de = bus1.bigint.rbegin();
 	//sign
 	if (bus1.b_sign == false) out << '-';
-	while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+	int ibuff = bus1.b_poi+bus1.b_exp;
+	if (ibuff <= 0) {
+		out << "0.";
+		while (ibuff < 0) {out << '0'; ++ibuff;}
+		while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+	}
+	else {
+		if (ibuff != bus1.bigint.size()) {
+			if (bus1.bigint.size() > ibuff) {
+				while (rit_de != bus1.bigint.rend()-ibuff) out << (int)*rit_de++;
+				out << '.';
+				while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+			}
+			else {
+				ibuff = ibuff-bus1.bigint.size();
+				while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+				for (unsigned ix = 0; ix != ibuff; ++ix) out << '0';
+			}
+		}
+		else while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+	}
 	return out;
 }
-
 
 
 
