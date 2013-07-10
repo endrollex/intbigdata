@@ -111,7 +111,7 @@ public:
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
-private:
+protected:
 	bool b_sign;
 	std::vector<char> bigint;
 	//sample: if int i = 190, convert to vector<char> d: 091

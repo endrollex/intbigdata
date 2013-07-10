@@ -4,7 +4,7 @@
 using namespace std;
 int main()
 {
-	intbigf t("ddd");
+	intbigf t("3e11");
 	
 	
 	cout << t << endl;
@@ -12,8 +12,8 @@ int main()
 	//cout << t.b_exp << endl;
 	
 	
-	cin >> t;
-	cout << t << endl;
+	//cin >> t;
+	//cout << t << endl;
 	
 	
 	return 0;

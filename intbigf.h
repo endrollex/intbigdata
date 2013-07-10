@@ -19,7 +19,6 @@ __          __ ____   _____   _  __ _____  _   _   _____
 #include <iostream>
 #include <fstream>//save_file, load_file
 #include <deque>
-#include <vector>
 #include <string>
 #include <iterator>
 #include "intbigdata.h"
@@ -28,6 +27,7 @@ typedef deque<char>::size_type unsigntp;
 //
 class intbigf
 {
+	friend class intbigdata;
 public:
 	//Constructors:
 	intbigf(): b_sign(true), bigint(1, 0), b_poi(0), b_exp(0) {};
@@ -39,6 +39,7 @@ public:
 	
 	//Traditional arithmetics:
 	intbigf add(const intbigf &bus2) const;
+	
 	
 	
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
@@ -122,27 +123,32 @@ intbigf::intbigf(const std::string &str1)
 		b_exp = 0;
 		if (s_ixp != 0) {
 			for (unsigned ix = 0; ix != s_ixbu; ++ix) bigint.pop_back();
-			s_ixbu = 0;
 			while (bigint.back() == 0 && bigint.size() != 1) {bigint.pop_back(); --b_exp;}
-			
-			
-			
-			
-			
-			while (bigint[s_ixbu] == 0 && bigint.size() != 1) ++s_ixbu;
-			deque<char>::const_iterator v_it2 = bigint.begin();
-			bigint.erase(v_it2, v_it2+s_ixbu);
+			while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 		}
 		//zero no sign
 		if (bigint.size() == 1 && bigint[0] == 0) {b_sign = true; b_poi = 1; b_exp = 0;}
 	}
-	
-	cout << "p " << b_poi << endl;
-	cout << "e " << b_exp << endl;
-	
 }
 
 
+
+
+//arithmetic encapsulate
+//add, sub, mul, div, pow, mod
+//add
+inline intbigf intbigf::add(const intbigf &bus2) const
+{
+	int i_absob;
+	//sign
+	if (b_sign == bus2.b_sign) return intbigdata(this->add_f(bus2.bigint), b_sign, 'n');
+	/*else {
+		i_absob = this->abso_big(bus2.bigint);
+		if (i_absob == 1) return intbigdata(this->sub_f(bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(bus2.sub_f(bigint), bus2.b_sign, 'n');
+	}*/
+	return intbigf();
+}
 
 
 
@@ -170,6 +176,7 @@ istream &operator>>(istream &in, intbigf &bus1)
 
 	return in;
 }
+
 //ostream &operator<<
 ostream &operator<<(ostream &out, const intbigf &bus1)
 {
@@ -199,6 +206,11 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 	}
 	return out;
 }
+
+
+
+
+
 
 
 
