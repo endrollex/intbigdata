@@ -3,7 +3,7 @@
 //craft by endrollex, 2012.10.03
 //http://endrollex.com/
 //ATTENTION: This is a immature project with very simple arithemtic method,
-//           that means the intbigdata.h is not very efficiently.
+//           that means the intbigdata.h is less efficient.
 ////////////////
 ////////////////
 #ifndef INTBIGDATA_H

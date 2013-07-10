@@ -11,7 +11,7 @@ __          __ ____   _____   _  __ _____  _   _   _____
 //craft by endrollex, 2013.7.3
 //http://endrollex.com/
 //ATTENTION: This is a immature project with very simple arithemtic method,
-//           that means the intbigf.h is not very efficiently.
+//           that means the intbigf.h is less efficient.
 ////////////////
 ////////////////
 #ifndef INTBIGDAF_H
@@ -24,7 +24,7 @@ __          __ ____   _____   _  __ _____  _   _   _____
 #include <iterator>
 #include "intbigdata.h"
 using namespace std;
-typedef vector<char>::size_type unsigntp;
+typedef deque<char>::size_type unsigntp;
 //
 class intbigf
 {
@@ -49,11 +49,11 @@ public:
 //private:
 
 	bool b_sign;
-	std::vector<char> bigint;
+	std::deque<char> bigint;
 	int b_poi;
 	int b_exp;
 	//
-	intbigf(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
+	intbigf(const std::deque<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
 	
 	
 	//
@@ -107,7 +107,7 @@ intbigf::intbigf(const std::string &str1)
 		if (s_ixp != 0) {
 			s_ixp = s_ixbu-s_ixp;
 			s_ixbu = 0;
-			vector<char>::const_reverse_iterator v_it;
+			deque<char>::const_reverse_iterator v_it;
 			for (v_it = bigint.rbegin(); v_it != bigint.rend(); ++v_it) {
 				if (*v_it != 0) break;
 				++s_ixbu;
@@ -130,7 +130,7 @@ intbigf::intbigf(const std::string &str1)
 			
 			
 			while (bigint[s_ixbu] == 0 && bigint.size() != 1) ++s_ixbu;
-			vector<char>::const_iterator v_it2 = bigint.begin();
+			deque<char>::const_iterator v_it2 = bigint.begin();
 			bigint.erase(v_it2, v_it2+s_ixbu);
 		}
 		//zero no sign
@@ -173,7 +173,7 @@ istream &operator>>(istream &in, intbigf &bus1)
 //ostream &operator<<
 ostream &operator<<(ostream &out, const intbigf &bus1)
 {
-	vector<char>::const_reverse_iterator rit_de = bus1.bigint.rbegin();
+	deque<char>::const_reverse_iterator rit_de = bus1.bigint.rbegin();
 	//sign
 	if (bus1.b_sign == false) out << '-';
 	int ibuff = bus1.b_poi+bus1.b_exp;
