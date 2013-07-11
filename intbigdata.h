@@ -6,6 +6,294 @@
 //           that means the intbigdata.h is less efficient.
 ////////////////
 ////////////////
+namespace intbigdata_func
+{
+//skip tab
+//Traditional arithmetics:
+////////////////
+//add_f
+////////////////
+////////////////
+template <typename Tve>//Tve: vector<char>, deque<char>...
+Tve add_f(const Tve &bigint, const Tve &di2)
+{
+	Tve de_res;
+	int ip3 = 0, ip1, ip2, ipadd;
+	bool irun1 = true, irun2 = true;
+	typename Tve::const_iterator d_it1 = bigint.begin(), d_it2 = di2.begin();
+	while (irun1 || irun2) {
+		if (d_it1 != bigint.end()) {ip1 = *d_it1; ++d_it1;}
+		else {ip1 = 0; irun1 = false;}
+		if (d_it2 != di2.end()) {ip2 = *d_it2; ++d_it2;}
+		else {ip2 = 0; irun2 = false;}
+		ipadd = ip1+ip2+ip3;
+		if (ipadd < 10) {de_res.push_back(ipadd); ip3 = 0;}
+		else {de_res.push_back(ipadd-10); ip3 = 1;}
+	}
+	//remove zero, irun will generate zero
+	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
+	return de_res;
+}
+////////////////
+//sub_fself, a = a-b (a>=b)
+////////////////
+////////////////original
+template <typename Tve>
+void sub_fself(Tve &bigint, const Tve &di2)
+{
+	typename Tve::iterator d_it1 = bigint.begin();
+	typename Tve::const_iterator d_it2 = di2.begin();
+	int ibuff = 0;
+	while (d_it1 != bigint.end()) {
+		if (d_it2 != di2.end()) {
+			*d_it1 -= *d_it2+ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			++d_it2;
+		}
+		else {
+			*d_it1 -= ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			else d_it1 = bigint.end()-1;
+		}
+		++d_it1;
+	}
+	//remove zero
+	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
+}
+////////////////
+//sub_f, y = a-b (a>=b)
+////////////////when operator-= call this function will be less efficient.
+////////////////from sub_fself
+template <typename Tve>
+Tve sub_f(const Tve &bigint, const Tve &di2)
+{
+	Tve ret(bigint);
+	typename Tve::iterator d_it1 = ret.begin();
+	typename Tve::const_iterator d_it2 = di2.begin();
+	int ibuff = 0;
+	while (d_it1 != ret.end()) {
+		if (d_it2 != di2.end()) {
+			*d_it1 -= *d_it2+ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			++d_it2;
+		}
+		else {
+			*d_it1 -= ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			else d_it1 = ret.end()-1;
+		}
+		++d_it1;
+	}
+	//remove zero
+	while (ret.back() == 0 && ret.size() != 1) ret.pop_back();
+	return ret;
+}
+////////////////
+//sub_fself_contra, CAUTION: reverse, b = b-a (b>=a)
+////////////////
+////////////////from sub_fself
+template <typename Tve, typename Tve2>
+void sub_fself_contra(const Tve2 &bigint, Tve &di1)
+{
+	typename Tve::iterator d_it1 = di1.begin();
+	typename Tve2::const_iterator d_it2 = bigint.begin();
+	int ibuff = 0;
+	while (d_it1 != di1.end()) {
+		if (d_it2 != bigint.end()) {
+			*d_it1 -= *d_it2+ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			++d_it2;
+		}
+		else {
+			*d_it1 -= ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			else d_it1 = di1.end()-1;
+		}
+		++d_it1;
+	}
+	//remove zero
+	while (di1.back() == 0 && di1.size() != 1) di1.pop_back();
+}
+////////////////
+//sub_ffordiv, b = b-c (b>=c)
+////////////////
+////////////////from sub_fself
+template <typename Tve, typename Tve2>
+void sub_ffordiv(Tve &di1, const Tve2 &di2)
+{
+	typename Tve::iterator d_it1 = di1.begin();
+	typename Tve2::const_iterator d_it2 = di2.begin();
+	int ibuff = 0;
+	while (d_it1 != di1.end()) {
+		if (d_it2 != di2.end()) {
+			*d_it1 -= *d_it2+ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			++d_it2;
+		}
+		else {
+			*d_it1 -= ibuff;
+			ibuff = 0;
+			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
+			else d_it1 = di1.end()-1;
+		}
+		++d_it1;
+	}
+	//remove zero
+	while (di1.back() == 0 && di1.size() != 1) di1.pop_back();
+}
+////////////////
+//mul_f, y = a*b
+////////////////
+////////////////original
+template <typename Tve, typename Tve2>
+Tve mul_f(const Tve &bigint, const Tve2 &di2)
+{
+	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
+	Tve de_res;
+	typename Tve::const_iterator d_it1;
+	typename Tve2::const_iterator d_it2;
+	//2 skip tab
+	for (d_it2 = di2.begin(); d_it2 != di2.end(); ++d_it2) {
+	for (d_it1 = bigint.begin(); d_it1 != bigint.end(); ++d_it1) {
+		i_buff = *d_it1**d_it2;
+		ipos1 = i_buff%10;
+		ixadd = ix1+ix2;
+		if (i_buff >= 10) ipos2 = i_buff/10;
+		else ipos2 = 0;
+		//skip tab
+		if (ixadd+1 <= de_res.size()) {
+		i_buff = de_res[ixadd]+ipos1;
+		if (i_buff < 10) de_res[ixadd] += ipos1;
+		else {
+			ipos_x = i_buff/10;
+			de_res[ixadd] = i_buff%10;
+			ipos2 += ipos_x;
+		}}
+		else de_res.push_back(ipos1);
+		//step2
+		if (ipos2 != 0) {
+			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += ipos2;
+			else de_res.push_back(ipos2);
+		}
+		++ix1;		
+	}
+		++ix2;
+		ix1 = 0;
+	}
+	//remove zero
+	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
+	return de_res;
+}
+////////////////
+//mul_fself, a = a*b
+////////////////
+////////////////from mul_f
+template <typename Tve>
+void mul_fself(Tve &bigint, const Tve &di2)
+{
+	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
+	Tve de_res;
+	typename Tve::const_iterator d_it1, d_it2;
+	//2 skip tab
+	for (d_it2 = di2.begin(); d_it2 != di2.end(); ++d_it2) {
+	for (d_it1 = bigint.begin(); d_it1 != bigint.end(); ++d_it1) {
+		i_buff = *d_it1**d_it2;
+		ipos1 = i_buff%10;
+		ixadd = ix1+ix2;
+		if (i_buff >= 10) ipos2 = i_buff/10;
+		else ipos2 = 0;
+		//skip tab
+		if (ixadd+1 <= de_res.size()) {
+		i_buff = de_res[ixadd]+ipos1;
+		if (i_buff < 10) de_res[ixadd] += ipos1;
+		else {
+			ipos_x = i_buff/10;
+			de_res[ixadd] = i_buff%10;
+			ipos2 += ipos_x;
+		}}
+		else de_res.push_back(ipos1);
+		//step2
+		if (ipos2 != 0) {
+			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += ipos2;
+			else de_res.push_back(ipos2);
+		}
+		++ix1;		
+	}
+		++ix2;
+		ix1 = 0;
+	}
+	//remove zero
+	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
+	bigint.swap(de_res);
+}
+////////////////deque use
+//div_f, y = a/b (a>=b && b!=0)
+////////////////
+////////////////
+template <typename Tve>
+Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
+{
+	unsigntp difsize = bigint.size()-di2.size()+1;
+	//deque
+	deque<char> bu1(bigint.begin()+difsize, bigint.end()), de_res;
+	Tve di_p(bigint.begin(), bigint.begin()+difsize), ve_res;
+	unsigntp ix1, ix2;
+	//sub_reverse_
+	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
+		bu1.push_front(*d_it);
+		//remove zero
+		while (bu1.back() == 0 && bu1.size() != 1) bu1.pop_back();
+		ix2 = 0;
+		while (ix2 != 10) {
+			//spcial version for div
+			if (abso_big(bu1, di2) != -1) {
+				//spcial version for div
+				sub_ffordiv(bu1, di2);
+				++ix2;
+			}
+			else {
+				de_res.push_front(ix2);
+				ix2 = 10;
+			}
+		}
+	}
+	//remove zero
+	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
+	if (b_is_mod) {ve_res.assign(bu1.begin(), bu1.end()); return ve_res;}
+	ve_res.assign(de_res.begin(), de_res.end());
+	return ve_res;
+}
+//Compare:
+////////////////
+//abso_big, compare absolute value, return 1 = first big, -1 = second big, 0 = equal
+////////////////
+////////////////original
+template <typename Tve, typename Tve2>
+int abso_big(const Tve2 &bigint, const Tve &di2)
+{
+	if (bigint.size() > di2.size()) return 1;
+	if (bigint.size() < di2.size()) return -1;
+	typename Tve2::const_reverse_iterator d_it1 = bigint.rbegin();
+	typename Tve::const_reverse_iterator d_it2 = di2.rbegin();
+	for (; d_it1 != bigint.rend(); ++d_it1) {
+		if (d_it1 != bigint.rbegin()) ++d_it2;
+		if (*d_it1 > *d_it2)  return 1;
+		else {if (*d_it1 != *d_it2) return -1;}
+	}
+	return 0;
+}
+}
+////////////////
+//class intbigdata
+////////////////
+////////////////
 #ifndef INTBIGDATA_H
 #define INTBIGDATA_H
 #include <iostream>
@@ -24,6 +312,7 @@ using std::ofstream;
 using std::ifstream;
 using std::cerr;
 using std::endl;
+using namespace intbigdata_func;
 //
 typedef vector<char>::size_type unsigntp;
 class intbigdata_error
@@ -111,25 +400,14 @@ public:
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
-protected:
+//protected:
 	bool b_sign;
 	std::vector<char> bigint;
 	//sample: if int i = 190, convert to vector<char> d: 091
 	//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
 	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
 	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};//debug
-	//Traditional arithmetics:
-	template <typename Tve> Tve add_f(const Tve &di2) const;
-	template <typename Tve> void sub_fself(const Tve &di2);
-	template <typename Tve> Tve sub_f(const Tve &di2) const;
-	template <typename Tve, typename Tve2> void sub_fself_contra(Tve &di1, const Tve2 &dummy) const;
-	template <typename Tve, typename Tve2> void sub_ffordiv(Tve &di1, const Tve2 &di2) const;
-	template <typename Tve, typename Tve2> Tve2 mul_f(const Tve &di2, const Tve2 &dummy) const;
-	template <typename Tve> void mul_fself(const Tve &di2);
-	template <typename Tve> Tve div_f(const Tve &di2_o, const bool &b_is_mod = false) const;
 	//Compare:
-	template <typename Tve> int abso_big(const Tve &di2) const;
-	template <typename Tve, typename Tve2> int abso_big_fordiv(const Tve &di1, const Tve2 &di2) const;
 	int who_big(const intbigdata &bus2) const;
 	bool is_zero() const;
 	void fix_data();
@@ -257,311 +535,13 @@ intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 	while (us1 != 0) {bigint.push_back(us1%10); us1 /= 10;}
 	if (us1_o == 0) bigint.push_back(0);
 }
-////////////////
-//add_f
-////////////////
-////////////////
-template <typename Tve>//Tve: vector<char>, deque<char>...
-Tve intbigdata::add_f(const Tve &di2) const
-{
-	Tve de_res;
-	int ip3 = 0, ip1, ip2, ipadd;
-	bool irun1 = true, irun2 = true;
-	typename Tve::const_iterator d_it1 = bigint.begin(), d_it2 = di2.begin();
-	while (irun1 || irun2) {
-		if (d_it1 != bigint.end()) {ip1 = *d_it1; ++d_it1;}
-		else {ip1 = 0; irun1 = false;}
-		if (d_it2 != di2.end()) {ip2 = *d_it2; ++d_it2;}
-		else {ip2 = 0; irun2 = false;}
-		ipadd = ip1+ip2+ip3;
-		if (ipadd < 10) {de_res.push_back(ipadd); ip3 = 0;}
-		else {de_res.push_back(ipadd-10); ip3 = 1;}
-	}
-	//remove zero, irun will generate zero
-	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
-	return de_res;
-}
-////////////////
-//sub_fself, a = a-b (a>=b)
-////////////////
-////////////////original
-template <typename Tve>
-void intbigdata::sub_fself(const Tve &di2)
-{
-	vector<char>::iterator d_it1 = bigint.begin();
-	typename Tve::const_iterator d_it2 = di2.begin();
-	int ibuff = 0;
-	while (d_it1 != bigint.end()) {
-		if (d_it2 != di2.end()) {
-			*d_it1 -= *d_it2+ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			++d_it2;
-		}
-		else {
-			*d_it1 -= ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			else d_it1 = bigint.end()-1;
-		}
-		++d_it1;
-	}
-	//remove zero
-	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
-}
-////////////////
-//sub_f, y = a-b (a>=b)
-////////////////when operator-= call this function will be less efficient.
-////////////////from sub_fself
-template <typename Tve>
-Tve intbigdata::sub_f(const Tve &di2) const
-{
-	Tve ret(bigint);
-	typename Tve::iterator d_it1 = ret.begin();
-	typename Tve::const_iterator d_it2 = di2.begin();
-	int ibuff = 0;
-	while (d_it1 != ret.end()) {
-		if (d_it2 != di2.end()) {
-			*d_it1 -= *d_it2+ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			++d_it2;
-		}
-		else {
-			*d_it1 -= ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			else d_it1 = ret.end()-1;
-		}
-		++d_it1;
-	}
-	//remove zero
-	while (ret.back() == 0 && ret.size() != 1) ret.pop_back();
-	return ret;
-}
-////////////////
-//sub_fself_contra, CAUTION: reverse, b = b-a (b>=a)
-////////////////
-////////////////from sub_fself
-template <typename Tve, typename Tve2>
-void intbigdata::sub_fself_contra(Tve &di1, const Tve2 &dummy) const
-{
-	typename Tve::iterator d_it1 = di1.begin();
-	typename Tve2::const_iterator d_it2 = bigint.begin();
-	int ibuff = 0;
-	while (d_it1 != di1.end()) {
-		if (d_it2 != bigint.end()) {
-			*d_it1 -= *d_it2+ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			++d_it2;
-		}
-		else {
-			*d_it1 -= ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			else d_it1 = di1.end()-1;
-		}
-		++d_it1;
-	}
-	//remove zero
-	while (di1.back() == 0 && di1.size() != 1) di1.pop_back();
-}
-////////////////
-//sub_ffordiv, b = b-c (b>=c)
-////////////////
-////////////////from sub_fself
-template <typename Tve, typename Tve2>
-void intbigdata::sub_ffordiv(Tve &di1, const Tve2 &di2) const
-{
-	typename Tve::iterator d_it1 = di1.begin();
-	typename Tve2::const_iterator d_it2 = di2.begin();
-	int ibuff = 0;
-	while (d_it1 != di1.end()) {
-		if (d_it2 != di2.end()) {
-			*d_it1 -= *d_it2+ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			++d_it2;
-		}
-		else {
-			*d_it1 -= ibuff;
-			ibuff = 0;
-			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
-			else d_it1 = di1.end()-1;
-		}
-		++d_it1;
-	}
-	//remove zero
-	while (di1.back() == 0 && di1.size() != 1) di1.pop_back();
-}
-////////////////
-//mul_f, y = a*b
-////////////////
-////////////////original
-template <typename Tve, typename Tve2>
-Tve2 intbigdata::mul_f(const Tve &di2, const Tve2 &dummy) const
-{
-	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
-	Tve2 de_res;
-	typename Tve2::const_iterator d_it1;
-	typename Tve::const_iterator d_it2;
-	//2 skip tab
-	for (d_it2 = di2.begin(); d_it2 != di2.end(); ++d_it2) {
-	for (d_it1 = bigint.begin(); d_it1 != bigint.end(); ++d_it1) {
-		i_buff = *d_it1**d_it2;
-		ipos1 = i_buff%10;
-		ixadd = ix1+ix2;
-		if (i_buff >= 10) ipos2 = i_buff/10;
-		else ipos2 = 0;
-		//skip tab
-		if (ixadd+1 <= de_res.size()) {
-		i_buff = de_res[ixadd]+ipos1;
-		if (i_buff < 10) de_res[ixadd] += ipos1;
-		else {
-			ipos_x = i_buff/10;
-			de_res[ixadd] = i_buff%10;
-			ipos2 += ipos_x;
-		}}
-		else de_res.push_back(ipos1);
-		//step2
-		if (ipos2 != 0) {
-			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += ipos2;
-			else de_res.push_back(ipos2);
-		}
-		++ix1;		
-	}
-		++ix2;
-		ix1 = 0;
-	}
-	//remove zero
-	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
-	return de_res;
-}
-////////////////
-//mul_fself, a = a*b
-////////////////
-////////////////from mul_f
-template <typename Tve>
-void intbigdata::mul_fself(const Tve &di2)
-{
-	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
-	typename Tve de_res;
-	typename Tve::const_iterator d_it1, d_it2;
-	//2 skip tab
-	for (d_it2 = di2.begin(); d_it2 != di2.end(); ++d_it2) {
-	for (d_it1 = bigint.begin(); d_it1 != bigint.end(); ++d_it1) {
-		i_buff = *d_it1**d_it2;
-		ipos1 = i_buff%10;
-		ixadd = ix1+ix2;
-		if (i_buff >= 10) ipos2 = i_buff/10;
-		else ipos2 = 0;
-		//skip tab
-		if (ixadd+1 <= de_res.size()) {
-		i_buff = de_res[ixadd]+ipos1;
-		if (i_buff < 10) de_res[ixadd] += ipos1;
-		else {
-			ipos_x = i_buff/10;
-			de_res[ixadd] = i_buff%10;
-			ipos2 += ipos_x;
-		}}
-		else de_res.push_back(ipos1);
-		//step2
-		if (ipos2 != 0) {
-			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += ipos2;
-			else de_res.push_back(ipos2);
-		}
-		++ix1;		
-	}
-		++ix2;
-		ix1 = 0;
-	}
-	//remove zero
-	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
-	//difference form mul_f
-	bigint.swap(de_res);
-}
-////////////////deque use
-//div_f, y = a/b (a>=b && b!=0)
-////////////////
-////////////////
-template <typename Tve>
-Tve intbigdata::div_f(const Tve &di2, const bool &b_is_mod) const
-{
-	unsigntp difsize = bigint.size()-di2.size()+1;
-	intbigdata dummy_empty;
-	//deque
-	deque<char> bu1(bigint.begin()+difsize, bigint.end()), de_res;
-	Tve di_p(bigint.begin(), bigint.begin()+difsize), ve_res;
-	unsigntp ix1, ix2;
-	//sub_reverse_
-	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
-		bu1.push_front(*d_it);
-		//remove zero
-		while (bu1.back() == 0 && bu1.size() != 1) bu1.pop_back();
-		ix2 = 0;
-		while (ix2 != 10) {
-			//spcial version for div
-			if (dummy_empty.abso_big_fordiv(bu1, di2) != -1) {
-				//spcial version for div
-				dummy_empty.sub_ffordiv(bu1, di2);
-				++ix2;
-			}
-			else {
-				de_res.push_front(ix2);
-				ix2 = 10;
-			}
-		}
-	}
-	//remove zero
-	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
-	if (b_is_mod) {ve_res.assign(bu1.begin(), bu1.end()); return ve_res;}
-	ve_res.assign(de_res.begin(), de_res.end());
-	return ve_res;
-}
-////////////////
-//abso_big, compare absolute value, return 1 = first big, -1 = second big, 0 = equal
-////////////////
-////////////////original
-template <typename Tve>
-int intbigdata::abso_big(const Tve &di2) const
-{
-	if (bigint.size() > di2.size()) return 1;
-	if (bigint.size() < di2.size()) return -1;
-	typename Tve::const_reverse_iterator d_it1 = bigint.rbegin();
-	typename Tve::const_reverse_iterator d_it2 = di2.rbegin();
-	for (; d_it1 != bigint.rend(); ++d_it1) {
-		if (d_it1 != bigint.rbegin()) ++d_it2;
-		if (*d_it1 > *d_it2)  return 1;
-		else {if (*d_it1 != *d_it2) return -1;}
-	}
-	return 0;
-}
-////////////////
-//abso_big_fordiv, 2 template parameter version
-////////////////
-////////////////from abso_big
-template <typename Tve, typename Tve2>
-int intbigdata::abso_big_fordiv(const Tve &di1, const Tve2 &di2) const
-{
-	if (di1.size() > di2.size()) return 1;
-	if (di1.size() < di2.size()) return -1;
-	typename Tve::const_reverse_iterator d_it1 = di1.rbegin();
-	typename Tve2::const_reverse_iterator d_it2 = di2.rbegin();
-	for (; d_it1 != di1.rend(); ++d_it1) {
-		if (d_it1 != di1.rbegin()) ++d_it2;
-		if (*d_it1 > *d_it2)  return 1;
-		else {if (*d_it1 != *d_it2) return -1;}
-	}
-	return 0;
-}
 //who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
 inline int intbigdata::who_big(const intbigdata &bus2) const
 {
 	//sign
 	if (b_sign == true && bus2.b_sign == false) {return 1;}
 	if (b_sign == false && bus2.b_sign == true) {return -1;}
-	int i_who_big = this->abso_big(bus2.bigint);
+	int i_who_big = abso_big(bigint, bus2.bigint);
 	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
 	return i_who_big;
 }
@@ -579,11 +559,11 @@ inline intbigdata intbigdata::add(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
-	if (b_sign == bus2.b_sign) return intbigdata(this->add_f(bus2.bigint), b_sign, 'n');
+	if (b_sign == bus2.b_sign) return intbigdata(add_f(bigint, bus2.bigint), b_sign, 'n');
 	else {
-		i_absob = this->abso_big(bus2.bigint);
-		if (i_absob == 1) return intbigdata(this->sub_f(bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return intbigdata(bus2.sub_f(bigint), bus2.b_sign, 'n');
+		i_absob = abso_big(bigint, bus2.bigint);
+		if (i_absob == 1) return intbigdata(sub_f(bigint, bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(sub_f(bus2.bigint, bigint), bus2.b_sign, 'n');
 	}
 	return intbigdata();
 }
@@ -592,38 +572,37 @@ inline intbigdata intbigdata::sub(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
-	if (b_sign != bus2.b_sign) return intbigdata(this->add_f(bus2.bigint), b_sign, 'n');
+	if (b_sign != bus2.b_sign) return intbigdata(add_f(bigint, bus2.bigint), b_sign, 'n');
 	else {
-		i_absob = this->abso_big(bus2.bigint);
-		if (i_absob == 1) return intbigdata(this->sub_f(bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return intbigdata(bus2.sub_f(bigint), !bus2.b_sign, 'n');
+		i_absob = abso_big(bigint, bus2.bigint);
+		if (i_absob == 1) return intbigdata(sub_f(bigint, bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(sub_f(bus2.bigint, bigint), !bus2.b_sign, 'n');
 	}
 	return intbigdata();
 }
 //mul
 inline intbigdata intbigdata::mul(const intbigdata &bus2) const
 {
-	vector<char> dummy;
 	//sign
-	return intbigdata(this->mul_f(bus2.bigint, dummy), b_sign == bus2.b_sign, 'n');
+	return intbigdata(mul_f(bigint, bus2.bigint), b_sign == bus2.b_sign, 'n');
 }
 //div
 inline intbigdata intbigdata::div(const intbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
-	int iabsobig = this->abso_big(bus2.bigint);
+	int iabsobig = abso_big(bigint, bus2.bigint);
 	if (iabsobig == -1) return intbigdata();
 	//sign
-	return intbigdata(this->div_f(bus2.bigint, false), b_sign == bus2.b_sign, 'n');
+	return intbigdata(div_f(bigint, bus2.bigint, false), b_sign == bus2.b_sign, 'n');
 }
 //mod
 inline intbigdata intbigdata::mod(const intbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
-	int iabsobig = this->abso_big(bus2.bigint);
+	int iabsobig = abso_big(bigint, bus2.bigint);
 	if (iabsobig == -1) {return *this;}	
 	//sign
-	intbigdata ret(this->div_f(bus2.bigint, true), b_sign, 'n');
+	intbigdata ret(div_f(bigint, bus2.bigint, true), b_sign, 'n');
 	if (ret.is_zero()) ret.b_sign = true;
 	return ret;
 }
@@ -641,7 +620,7 @@ inline intbigdata intbigdata::pow(const intbigdata &bus2) const
 	}
 	if (ixpow%2 == 1) ret.b_sign = b_sign;
 	ret.bigint = bigint;
-	for (int ixc = 1; ixc != ixpow; ++ixc) ret.mul_fself(bigint);
+	for (int ixc = 1; ixc != ixpow; ++ixc) mul_fself(ret.bigint, bigint);
 	return ret;
 }
 ////////////////deque use
@@ -650,7 +629,6 @@ intbigdata intbigdata::sqrt() const
 {
 	//deque
 	deque<char> rema;//remainder
-	intbigdata dummy;
 	vector<char>::const_reverse_iterator v_it = bigint.rbegin();
 	//sign
 	if (b_sign == false) cerr << "intbigdata.h: imaginary number" << endl;
@@ -664,7 +642,7 @@ intbigdata intbigdata::sqrt() const
 	//deque
 	deque<char> de_root(1, ix);
 	ib_20.bigint.push_back(2);
-	ib_rootsqr.sub_fself_contra(rema, dummy.bigint);
+	sub_fself_contra(ib_rootsqr.bigint, rema);
 	//iterate
 	//skip tab
 	while (v_it != bigint.rend()) {
@@ -672,13 +650,13 @@ intbigdata intbigdata::sqrt() const
 	rema.push_front(*v_it++);
 	rema.push_front(*v_it++);
 	while (rema.back() == 0 && rema.size() != 1) rema.pop_back();
-	ib_20p.bigint = ib_20.mul_f(de_root, dummy.bigint);
+	ib_20p.bigint = mul_f(ib_20.bigint, de_root);
 	//formula: x(20p+x) <= remainder
 	//try division
 	di_temp.bigint.assign(rema.begin(), rema.end());
 	ix = 0;
-	while (di_temp.abso_big(ib_20p.bigint) != -1) {
-		di_temp.sub_fself(ib_20p.bigint);
+	while (abso_big(di_temp.bigint, ib_20p.bigint) != -1) {
+		sub_fself(di_temp.bigint, ib_20p.bigint);
 		++ix;
 	}
 	//note: ix < 10
@@ -693,14 +671,14 @@ intbigdata intbigdata::sqrt() const
 		di_temp.bigint.assign(rema.begin(), rema.end());
 		ix = 0;
 		//note: ix < 10
-		while (di_temp.abso_big(ib_20p.bigint) != -1 && ix != 9) {
-			di_temp.sub_fself(ib_20p.bigint);
+		while (abso_big(di_temp.bigint, ib_20p.bigint) != -1 && ix != 9) {
+			sub_fself(di_temp.bigint, ib_20p.bigint);
 			++ix;
 		}
 		if (ix < ib_20p.bigint[0]) --ib_20p.bigint[0];
 		else {
 			i_temp = 2;
-			if (ix > ib_20p.bigint[0]) di_temp.bigint = di_temp.add_f(ib_20p.bigint);
+			if (ix > ib_20p.bigint[0]) di_temp.bigint = add_f(di_temp.bigint, ib_20p.bigint);
 		}
 	}
 	de_root.push_front(ib_20p.bigint[0]);
@@ -720,9 +698,9 @@ intbigdata::operator int() const
 	intbigdata ibd_max(s_max);
 	vector<char>::const_reverse_iterator v_it;
 	int get_int = 0;
-	if (this->abso_big(ibd_max.bigint) == 1) {
+	if (abso_big(bigint, ibd_max.bigint) == 1) {
 		//cerr << intbigdata.h: out of range << endl;
-		ibd_max.bigint = this->div_f(ibd_max.bigint, true);
+		ibd_max.bigint = div_f(bigint, ibd_max.bigint, true);
 		v_it = ibd_max.bigint.rbegin();
 		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
 	}
@@ -872,7 +850,7 @@ string intbigdata::scientific(const int &i_point = 6) const
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
-		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = i_round.add_f(d_one);
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = add_f(i_round.bigint, d_one);
 	}
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;
@@ -959,9 +937,9 @@ unsigned intbigdata::get_unsigned() const
 	intbigdata ibd_max(s_max);
 	vector<char>::const_reverse_iterator v_it;
 	unsigned get_int = 0;
-	if (this->abso_big(ibd_max.bigint) == 1) {
+	if (abso_big(bigint, ibd_max.bigint) == 1) {
 		//cerr << intbigdata.h: out of range << endl;
-		ibd_max.bigint = this->div_f(ibd_max.bigint, true);
+		ibd_max.bigint = div_f(bigint, ibd_max.bigint, true);
 		v_it = ibd_max.bigint.rbegin();
 		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
 	}
