@@ -4,17 +4,14 @@
 using namespace std;
 int main()
 {
-	intbigf t("3e11");
+	intbigf t1("0.0456");
+	intbigf t2("1.234");
 	
+	cout << t1.add(t2) << endl;
 	
-	cout << t << endl;
-	//cout << t.b_poi << endl;
-	//cout << t.b_exp << endl;
-	
-	
-	//cin >> t;
-	//cout << t << endl;
-	
-	
+
+
+
+
 	return 0;
 }

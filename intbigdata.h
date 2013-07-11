@@ -405,8 +405,8 @@ public:
 	std::vector<char> bigint;
 	//sample: if int i = 190, convert to vector<char> d: 091
 	//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
-	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
-	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};//debug
+	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience
+	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};
 	//Compare:
 	int who_big(const intbigdata &bus2) const;
 	bool is_zero() const;

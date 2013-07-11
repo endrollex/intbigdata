@@ -1,10 +1,7 @@
-/* The library is not fininshed!!
-__          __ ____   _____   _  __ _____  _   _   _____ 
-\ \        / // __ \ |  __ \ | |/ /|_   _|| \ | | / ____|
- \ \  /\  / /| |  | || |__) || ' /   | |  |  \| || |  __ 
-  \ \/  \/ / | |  | ||  _  / |  <    | |  | . ` || | |_ |
-   \  /\  /  | |__| || | \ \ | . \  _| |_ | |\  || |__| |
-    \/  \/    \____/ |_|  \_\|_|\_\|_____||_| \_| \_____|
+/**
+ *
+ * The library is not fininshed!!
+ *
 */
 ////////////////
 //intbigf.h, calculate big float, environment: C++03 x86
@@ -23,11 +20,11 @@ __          __ ____   _____   _  __ _____  _   _   _____
 #include <iterator>
 #include "intbigdata.h"
 using namespace std;
+using namespace intbigdata_func;
 typedef deque<char>::size_type unsigntp;
 //
 class intbigf: public intbigdata
 {
-	friend class intbigdata;
 public:
 	//Constructors:
 	intbigf(): b_sign(true), bigint(1, 0), b_poi(0), b_exp(0) {};
@@ -42,10 +39,11 @@ public:
 	
 	
 	
+	
+	
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigf &bus1);
 	
-	template <typename Tve> Tve add_f(const Tve &di2) const {return bigint;}
 	
 	
 	
@@ -61,17 +59,35 @@ public:
 	int b_poi;
 	int b_exp;
 	//
-	intbigf(const std::deque<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
+	intbigf(const std::deque<char> &di1, const bool &bsn, const int &bpi, const int &bep, const char &check_data);
 	
 	
-	//
+	
+	
+	//Compare
+	int who_big(const intbigf &bus2) const;
 	bool is_zero() const;
 	
 };
 
 
-
-
+// __  (\_ 
+//(_ \ ( '> 
+//  ) \/_)=
+//  (_(_ )_ member
+//structure2 vector
+intbigf::intbigf(const deque<char> &di1, const bool &bsn = true, const int &bpi = 0,
+	const int &bep = 0, const char &check_data = 'y')
+{
+	//sign
+	b_sign = bsn;
+	bigint = di1;
+	b_poi = bpi;
+	b_exp = bep;
+	if (bigint.empty()) {bigint.push_back(0); b_sign = true;}
+	//check data and fix
+	//if (check_data != 'n') this->fix_data();
+}
 //structure3 string
 intbigf::intbigf(const std::string &str1)
 {
@@ -143,21 +159,39 @@ intbigf::intbigf(const std::string &str1)
 
 
 
+
+
+
+
+
 //arithmetic encapsulate
 //add, sub, mul, div, pow, mod
 //add
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
-	int i_absob;
+	int i_absob, ibuff;
+	ibuff = b_poi-bus2.b_poi;
+	
+	
+	
+	
+	
+	
+	
+	
 	//sign
-	//this->add_f(bus2.bigint);
-	/*else {
-		i_absob = this->abso_big(bus2.bigint);
-		if (i_absob == 1) return intbigdata(this->sub_f(bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return intbigdata(bus2.sub_f(bigint), bus2.b_sign, 'n');
-	}*/
+	if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus2.bigint), b_sign, 0, 0, 'n');
+	//else {
+	//	i_absob = abso_big(bigint, bus2.bigint);
+	//	if (i_absob == 1) return intbigf(sub_f(bigint, bus2.bigint), b_sign, 'n');
+	//	if (i_absob == -1) return intbigf(sub_f(bus2.bigint, bigint), bus2.b_sign, 'n');
+	//}
 	return intbigf();
 }
+
+
+
+
 
 
 
@@ -218,7 +252,46 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 
 
 
-
+//who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
+inline int intbigf::who_big(const intbigf &bus2) const
+{
+	
+	
+	//sign
+	if (b_sign == true && bus2.b_sign == false) {return 1;}
+	if (b_sign == false && bus2.b_sign == true) {return -1;}
+	
+	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, b_exp1 = b_exp, b_exp2 = bus2.b_exp;
+	
+	
+	
+	
+	
+	
+	
+	if (b_sign) {
+		
+		
+		
+		
+		
+		;	
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	int i_who_big = abso_big(bigint, bus2.bigint);
+	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
+	return i_who_big;
+}
 
 
 
