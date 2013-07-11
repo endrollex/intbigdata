@@ -6,6 +6,26 @@
 //           that means the intbigdata.h is less efficient.
 ////////////////
 ////////////////
+#ifndef INTBIGDATA_H
+#define INTBIGDATA_H
+#include <iostream>
+#include <fstream>//save_file, load_file
+#include <deque>
+#include <vector>
+#include <string>
+#include <iterator>
+//
+using std::deque;
+using std::vector;
+using std::string;
+using std::istream;
+using std::ostream;
+using std::ofstream;
+using std::ifstream;
+using std::cerr;
+using std::endl;
+//
+typedef vector<char>::size_type unsigntp;
 namespace intbigdata_func
 {
 //skip tab
@@ -294,27 +314,7 @@ int abso_big(const Tve2 &bigint, const Tve &di2)
 //class intbigdata
 ////////////////
 ////////////////
-#ifndef INTBIGDATA_H
-#define INTBIGDATA_H
-#include <iostream>
-#include <fstream>//save_file, load_file
-#include <deque>
-#include <vector>
-#include <string>
-#include <iterator>
-//
-using std::deque;
-using std::vector;
-using std::string;
-using std::istream;
-using std::ostream;
-using std::ofstream;
-using std::ifstream;
-using std::cerr;
-using std::endl;
 using namespace intbigdata_func;
-//
-typedef vector<char>::size_type unsigntp;
 class intbigdata_error
 {
 public:
