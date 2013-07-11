@@ -25,7 +25,7 @@ __          __ ____   _____   _  __ _____  _   _   _____
 using namespace std;
 typedef deque<char>::size_type unsigntp;
 //
-class intbigf
+class intbigf: public intbigdata
 {
 	friend class intbigdata;
 public:
@@ -45,9 +45,16 @@ public:
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigf &bus1);
 	
+	template <typename Tve> Tve add_f(const Tve &di2) const {return bigint;}
 	
 	
-//private:
+	
+//protected:
+
+
+
+
+
 
 	bool b_sign;
 	std::deque<char> bigint;
@@ -61,6 +68,8 @@ public:
 	bool is_zero() const;
 	
 };
+
+
 
 
 //structure3 string
@@ -141,7 +150,7 @@ inline intbigf intbigf::add(const intbigf &bus2) const
 {
 	int i_absob;
 	//sign
-	if (b_sign == bus2.b_sign) return intbigdata(this->add_f(bus2.bigint), b_sign, 'n');
+	//this->add_f(bus2.bigint);
 	/*else {
 		i_absob = this->abso_big(bus2.bigint);
 		if (i_absob == 1) return intbigdata(this->sub_f(bus2.bigint), b_sign, 'n');

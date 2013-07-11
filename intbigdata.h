@@ -119,14 +119,14 @@ protected:
 	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience, don't use
 	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};//debug
 	//Traditional arithmetics:
-	template <typename Tve> std::vector<char> add_f(const Tve &di2) const;
+	template <typename Tve> Tve add_f(const Tve &di2) const;
 	template <typename Tve> void sub_fself(const Tve &di2);
-	template <typename Tve> std::vector<char> sub_f(const Tve &di2) const;
-	template <typename Tve> void sub_fself_contra(Tve &di1) const;
+	template <typename Tve> Tve sub_f(const Tve &di2) const;
+	template <typename Tve, typename Tve2> void sub_fself_contra(Tve &di1, const Tve2 &dummy) const;
 	template <typename Tve, typename Tve2> void sub_ffordiv(Tve &di1, const Tve2 &di2) const;
-	template <typename Tve> std::vector<char> mul_f(const Tve &di2) const;
+	template <typename Tve, typename Tve2> Tve2 mul_f(const Tve &di2, const Tve2 &dummy) const;
 	template <typename Tve> void mul_fself(const Tve &di2);
-	template <typename Tve> std::vector<char> div_f(const Tve &di2_o, const bool &b_is_mod = false) const;
+	template <typename Tve> Tve div_f(const Tve &di2_o, const bool &b_is_mod = false) const;
 	//Compare:
 	template <typename Tve> int abso_big(const Tve &di2) const;
 	template <typename Tve, typename Tve2> int abso_big_fordiv(const Tve &di1, const Tve2 &di2) const;
@@ -262,13 +262,12 @@ intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 ////////////////
 ////////////////
 template <typename Tve>//Tve: vector<char>, deque<char>...
-vector<char> intbigdata::add_f(const Tve &di2) const
+Tve intbigdata::add_f(const Tve &di2) const
 {
-	vector<char> de_res;
+	Tve de_res;
 	int ip3 = 0, ip1, ip2, ipadd;
 	bool irun1 = true, irun2 = true;
-	vector<char>::const_iterator d_it1 = bigint.begin();
-	typename Tve::const_iterator d_it2 = di2.begin();
+	typename Tve::const_iterator d_it1 = bigint.begin(), d_it2 = di2.begin();
 	while (irun1 || irun2) {
 		if (d_it1 != bigint.end()) {ip1 = *d_it1; ++d_it1;}
 		else {ip1 = 0; irun1 = false;}
@@ -312,13 +311,13 @@ void intbigdata::sub_fself(const Tve &di2)
 }
 ////////////////
 //sub_f, y = a-b (a>=b)
-////////////////when operator-= call this function will cause a little performance loss
+////////////////when operator-= call this function will be less efficient.
 ////////////////from sub_fself
 template <typename Tve>
-vector<char> intbigdata::sub_f(const Tve &di2) const
+Tve intbigdata::sub_f(const Tve &di2) const
 {
-	vector<char> ret(bigint);
-	vector<char>::iterator d_it1 = ret.begin();
+	Tve ret(bigint);
+	typename Tve::iterator d_it1 = ret.begin();
 	typename Tve::const_iterator d_it2 = di2.begin();
 	int ibuff = 0;
 	while (d_it1 != ret.end()) {
@@ -344,11 +343,11 @@ vector<char> intbigdata::sub_f(const Tve &di2) const
 //sub_fself_contra, CAUTION: reverse, b = b-a (b>=a)
 ////////////////
 ////////////////from sub_fself
-template <typename Tve>
-void intbigdata::sub_fself_contra(Tve &di1) const
+template <typename Tve, typename Tve2>
+void intbigdata::sub_fself_contra(Tve &di1, const Tve2 &dummy) const
 {
 	typename Tve::iterator d_it1 = di1.begin();
-	vector<char>::const_iterator d_it2 = bigint.begin();
+	typename Tve2::const_iterator d_it2 = bigint.begin();
 	int ibuff = 0;
 	while (d_it1 != di1.end()) {
 		if (d_it2 != bigint.end()) {
@@ -400,12 +399,12 @@ void intbigdata::sub_ffordiv(Tve &di1, const Tve2 &di2) const
 //mul_f, y = a*b
 ////////////////
 ////////////////original
-template <typename Tve>
-vector<char> intbigdata::mul_f(const Tve &di2) const
+template <typename Tve, typename Tve2>
+Tve2 intbigdata::mul_f(const Tve &di2, const Tve2 &dummy) const
 {
 	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
-	vector<char> de_res;
-	vector<char>::const_iterator d_it1;
+	Tve2 de_res;
+	typename Tve2::const_iterator d_it1;
 	typename Tve::const_iterator d_it2;
 	//2 skip tab
 	for (d_it2 = di2.begin(); d_it2 != di2.end(); ++d_it2) {
@@ -447,9 +446,8 @@ template <typename Tve>
 void intbigdata::mul_fself(const Tve &di2)
 {
 	unsigntp ix1 = 0, ix2 = 0, i_buff, ipos1, ipos2, ixadd, ipos_x;
-	vector<char> de_res;
-	vector<char>::const_iterator d_it1;
-	typename Tve::const_iterator d_it2;
+	typename Tve de_res;
+	typename Tve::const_iterator d_it1, d_it2;
 	//2 skip tab
 	for (d_it2 = di2.begin(); d_it2 != di2.end(); ++d_it2) {
 	for (d_it1 = bigint.begin(); d_it1 != bigint.end(); ++d_it1) {
@@ -488,16 +486,16 @@ void intbigdata::mul_fself(const Tve &di2)
 ////////////////
 ////////////////
 template <typename Tve>
-vector<char> intbigdata::div_f(const Tve &di2, const bool &b_is_mod) const
+Tve intbigdata::div_f(const Tve &di2, const bool &b_is_mod) const
 {
 	unsigntp difsize = bigint.size()-di2.size()+1;
 	intbigdata dummy_empty;
 	//deque
 	deque<char> bu1(bigint.begin()+difsize, bigint.end()), de_res;
-	vector<char> di_p(bigint.begin(), bigint.begin()+difsize), ve_res;
+	Tve di_p(bigint.begin(), bigint.begin()+difsize), ve_res;
 	unsigntp ix1, ix2;
 	//sub_reverse_
-	for(vector<char>::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
+	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
 		bu1.push_front(*d_it);
 		//remove zero
 		while (bu1.back() == 0 && bu1.size() != 1) bu1.pop_back();
@@ -530,7 +528,7 @@ int intbigdata::abso_big(const Tve &di2) const
 {
 	if (bigint.size() > di2.size()) return 1;
 	if (bigint.size() < di2.size()) return -1;
-	vector<char>::const_reverse_iterator d_it1 = bigint.rbegin();
+	typename Tve::const_reverse_iterator d_it1 = bigint.rbegin();
 	typename Tve::const_reverse_iterator d_it2 = di2.rbegin();
 	for (; d_it1 != bigint.rend(); ++d_it1) {
 		if (d_it1 != bigint.rbegin()) ++d_it2;
@@ -605,8 +603,9 @@ inline intbigdata intbigdata::sub(const intbigdata &bus2) const
 //mul
 inline intbigdata intbigdata::mul(const intbigdata &bus2) const
 {
+	vector<char> dummy;
 	//sign
-	return intbigdata(this->mul_f(bus2.bigint), b_sign == bus2.b_sign, 'n');
+	return intbigdata(this->mul_f(bus2.bigint, dummy), b_sign == bus2.b_sign, 'n');
 }
 //div
 inline intbigdata intbigdata::div(const intbigdata &bus2) const
@@ -651,6 +650,7 @@ intbigdata intbigdata::sqrt() const
 {
 	//deque
 	deque<char> rema;//remainder
+	intbigdata dummy;
 	vector<char>::const_reverse_iterator v_it = bigint.rbegin();
 	//sign
 	if (b_sign == false) cerr << "intbigdata.h: imaginary number" << endl;
@@ -664,7 +664,7 @@ intbigdata intbigdata::sqrt() const
 	//deque
 	deque<char> de_root(1, ix);
 	ib_20.bigint.push_back(2);
-	ib_rootsqr.sub_fself_contra(rema);
+	ib_rootsqr.sub_fself_contra(rema, dummy.bigint);
 	//iterate
 	//skip tab
 	while (v_it != bigint.rend()) {
@@ -672,7 +672,7 @@ intbigdata intbigdata::sqrt() const
 	rema.push_front(*v_it++);
 	rema.push_front(*v_it++);
 	while (rema.back() == 0 && rema.size() != 1) rema.pop_back();
-	ib_20p.bigint = ib_20.mul_f(de_root);
+	ib_20p.bigint = ib_20.mul_f(de_root, dummy.bigint);
 	//formula: x(20p+x) <= remainder
 	//try division
 	di_temp.bigint.assign(rema.begin(), rema.end());
