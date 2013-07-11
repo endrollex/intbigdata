@@ -71,10 +71,9 @@ public:
 };
 
 
-// __  (\_ 
-//(_ \ ( '> 
-//  ) \/_)=
-//  (_(_ )_ member
+// (\__/)
+//(='.'=)
+//(")_(") member
 //structure2 vector
 intbigf::intbigf(const deque<char> &di1, const bool &bsn = true, const int &bpi = 0,
 	const int &bep = 0, const char &check_data = 'y')
@@ -169,18 +168,42 @@ intbigf::intbigf(const std::string &str1)
 //add
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
-	int i_absob, ibuff;
-	ibuff = b_poi-bus2.b_poi;
+	
+	
+	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, b_exp1 = b_exp, b_exp2 = bus2.b_exp, ibuff;
+	
+	if (b_exp1 > b_exp2) {b_poi1 += b_exp1-b_exp2; b_exp1 = b_exp2;}
+	if (b_exp2 > b_exp1) {b_poi2 += b_exp2-b_exp1; b_exp2 = b_exp1;}
+	
+	
+	ibuff = b_poi1-b_poi2;
+	
+	deque<char> bus1_p(bigint), bus2_p(bus2.bigint);
 	
 	
 	
 	
-	
-	
+	if (ibuff < 0) {
+		
+		ibuff = bus2.bigint.size()-bigint.size()+ibuff;
+		if (ibuff < 0) ibuff = -ibuff;
+		
+		while (ibuff != 0) {bus2_p.push_front(0); --ibuff;}
+	}
+	if (ibuff > 0) {
+		
+		ibuff = bigint.size()-bus2.bigint.size()-ibuff;
+		if (ibuff < 0) ibuff = -ibuff;
+		
+		while (ibuff != 0) {bus2_p.push_front(0); --ibuff;}
+	}
 	
 	
 	//sign
-	if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus2.bigint), b_sign, 0, 0, 'n');
+	if (b_sign == bus2.b_sign) return intbigf(add_f(bus1_p, bus2_p), b_sign, b_poi1, b_exp1, 'n');
+	
+	
+	
 	//else {
 	//	i_absob = abso_big(bigint, bus2.bigint);
 	//	if (i_absob == 1) return intbigf(sub_f(bigint, bus2.bigint), b_sign, 'n');
@@ -207,19 +230,10 @@ istream &operator>>(istream &in, intbigf &bus1)
 	bus1.b_sign = true;
 	if (str1[0] == '-') bus1.b_sign = false;
 	string::reverse_iterator s_it = str1.rbegin();
-	if (in) {
-		
-		
-		
-		
-		bus1 = intbigf(str1);
-	}
+	if (in) bus1 = intbigf(str1);
 	else bus1.bigint.push_back(0);
-	
-
 	return in;
 }
-
 //ostream &operator<<
 ostream &operator<<(ostream &out, const intbigf &bus1)
 {
@@ -255,40 +269,15 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 //who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
 inline int intbigf::who_big(const intbigf &bus2) const
 {
-	
-	
 	//sign
-	if (b_sign == true && bus2.b_sign == false) {return 1;}
-	if (b_sign == false && bus2.b_sign == true) {return -1;}
-	
-	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, b_exp1 = b_exp, b_exp2 = bus2.b_exp;
-	
-	
-	
-	
-	
-	
-	
-	if (b_sign) {
-		
-		
-		
-		
-		
-		;	
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	int i_who_big = abso_big(bigint, bus2.bigint);
+	if (b_sign == true && bus2.b_sign == false) return 1;
+	if (b_sign == false && bus2.b_sign == true) return -1;
+	int b_exp1 = b_exp, b_exp2 = bus2.b_exp, i_who_big;
+	if (b_poi > bus2.b_poi) b_exp1 += b_poi-bus2.b_poi;
+	if (bus2.b_poi > b_poi) b_exp2 += bus2.b_poi-b_poi;
+	if (b_sign) {if (b_exp1 > b_exp2) return 1; if (b_exp2 > b_exp1) return -1;}
+	if (!b_sign) {if (b_exp1 < b_exp2) return 1; if (b_exp2 < b_exp1) return -1;}
+	i_who_big = abso_big(bigint, bus2.bigint);
 	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
 	return i_who_big;
 }

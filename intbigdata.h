@@ -539,8 +539,8 @@ intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 inline int intbigdata::who_big(const intbigdata &bus2) const
 {
 	//sign
-	if (b_sign == true && bus2.b_sign == false) {return 1;}
-	if (b_sign == false && bus2.b_sign == true) {return -1;}
+	if (b_sign == true && bus2.b_sign == false) return 1;
+	if (b_sign == false && bus2.b_sign == true) return -1;
 	int i_who_big = abso_big(bigint, bus2.bigint);
 	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
 	return i_who_big;
