@@ -87,6 +87,12 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	if (bigint.empty()) {bigint.push_back(0); b_sign = true;}
 	//check data and fix
 	//if (check_data != 'n') this->fix_data();
+	
+	
+	
+	
+	
+	
 }
 //structure3 string
 intbigf::intbigf(const std::string &str1)
@@ -169,67 +175,41 @@ intbigf::intbigf(const std::string &str1)
 //add
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
-	
-	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, b_exp1 = b_exp, b_exp2 = bus2.b_exp, i_offset;
-	if (b_exp1 > b_exp2) {b_poi1 -= b_exp2-b_exp1; b_exp1 = b_exp2;}
-	if (b_exp2 > b_exp1) {b_poi2 -= b_exp1-b_exp2; b_exp2 = b_exp1;}
-	
+	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, i_offset, i_absob;
+	if (b_exp > bus2.b_exp) b_poi1 += b_exp-bus2.b_exp;
+	if (bus2.b_exp > b_exp) b_poi2 += bus2.b_exp-b_exp;
 	i_offset = (bigint.size()-b_poi1)-(bus2.bigint.size()-b_poi2);
 	deque<char> bus_temp;
-	
 	if (i_offset < 0) {
 		bus_temp = bigint;
-		
-		cout << "i_offset < 0" << endl;
-		
 		for (int ix = i_offset; ix < 0; ++ix) bus_temp.push_front(0);
-		
-		
-		cout << intbigf(bus_temp, b_poi1, b_exp1) << endl;
-		cout << "b " << b_poi1 << ' ' << b_exp1 << endl;
-		cout << intbigf(bus2.bigint, b_poi2, b_exp2) << endl;
-		cout << "b " << b_poi2 << ' ' << b_exp2 << endl;
-		cout << endl;
-		
-		cout << "size " << bigint.size() << " poi " << b_poi << " i_offset " << i_offset << endl;
-		i_offset = i_offset-(bigint.size()-b_poi);
-		
+		i_offset = i_offset-(bigint.size()-b_poi)+b_exp;
 		if (b_sign == bus2.b_sign) return intbigf(add_f(bus_temp, bus2.bigint), -1, i_offset, b_sign, 'n');
+		else {
+			i_absob = abso_big(bus_temp, bus2.bigint);
+			if (i_absob == 1) return intbigf(sub_f(bus_temp, bus2.bigint), -1, i_offset, b_sign, 'n');
+			if (i_absob == -1) return intbigf(sub_f(bus2.bigint, bus_temp), -1, i_offset, bus2.b_sign, 'n');
+		}
 	}
 	if (i_offset > 0) {
 		bus_temp = bus2.bigint;
-		
-		cout << "i_offset > 0" << endl;
-		
 		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
-		
-		cout << intbigf(bigint, b_poi1, b_exp1) << endl;
-		cout << "b " << b_poi1 << ' ' << b_exp1 << endl;
-		cout << intbigf(bus_temp, b_poi2, b_exp2) << endl;
-		cout << "b " << b_poi2 << ' ' << b_exp2 << endl;
-		cout << endl;
-		
 		i_offset = -i_offset;
-		i_offset = i_offset-(bus2.bigint.size()-bus2.b_poi);
-		
-		
+		i_offset = i_offset-(bus2.bigint.size()-bus2.b_poi)+bus2.b_exp;
 		if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus_temp), -1, i_offset, b_sign, 'n');
+		else {
+			i_absob = abso_big(bigint, bus_temp);
+			if (i_absob == 1) return intbigf(sub_f(bigint, bus_temp), -1, i_offset, b_sign, 'n');
+			if (i_absob == -1) return intbigf(sub_f(bus_temp, bigint), -1, i_offset, bus2.b_sign, 'n');
+		}
 	}
-	
-	cout << "i_offset = 0" << endl;
-	
-	
-	
-	//sign
-	if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus2.bigint), b_poi1, b_exp1, b_sign, 'n');
-	
-	
-	
-	//else {
-	//	i_absob = abso_big(bigint, bus2.bigint);
-	//	if (i_absob == 1) return intbigf(sub_f(bigint, bus2.bigint), b_sign, 'n');
-	//	if (i_absob == -1) return intbigf(sub_f(bus2.bigint, bigint), bus2.b_sign, 'n');
-	//}
+	i_offset = -(bigint.size()-b_poi)+b_exp;
+	if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus2.bigint), -1, i_offset, b_sign, 'y');
+	else {
+		i_absob = abso_big(bigint, bus2.bigint);
+		if (i_absob == 1) return intbigf(sub_f(bigint, bus2.bigint), -1, i_offset, b_sign, 'y');
+		if (i_absob == -1) return intbigf(sub_f(bus2.bigint, bigint), -1, i_offset, bus2.b_sign, 'y');
+	}
 	return intbigf();
 }
 

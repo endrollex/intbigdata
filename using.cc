@@ -4,23 +4,25 @@
 using namespace std;
 int main()
 {
-	//intbigf t1("0.00456");
-	//intbigf t2("1000234");
+	intbigf t2("0.00000000000005");
+	intbigf t1("1.00000000000005");
 	
-	intbigf t2("1000234");
-	intbigf t1("0.00456");
+	//intbigf t2("12.345");
+	//intbigf t1("-0.0045");	
+	
+	
+	cout << t1 << endl;
+	cout << t2 << endl;
+	cout << endl;
+	
 	
 	intbigf t3(t1.add(t2));
 	
 	
 	
-	cout << "res: " << t3 << endl;
-	cout << "r " << t3.b_poi << ' ' << t3.b_exp << endl;
+	cout << t3 << endl;
 	
 	
-	cout << endl;
-	cout << t1 << endl;
-	cout << t2 << endl;
 	
 
 
