@@ -59,7 +59,7 @@ public:
 	int b_poi;
 	int b_exp;
 	//
-	intbigf(const std::deque<char> &di1, const bool &bsn, const int &bpi, const int &bep, const char &check_data);
+	intbigf(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);
 	
 	
 	
@@ -75,13 +75,14 @@ public:
 //(='.'=)
 //(")_(") member
 //structure2 vector
-intbigf::intbigf(const deque<char> &di1, const bool &bsn = true, const int &bpi = 0,
-	const int &bep = 0, const char &check_data = 'y')
+intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
+	const bool &bsn = true, const char &check_data = 'y')
 {
 	//sign
 	b_sign = bsn;
 	bigint = di1;
 	b_poi = bpi;
+	if (b_poi == -1) b_poi = bigint.size();
 	b_exp = bep;
 	if (bigint.empty()) {bigint.push_back(0); b_sign = true;}
 	//check data and fix
@@ -169,38 +170,58 @@ intbigf::intbigf(const std::string &str1)
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
 	
+	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, b_exp1 = b_exp, b_exp2 = bus2.b_exp, i_offset;
+	if (b_exp1 > b_exp2) {b_poi1 -= b_exp2-b_exp1; b_exp1 = b_exp2;}
+	if (b_exp2 > b_exp1) {b_poi2 -= b_exp1-b_exp2; b_exp2 = b_exp1;}
 	
-	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, b_exp1 = b_exp, b_exp2 = bus2.b_exp, ibuff;
+	i_offset = (bigint.size()-b_poi1)-(bus2.bigint.size()-b_poi2);
+	deque<char> bus_temp;
 	
-	if (b_exp1 > b_exp2) {b_poi1 += b_exp1-b_exp2; b_exp1 = b_exp2;}
-	if (b_exp2 > b_exp1) {b_poi2 += b_exp2-b_exp1; b_exp2 = b_exp1;}
-	
-	
-	ibuff = b_poi1-b_poi2;
-	
-	deque<char> bus1_p(bigint), bus2_p(bus2.bigint);
-	
-	
-	
-	
-	if (ibuff < 0) {
+	if (i_offset < 0) {
+		bus_temp = bigint;
 		
-		ibuff = bus2.bigint.size()-bigint.size()+ibuff;
-		if (ibuff < 0) ibuff = -ibuff;
+		cout << "i_offset < 0" << endl;
 		
-		while (ibuff != 0) {bus2_p.push_front(0); --ibuff;}
+		for (int ix = i_offset; ix < 0; ++ix) bus_temp.push_front(0);
+		
+		
+		cout << intbigf(bus_temp, b_poi1, b_exp1) << endl;
+		cout << "b " << b_poi1 << ' ' << b_exp1 << endl;
+		cout << intbigf(bus2.bigint, b_poi2, b_exp2) << endl;
+		cout << "b " << b_poi2 << ' ' << b_exp2 << endl;
+		cout << endl;
+		
+		cout << "size " << bigint.size() << " poi " << b_poi << " i_offset " << i_offset << endl;
+		i_offset = i_offset-(bigint.size()-b_poi);
+		
+		if (b_sign == bus2.b_sign) return intbigf(add_f(bus_temp, bus2.bigint), -1, i_offset, b_sign, 'n');
 	}
-	if (ibuff > 0) {
+	if (i_offset > 0) {
+		bus_temp = bus2.bigint;
 		
-		ibuff = bigint.size()-bus2.bigint.size()-ibuff;
-		if (ibuff < 0) ibuff = -ibuff;
+		cout << "i_offset > 0" << endl;
 		
-		while (ibuff != 0) {bus2_p.push_front(0); --ibuff;}
+		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
+		
+		cout << intbigf(bigint, b_poi1, b_exp1) << endl;
+		cout << "b " << b_poi1 << ' ' << b_exp1 << endl;
+		cout << intbigf(bus_temp, b_poi2, b_exp2) << endl;
+		cout << "b " << b_poi2 << ' ' << b_exp2 << endl;
+		cout << endl;
+		
+		i_offset = -i_offset;
+		i_offset = i_offset-(bus2.bigint.size()-bus2.b_poi);
+		
+		
+		if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus_temp), -1, i_offset, b_sign, 'n');
 	}
+	
+	cout << "i_offset = 0" << endl;
+	
 	
 	
 	//sign
-	if (b_sign == bus2.b_sign) return intbigf(add_f(bus1_p, bus2_p), b_sign, b_poi1, b_exp1, 'n');
+	if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus2.bigint), b_poi1, b_exp1, b_sign, 'n');
 	
 	
 	
@@ -249,7 +270,7 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 	else {
 		if (ibuff != bus1.bigint.size()) {
 			if (bus1.bigint.size() > ibuff) {
-				while (rit_de != bus1.bigint.rend()-ibuff) out << (int)*rit_de++;
+				while (rit_de != bus1.bigint.rbegin()+ibuff) out << (int)*rit_de++;
 				out << '.';
 				while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
 			}
