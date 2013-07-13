@@ -26,7 +26,7 @@ using std::cerr;
 using std::endl;
 //
 typedef vector<char>::size_type unsigntp;
-namespace intbigdata_func
+namespace intbigd_fu
 {
 //skip tab
 //Traditional arithmetics:
@@ -314,7 +314,6 @@ int abso_big(const Tve2 &bigint, const Tve &di2)
 //class intbigdata
 ////////////////
 ////////////////
-using namespace intbigdata_func;
 class intbigdata_error
 {
 public:
@@ -541,7 +540,7 @@ inline int intbigdata::who_big(const intbigdata &bus2) const
 	//sign
 	if (b_sign == true && bus2.b_sign == false) return 1;
 	if (b_sign == false && bus2.b_sign == true) return -1;
-	int i_who_big = abso_big(bigint, bus2.bigint);
+	int i_who_big = intbigd_fu::abso_big(bigint, bus2.bigint);
 	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
 	return i_who_big;
 }
@@ -559,11 +558,11 @@ inline intbigdata intbigdata::add(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
-	if (b_sign == bus2.b_sign) return intbigdata(add_f(bigint, bus2.bigint), b_sign, 'n');
+	if (b_sign == bus2.b_sign) return intbigdata(intbigd_fu::add_f(bigint, bus2.bigint), b_sign, 'n');
 	else {
-		i_absob = abso_big(bigint, bus2.bigint);
-		if (i_absob == 1) return intbigdata(sub_f(bigint, bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return intbigdata(sub_f(bus2.bigint, bigint), bus2.b_sign, 'n');
+		i_absob = intbigd_fu::abso_big(bigint, bus2.bigint);
+		if (i_absob == 1) return intbigdata(intbigd_fu::sub_f(bigint, bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(intbigd_fu::sub_f(bus2.bigint, bigint), bus2.b_sign, 'n');
 	}
 	return intbigdata();
 }
@@ -572,11 +571,11 @@ inline intbigdata intbigdata::sub(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
-	if (b_sign != bus2.b_sign) return intbigdata(add_f(bigint, bus2.bigint), b_sign, 'n');
+	if (b_sign != bus2.b_sign) return intbigdata(intbigd_fu::add_f(bigint, bus2.bigint), b_sign, 'n');
 	else {
-		i_absob = abso_big(bigint, bus2.bigint);
-		if (i_absob == 1) return intbigdata(sub_f(bigint, bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return intbigdata(sub_f(bus2.bigint, bigint), !bus2.b_sign, 'n');
+		i_absob = intbigd_fu::abso_big(bigint, bus2.bigint);
+		if (i_absob == 1) return intbigdata(intbigd_fu::sub_f(bigint, bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(intbigd_fu::sub_f(bus2.bigint, bigint), !bus2.b_sign, 'n');
 	}
 	return intbigdata();
 }
@@ -584,25 +583,25 @@ inline intbigdata intbigdata::sub(const intbigdata &bus2) const
 inline intbigdata intbigdata::mul(const intbigdata &bus2) const
 {
 	//sign
-	return intbigdata(mul_f(bigint, bus2.bigint), b_sign == bus2.b_sign, 'n');
+	return intbigdata(intbigd_fu::mul_f(bigint, bus2.bigint), b_sign == bus2.b_sign, 'n');
 }
 //div
 inline intbigdata intbigdata::div(const intbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
-	int iabsobig = abso_big(bigint, bus2.bigint);
+	int iabsobig = intbigd_fu::abso_big(bigint, bus2.bigint);
 	if (iabsobig == -1) return intbigdata();
 	//sign
-	return intbigdata(div_f(bigint, bus2.bigint, false), b_sign == bus2.b_sign, 'n');
+	return intbigdata(intbigd_fu::div_f(bigint, bus2.bigint, false), b_sign == bus2.b_sign, 'n');
 }
 //mod
 inline intbigdata intbigdata::mod(const intbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
-	int iabsobig = abso_big(bigint, bus2.bigint);
+	int iabsobig = intbigd_fu::abso_big(bigint, bus2.bigint);
 	if (iabsobig == -1) {return *this;}	
 	//sign
-	intbigdata ret(div_f(bigint, bus2.bigint, true), b_sign, 'n');
+	intbigdata ret(intbigd_fu::div_f(bigint, bus2.bigint, true), b_sign, 'n');
 	if (ret.is_zero()) ret.b_sign = true;
 	return ret;
 }
@@ -620,7 +619,7 @@ inline intbigdata intbigdata::pow(const intbigdata &bus2) const
 	}
 	if (ixpow%2 == 1) ret.b_sign = b_sign;
 	ret.bigint = bigint;
-	for (int ixc = 1; ixc != ixpow; ++ixc) mul_fself(ret.bigint, bigint);
+	for (int ixc = 1; ixc != ixpow; ++ixc) intbigd_fu::mul_fself(ret.bigint, bigint);
 	return ret;
 }
 ////////////////deque use
@@ -642,7 +641,7 @@ intbigdata intbigdata::sqrt() const
 	//deque
 	deque<char> de_root(1, ix);
 	ib_20.bigint.push_back(2);
-	sub_fself_contra(ib_rootsqr.bigint, rema);
+	intbigd_fu::sub_fself_contra(ib_rootsqr.bigint, rema);
 	//iterate
 	//skip tab
 	while (v_it != bigint.rend()) {
@@ -650,13 +649,13 @@ intbigdata intbigdata::sqrt() const
 	rema.push_front(*v_it++);
 	rema.push_front(*v_it++);
 	while (rema.back() == 0 && rema.size() != 1) rema.pop_back();
-	ib_20p.bigint = mul_f(ib_20.bigint, de_root);
+	ib_20p.bigint = intbigd_fu::mul_f(ib_20.bigint, de_root);
 	//formula: x(20p+x) <= remainder
 	//try division
 	di_temp.bigint.assign(rema.begin(), rema.end());
 	ix = 0;
-	while (abso_big(di_temp.bigint, ib_20p.bigint) != -1) {
-		sub_fself(di_temp.bigint, ib_20p.bigint);
+	while (intbigd_fu::abso_big(di_temp.bigint, ib_20p.bigint) != -1) {
+		intbigd_fu::sub_fself(di_temp.bigint, ib_20p.bigint);
 		++ix;
 	}
 	//note: ix < 10
@@ -671,14 +670,14 @@ intbigdata intbigdata::sqrt() const
 		di_temp.bigint.assign(rema.begin(), rema.end());
 		ix = 0;
 		//note: ix < 10
-		while (abso_big(di_temp.bigint, ib_20p.bigint) != -1 && ix != 9) {
-			sub_fself(di_temp.bigint, ib_20p.bigint);
+		while (intbigd_fu::abso_big(di_temp.bigint, ib_20p.bigint) != -1 && ix != 9) {
+			intbigd_fu::sub_fself(di_temp.bigint, ib_20p.bigint);
 			++ix;
 		}
 		if (ix < ib_20p.bigint[0]) --ib_20p.bigint[0];
 		else {
 			i_temp = 2;
-			if (ix > ib_20p.bigint[0]) di_temp.bigint = add_f(di_temp.bigint, ib_20p.bigint);
+			if (ix > ib_20p.bigint[0]) di_temp.bigint = intbigd_fu::add_f(di_temp.bigint, ib_20p.bigint);
 		}
 	}
 	de_root.push_front(ib_20p.bigint[0]);
@@ -698,9 +697,9 @@ intbigdata::operator int() const
 	intbigdata ibd_max(s_max);
 	vector<char>::const_reverse_iterator v_it;
 	int get_int = 0;
-	if (abso_big(bigint, ibd_max.bigint) == 1) {
+	if (intbigd_fu::abso_big(bigint, ibd_max.bigint) == 1) {
 		//cerr << intbigdata.h: out of range << endl;
-		ibd_max.bigint = div_f(bigint, ibd_max.bigint, true);
+		ibd_max.bigint = intbigd_fu::div_f(bigint, ibd_max.bigint, true);
 		v_it = ibd_max.bigint.rbegin();
 		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
 	}
@@ -850,7 +849,7 @@ string intbigdata::scientific(const int &i_point = 6) const
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
-		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = add_f(i_round.bigint, d_one);
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, d_one);
 	}
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;
@@ -937,9 +936,9 @@ unsigned intbigdata::get_unsigned() const
 	intbigdata ibd_max(s_max);
 	vector<char>::const_reverse_iterator v_it;
 	unsigned get_int = 0;
-	if (abso_big(bigint, ibd_max.bigint) == 1) {
+	if (intbigd_fu::abso_big(bigint, ibd_max.bigint) == 1) {
 		//cerr << intbigdata.h: out of range << endl;
-		ibd_max.bigint = div_f(bigint, ibd_max.bigint, true);
+		ibd_max.bigint = intbigd_fu::div_f(bigint, ibd_max.bigint, true);
 		v_it = ibd_max.bigint.rbegin();
 		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
 	}

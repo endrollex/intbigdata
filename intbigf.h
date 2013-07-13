@@ -19,24 +19,28 @@
 #include <string>
 #include <iterator>
 #include "intbigdata.h"
-using namespace std;
-//using namespace intbigdata_func;
-typedef deque<char>::size_type unsigntp;
 
-
-namespace intbigdata_func
+namespace intbigd_fu
 {
 //skip tab
-
-void pre_calc() {
-	
-	
-	
-	
-	
-	
-	
-	
+//prepare calc point float
+inline void pre_fcalc(const deque<char> &bus1, const deque<char> &bus2, deque<char> &bus_temp,
+	int &i_offset, int &i_exp, char &check_d, int b_poi1, int b_poi2, const int &b_exp1, const int &b_exp2) {
+	int b_poi1_o = b_poi1, b_poi2_o = b_poi2;
+	if (b_exp1 > b_exp2) b_poi1 += b_exp1-b_exp2;
+	if (b_exp2 > b_exp1) b_poi2 += b_exp2-b_exp1;
+	i_offset = (bus1.size()-b_poi1)-(bus2.size()-b_poi2);
+	if (i_offset < 0) {
+		bus_temp = bus1;
+		for (int ix = i_offset; ix < 0; ++ix) bus_temp.push_front(0);
+		i_exp = i_offset-(bus1.size()-b_poi1_o)+b_exp1;
+	}
+	if (i_offset > 0) {
+		bus_temp = bus2;
+		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
+		i_exp = -i_offset-(bus2.size()-b_poi2_o)+b_exp2;
+	}
+	if (i_offset == 0) {i_exp = -(bus1.size()-b_poi1_o)+b_exp1; check_d = 'y';}
 }
 
 
@@ -184,70 +188,45 @@ intbigf::intbigf(const std::string &str1)
 }
 
 
-
-
-
-
-
-
-
 //arithmetic encapsulate
 //add, sub, mul, div, pow, mod
 //add
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
-	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, i_offset, i_exp, i_absob;
+	int i_offset, i_exp, i_absob;
 	deque<char> bus_temp;
 	char check_d = 'n';
+	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
-	
-	
-	
-	if (b_exp > bus2.b_exp) b_poi1 += b_exp-bus2.b_exp;
-	if (bus2.b_exp > b_exp) b_poi2 += bus2.b_exp-b_exp;
-	i_offset = (bigint.size()-b_poi1)-(bus2.bigint.size()-b_poi2);
-	if (i_offset < 0) {
-		bus_temp = bigint;
-		for (int ix = i_offset; ix < 0; ++ix) bus_temp.push_front(0);
-		i_exp = i_offset-(bigint.size()-b_poi)+b_exp;
-		bus1_p = &bus_temp;
-	}
-	if (i_offset > 0) {
-		bus_temp = bus2.bigint;
-		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
-		i_exp = -i_offset-(bus2.bigint.size()-bus2.b_poi)+bus2.b_exp;
-		bus2_p = &bus_temp;
-	}
-	if (i_offset == 0) {i_exp = -(bigint.size()-b_poi)+b_exp; check_d = 'y';}
-	
-	
-	
-	
-	
-	if (b_sign == bus2.b_sign) return intbigf(add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
+	if (i_offset < 0) bus1_p = &bus_temp;
+	if (i_offset > 0) bus2_p = &bus_temp;
+	//sign
+	if (b_sign == bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
 	else {
-		i_absob = abso_big(*bus1_p, *bus2_p);
-		if (i_absob == 1) return intbigf(sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
-		if (i_absob == -1) return intbigf(sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, check_d);
+		i_absob = intbigd_fu::abso_big(*bus1_p, *bus2_p);
+		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
+		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, check_d);
 	}
 	return intbigf();
 }
 //sub
 inline intbigf intbigf::sub(const intbigf &bus2) const
 {
-	
-	
-	
-	/*
-	int i_absob;
+	int i_offset, i_exp, i_absob;
+	deque<char> bus_temp;
+	char check_d = 'n';
+	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
+	if (i_offset < 0) bus1_p = &bus_temp;
+	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	if (b_sign != bus2.b_sign) return intbigdata(add_f(bigint, bus2.bigint), b_sign, 'n');
+	if (b_sign != bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
 	else {
-		i_absob = abso_big(bigint, bus2.bigint);
-		if (i_absob == 1) return intbigdata(sub_f(bigint, bus2.bigint), b_sign, 'n');
-		if (i_absob == -1) return intbigdata(sub_f(bus2.bigint, bigint), !bus2.b_sign, 'n');
+		i_absob = intbigd_fu::abso_big(*bus1_p, *bus2_p);
+		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
+		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, check_d);
 	}
-	return intbigdata();*/
+	return intbigf();
 }
 
 
@@ -314,7 +293,7 @@ inline int intbigf::who_big(const intbigf &bus2) const
 	if (bus2.b_poi > b_poi) b_exp2 += bus2.b_poi-b_poi;
 	if (b_sign) {if (b_exp1 > b_exp2) return 1; if (b_exp2 > b_exp1) return -1;}
 	if (!b_sign) {if (b_exp1 < b_exp2) return 1; if (b_exp2 < b_exp1) return -1;}
-	i_who_big = abso_big(bigint, bus2.bigint);
+	i_who_big = intbigd_fu::abso_big(bigint, bus2.bigint);
 	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
 	return i_who_big;
 }
