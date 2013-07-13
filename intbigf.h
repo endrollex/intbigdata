@@ -7,7 +7,7 @@
 //intbigf.h, calculate big float, environment: C++03 x86
 //craft by endrollex, 2013.7.3
 //http://endrollex.com/
-//ATTENTION: This is a immature project with very simple arithemtic method,
+//ATTENTION: This is an immature project with very simple arithemtic method,
 //           that means the intbigf.h is less efficient.
 ////////////////
 ////////////////
@@ -23,8 +23,17 @@
 namespace intbigd_fu
 {
 //skip tab
+
+//global var, significant digits
+int sig_digs = 64;
+
+
+////////////////
 //prepare calc point float
-inline void pre_fcalc(const deque<char> &bus1, const deque<char> &bus2, deque<char> &bus_temp,
+////////////////
+////////////////
+template <typename Tve> 
+inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 	int &i_offset, int &i_exp, char &check_d, int b_poi1, int b_poi2, const int &b_exp1, const int &b_exp2) {
 	int b_poi1_o = b_poi1, b_poi2_o = b_poi2;
 	if (b_exp1 > b_exp2) b_poi1 += b_exp1-b_exp2;
@@ -42,7 +51,61 @@ inline void pre_fcalc(const deque<char> &bus1, const deque<char> &bus2, deque<ch
 	}
 	if (i_offset == 0) {i_exp = -(bus1.size()-b_poi1_o)+b_exp1; check_d = 'y';}
 }
-
+////////////////deque use
+//divf_f, y = a/b (a>=b && b!=0)
+////////////////
+////////////////from div_f
+template <typename Tve>
+Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
+{
+	unsigntp difsize = bigint.size()-di2.size()+1;
+	//deque
+	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
+	unsigntp ix1, ix2;
+	
+	int i_sigd= sig_digs-difsize, ibuff, ibuff_m;
+	
+	
+	
+	for (int ix= 0; ix != i_sigd; ++ix) di_p.push_front(0);
+	
+	
+	//sub_reverse_
+	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
+		bu1.push_front(*d_it);
+		//remove zero
+		while (bu1.back() == 0 && bu1.size() != 1) bu1.pop_back();
+		ix2 = 0;
+		while (ix2 != 10) {
+			if (abso_big(bu1, di2) != -1) {
+				//spcial version for div
+				sub_ffordiv(bu1, di2);
+				++ix2;
+			}
+			else {
+				de_res.push_front(ix2);
+				ix2 = 10;
+			}
+		}
+	}
+	
+	
+	
+	
+	//remove zero
+	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
+		
+	if (b_is_mod) return bu1;
+	
+	//10000
+	ibuff = i_sigd/100;
+	ibuff_m = i_sigd%100;
+	
+	
+	de_res.push_back(i_sigd);
+	
+	return de_res;
+}
 
 
 }
@@ -62,8 +125,10 @@ public:
 	//Traditional arithmetics:
 	intbigf add(const intbigf &bus2) const;
 	intbigf sub(const intbigf &bus2) const;
-	
-	
+	intbigf mul(const intbigf &bus2) const;
+	intbigf div(const intbigf &bus2) const;
+	intbigf mod(const intbigf &bus2) const;
+	//
 	
 	
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
@@ -113,12 +178,19 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	//check data and fix
 	//if (check_data != 'n') this->fix_data();
 	
-	
-	
-	
-	
-	
+	//for div
+	if (check_data == 'd') {
+		b_poi -= bigint.back();
+		
+		bigint.pop_back();
+	}
 }
+
+
+
+
+
+
 //structure3 string
 intbigf::intbigf(const std::string &str1)
 {
@@ -228,6 +300,49 @@ inline intbigf intbigf::sub(const intbigf &bus2) const
 	}
 	return intbigf();
 }
+//mul
+inline intbigf intbigf::mul(const intbigf &bus2) const
+{
+	int i_offset, i_exp, i_absob;
+	deque<char> bus_temp;
+	char check_d = 'n';
+	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
+	if (i_offset < 0) bus1_p = &bus_temp;
+	if (i_offset > 0) bus2_p = &bus_temp;
+	//sign
+	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, 'y');
+}
+
+//div
+inline intbigf intbigf::div(const intbigf &bus2) const
+{
+	if (bus2.is_zero()) throw intbigdata_error();
+	//
+	int i_offset, i_exp, i_absob;
+	deque<char> bus_temp;
+	char check_d = 'n';
+	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
+	if (i_offset < 0) bus1_p = &bus_temp;
+	if (i_offset > 0) bus2_p = &bus_temp;
+	
+	
+	
+	
+	//
+	int iabsobig = intbigd_fu::abso_big(*bus1_p, *bus2_p);
+	
+	
+	if (iabsobig == -1) return intbigf();
+	
+	
+	
+	//sign
+	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false), -1, 0, b_sign == bus2.b_sign, 'd');
+}
+
+
 
 
 

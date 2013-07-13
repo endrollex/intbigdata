@@ -1,14 +1,16 @@
 #include <iostream>
 #include <string>
+#include <iomanip>
 #include "intbigf.h"
 using namespace std;
 int main()
 {
-	intbigf t2("0.00000000000005");
-	intbigf t1("1.00000000000005");
+	//intbigf t2("0.00000000000005"), t1("1.00000000000005");
+	//intbigf t1("12.345"), t2("-0.0045");
+	intbigf t1("46146"), t2("0.893");
+	//intbigf t1("10000"), t2("50");
 	
-	//intbigf t2("12.345");
-	//intbigf t1("-0.0045");	
+	intbigd_fu::sig_digs = 100;
 	
 	
 	cout << t1 << endl;
@@ -16,13 +18,11 @@ int main()
 	cout << endl;
 	
 	
-	intbigf t3(t1.add(t2));
+	intbigf t3(t1.div(t2));
 	
 	
 	
-	cout << t3 << endl;
-	
-	
+	cout << t3 << " (result)" << endl;
 	
 
 

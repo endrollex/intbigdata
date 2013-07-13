@@ -2,7 +2,7 @@
 //intbigdata.h, calculate big number, environment: C++03 x86
 //craft by endrollex, 2012.10.03
 //http://endrollex.com/
-//ATTENTION: This is a immature project with very simple arithemtic method,
+//ATTENTION: This is an immature project with very simple arithemtic method,
 //           that means the intbigdata.h is less efficient.
 ////////////////
 ////////////////
