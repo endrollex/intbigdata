@@ -13,21 +13,14 @@
 ////////////////
 #ifndef INTBIGDAF_H
 #define INTBIGDAF_H
-#include <iostream>
-#include <fstream>//save_file, load_file
-#include <deque>
-#include <string>
-#include <iterator>
+#include <sstream>
 #include "intbigdata.h"
-
+using std::ostringstream;
 namespace intbigd_fu
 {
 //skip tab
-
 //global var, significant digits
 int sig_digs = 64;
-
-
 ////////////////
 //prepare calc point float
 ////////////////
@@ -49,7 +42,7 @@ inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
 		i_exp = -i_offset-(bus2.size()-b_poi2_o)+b_exp2;
 	}
-	if (i_offset == 0) {i_exp = -(bus1.size()-b_poi1_o)+b_exp1; check_d = 'y';}
+	if (i_offset == 0) {i_exp = -(bus1.size()-b_poi1_o)+b_exp1; check_d = 'z';}
 }
 ////////////////deque use
 //divf_f, y = a/b (a>=b && b!=0)
@@ -59,19 +52,18 @@ template <typename Tve>
 Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 {
 	unsigntp difsize = bigint.size()-di2.size()+1;
+	int i_sigd= sig_digs-difsize, ibuff = 0, di_p_siz, di_p_cou = 0;
+	unsigntp ix1, ix2;
+	if (difsize > bigint.size()) {ibuff = bigint.size()-difsize; difsize = bigint.size();}
 	//deque
 	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
-	unsigntp ix1, ix2;
-	
-	int i_sigd= sig_digs-difsize, ibuff, ibuff_m;
-	
-	
-	
-	for (int ix= 0; ix != i_sigd; ++ix) di_p.push_front(0);
-	
-	
+	di_p_siz = di_p.size();
+	for (int ix= 0; ix != i_sigd+ibuff; ++ix) di_p.push_front(0);
 	//sub_reverse_
 	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
+		//stop div
+		if (di_p_cou >= di_p_siz) if (bu1.back() == 0 && bu1.size() == 1) break;
+		++di_p_cou;
 		bu1.push_front(*d_it);
 		//remove zero
 		while (bu1.back() == 0 && bu1.size() != 1) bu1.pop_back();
@@ -88,28 +80,22 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 			}
 		}
 	}
-	
-	
-	
-	
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
-		
 	if (b_is_mod) return bu1;
-	
-	//10000
-	ibuff = i_sigd/100;
-	ibuff_m = i_sigd%100;
-	
-	
-	de_res.push_back(i_sigd);
-	
+	//significant digits
+	i_sigd = di_p_cou-di_p_siz;
+	if (i_sigd > 0) {
+		de_res.push_back(101);
+		while (i_sigd > 0) {
+			de_res.push_back(i_sigd%100);
+			i_sigd = i_sigd/100;
+		}
+		de_res.push_back(101);
+	}
 	return de_res;
 }
-
-
 }
-
 //
 class intbigf
 {
@@ -117,54 +103,43 @@ public:
 	//Constructors:
 	intbigf(): b_sign(true), bigint(1, 0), b_poi(0), b_exp(0) {};
 	intbigf(const std::string &str1);//structure form string, can deal with scientific notation
+	intbigf(const double &dou1_o);
 	
 	
-	
-	
-	
+	~intbigf() {};
 	//Traditional arithmetics:
 	intbigf add(const intbigf &bus2) const;
 	intbigf sub(const intbigf &bus2) const;
 	intbigf mul(const intbigf &bus2) const;
 	intbigf div(const intbigf &bus2) const;
-	intbigf mod(const intbigf &bus2) const;
-	//
-	
+	//Operators:
 	
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigf &bus1);
 	
-	
-	
-	
+	//Capacity:
+	unsigntp size();
+	unsigntp max_size();
 //protected:
-
-
-
-
-
-
 	bool b_sign;
 	std::deque<char> bigint;
 	int b_poi;
 	int b_exp;
-	//
+	//Constructors:
 	intbigf(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);
-	
-	
-	
-	
-	//Compare
+	//Compare:
 	int who_big(const intbigf &bus2) const;
 	bool is_zero() const;
-	
+	void fix_data();
+	bool is_not_corrupt() const;
 };
-
-
 // (\__/)
 //(='.'=)
 //(")_(") member
-//structure2 vector
+////////////////
+//Constructors:
+////////////////////////////////
+//structure2 deque
 intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	const bool &bsn = true, const char &check_data = 'y')
 {
@@ -176,21 +151,26 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	b_exp = bep;
 	if (bigint.empty()) {bigint.push_back(0); b_sign = true;}
 	//check data and fix
-	//if (check_data != 'n') this->fix_data();
-	
+	if (check_data == 'y') this->fix_data();
+	//remove point zero
+	if (check_data == 'z') {
+		int ibuff = b_poi+b_exp;
+		if (bigint.size() > ibuff) while (bigint.front() == 0 && bigint.size() != ibuff) bigint.pop_front();
+	}
 	//for div
-	if (check_data == 'd') {
-		b_poi -= bigint.back();
-		
+	if (check_data == 'd' && bigint.back() == 101) {
 		bigint.pop_back();
+		int i_count = 1, ibuff = 0;
+		while (bigint.back() != 101 && bigint.size() != 1) {
+			ibuff = ibuff*i_count+bigint.back();
+			i_count *= 100;
+			bigint.pop_back();
+			--b_poi;
+		}
+		bigint.pop_back();
+		b_poi -= ibuff+2;
 	}
 }
-
-
-
-
-
-
 //structure3 string
 intbigf::intbigf(const std::string &str1)
 {
@@ -258,8 +238,91 @@ intbigf::intbigf(const std::string &str1)
 		if (bigint.size() == 1 && bigint[0] == 0) {b_sign = true; b_poi = 1; b_exp = 0;}
 	}
 }
+//structure7 double
+intbigf::intbigf(const double &dou1_o)
+{
+	ostringstream os;
+	os << dou1_o;
+	*this = intbigf(os.str());
+}
 
 
+
+
+
+
+
+
+////////////////
+//Compare:
+////////////////////////////////
+//who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
+inline int intbigf::who_big(const intbigf &bus2) const
+{
+	//sign
+	if (b_sign == true && bus2.b_sign == false) return 1;
+	if (b_sign == false && bus2.b_sign == true) return -1;
+	int b_exp1 = b_exp, b_exp2 = bus2.b_exp, i_who_big;
+	if (b_poi > bus2.b_poi) b_exp1 += b_poi-bus2.b_poi;
+	if (bus2.b_poi > b_poi) b_exp2 += bus2.b_poi-b_poi;
+	if (b_sign) {if (b_exp1 > b_exp2) return 1; if (b_exp2 > b_exp1) return -1;}
+	if (!b_sign) {if (b_exp1 < b_exp2) return 1; if (b_exp2 < b_exp1) return -1;}
+	i_who_big = intbigd_fu::abso_big(bigint, bus2.bigint);
+	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
+	return i_who_big;
+}
+//is_zero
+inline bool intbigf::is_zero() const
+{
+	if (bigint.size() == 1 && bigint[0] == 0) return true;
+	//skip check sign, point, exponent
+	return false;
+}
+//fix_data
+void intbigf::fix_data()
+{
+	if (bigint.empty()) bigint.push_back(0);
+	deque<char>::reverse_iterator rit_de = bigint.rbegin();
+	while (rit_de != bigint.rend()) {
+		if (*rit_de < 0) *rit_de = -*rit_de;
+		if (*rit_de > 9) *rit_de = *rit_de%10;
+		++rit_de;
+	}
+	unsigntp ix2 = bigint.size()-1;
+	//remove zero
+	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
+	//zero no sign
+	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
+	//
+	if (b_poi < 0) b_poi = 0;
+	//remove point zero
+	int ibuff = b_poi+b_exp;
+	if (bigint.size() > ibuff) while (bigint.front() == 0 && bigint.size() != ibuff) bigint.pop_front();
+}
+//is_not_corrupt
+bool intbigf::is_not_corrupt() const
+{
+	if (bigint.empty()) return false;
+	deque<char>::const_reverse_iterator rit_de = bigint.rbegin();
+	while (rit_de != bigint.rend()) {
+		if (*rit_de < 0 || *rit_de > 9) return false;
+		++rit_de;
+	}
+	//remove zero
+	unsigntp ix2 = bigint.size()-1;
+	if (bigint[ix2] == 0) return false;
+	//zero no sign
+	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) return false;
+	//
+	if (b_poi < 0) return false;
+	//remove point zero
+	int ibuff = b_poi+b_exp;
+	if (bigint.size() > ibuff) if (bigint.front() == 0 && bigint.size() > ibuff) return false;
+	return true;
+}
+////////////////
+//Traditional arithmetics:
+////////////////////////////////
 //arithmetic encapsulate
 //add, sub, mul, div, pow, mod
 //add
@@ -311,7 +374,7 @@ inline intbigf intbigf::mul(const intbigf &bus2) const
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, 'y');
+	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, check_d);
 }
 
 //div
@@ -326,31 +389,13 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
-	
-	
-	
-	
 	//
-	int iabsobig = intbigd_fu::abso_big(*bus1_p, *bus2_p);
-	
-	
-	if (iabsobig == -1) return intbigf();
-	
-	
-	
 	//sign
 	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false), -1, 0, b_sign == bus2.b_sign, 'd');
 }
-
-
-
-
-
-
-
-
-
-
+////////////////
+//Operators:
+////////////////////////////////
 //istream &operator>>
 istream &operator>>(istream &in, intbigf &bus1)
 {
@@ -373,6 +418,7 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 	if (bus1.b_sign == false) out << '-';
 	int ibuff = bus1.b_poi+bus1.b_exp;
 	if (ibuff <= 0) {
+		if (bus1.bigint.size() == 1 && bus1.bigint.back() == 0) {out << '0'; return out;}
 		out << "0.";
 		while (ibuff < 0) {out << '0'; ++ibuff;}
 		while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
@@ -394,36 +440,17 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 	}
 	return out;
 }
-
-
-
-//who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
-inline int intbigf::who_big(const intbigf &bus2) const
+////////////////
+//Capacity:
+////////////////////////////////
+//size
+inline unsigntp intbigf::size()
 {
-	//sign
-	if (b_sign == true && bus2.b_sign == false) return 1;
-	if (b_sign == false && bus2.b_sign == true) return -1;
-	int b_exp1 = b_exp, b_exp2 = bus2.b_exp, i_who_big;
-	if (b_poi > bus2.b_poi) b_exp1 += b_poi-bus2.b_poi;
-	if (bus2.b_poi > b_poi) b_exp2 += bus2.b_poi-b_poi;
-	if (b_sign) {if (b_exp1 > b_exp2) return 1; if (b_exp2 > b_exp1) return -1;}
-	if (!b_sign) {if (b_exp1 < b_exp2) return 1; if (b_exp2 < b_exp1) return -1;}
-	i_who_big = intbigd_fu::abso_big(bigint, bus2.bigint);
-	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
-	return i_who_big;
+	return bigint.size();
 }
-
-
-
-
-//is_zero
-inline bool intbigf::is_zero() const
+//max_size
+inline unsigntp intbigf::max_size()
 {
-	if (bigint.size() == 1 && bigint[0] == 0) return true;
-	//skip check sign
-	return false;
+	return bigint.max_size();
 }
-
-
-
 #endif

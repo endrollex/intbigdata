@@ -14,7 +14,6 @@
 #include <vector>
 #include <string>
 #include <iterator>
-//
 using std::deque;
 using std::vector;
 using std::string;
@@ -24,7 +23,6 @@ using std::ofstream;
 using std::ifstream;
 using std::cerr;
 using std::endl;
-//
 typedef vector<char>::size_type unsigntp;
 namespace intbigd_fu
 {
@@ -339,7 +337,7 @@ public:
 	intbigdata div(const intbigdata &bus2) const;
 	intbigdata mod(const intbigdata &bus2) const;
 	//Power functions:
-	intbigdata pow(const intbigdata &bus2) const;//exponent's value is a int, cannot too big
+	intbigdata pow(const intbigdata &bus2) const;//exponent's value is int, cannot too big
 	intbigdata sqrt() const;//ignore sign, assume positive number
 	//Exponential and logarithmic functions:
 	//
@@ -399,9 +397,10 @@ public:
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
-//protected:
+protected:
 	bool b_sign;
 	std::vector<char> bigint;
+	//Constructors:
 	//sample: if int i = 190, convert to vector<char> d: 091
 	//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
 	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience
@@ -433,6 +432,9 @@ inline intbigdata operator%(const int &ib1, const intbigdata &bus2) {return intb
 //(_ \ ( '> 
 //  ) \/_)=
 //  (_(_ )_ member
+////////////////
+//Constructors:
+////////////////////////////////
 //structure2 vector
 intbigdata::intbigdata(const vector<char> &di1, const bool &bsn = true, const char &check_data = 'y')
 {
@@ -534,6 +536,9 @@ intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 	while (us1 != 0) {bigint.push_back(us1%10); us1 /= 10;}
 	if (us1_o == 0) bigint.push_back(0);
 }
+////////////////
+//Compare:
+////////////////////////////////
 //who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
 inline int intbigdata::who_big(const intbigdata &bus2) const
 {
@@ -551,6 +556,41 @@ inline bool intbigdata::is_zero() const
 	//skip check sign
 	return false;
 }
+//fix_data
+void intbigdata::fix_data()
+{
+	if (bigint.empty()) bigint.push_back(0);
+	vector<char>::reverse_iterator rit_de = bigint.rbegin();
+	while (rit_de != bigint.rend()) {
+		if (*rit_de < 0) *rit_de = -*rit_de;
+		if (*rit_de > 9) *rit_de = *rit_de%10;
+		++rit_de;
+	}
+	unsigntp ix2 = bigint.size()-1;
+	//remove zero
+	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
+	//zero no sign
+	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
+}
+//is_not_corrupt
+bool intbigdata::is_not_corrupt() const
+{
+	if (bigint.empty()) return false;
+	vector<char>::const_reverse_iterator rit_de = bigint.rbegin();
+	while (rit_de != bigint.rend()) {
+		if (*rit_de < 0 || *rit_de > 9) return false;
+		++rit_de;
+	}
+	//remove zero
+	unsigntp ix2 = bigint.size()-1;
+	if (bigint[ix2] == 0) return false;
+	//zero no sign
+	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) return false;
+	return true;
+}
+////////////////
+//Traditional arithmetics:
+////////////////////////////////
 //arithmetic encapsulate
 //add, sub, mul, div, pow, mod
 //add
@@ -605,7 +645,10 @@ inline intbigdata intbigdata::mod(const intbigdata &bus2) const
 	if (ret.is_zero()) ret.b_sign = true;
 	return ret;
 }
-//pow, exponent's value is a int
+////////////////
+//Power functions:
+////////////////////////////////
+//pow, exponent's value is int
 //large result of pow spends some time
 inline intbigdata intbigdata::pow(const intbigdata &bus2) const
 {
@@ -687,6 +730,9 @@ intbigdata intbigdata::sqrt() const
 	return ib_root_res;
 	//by the way: return pair to indicate square number
 }
+////////////////
+//Operators:
+////////////////////////////////
 //operator int()
 ////////////////original
 intbigdata::operator int() const
@@ -787,6 +833,9 @@ inline intbigdata intbigdata::operator--(int)
 	*this = this->sub(bu_d);
 	return ret;
 }
+////////////////
+//Modifiers:
+////////////////////////////////
 //assign1
 inline void intbigdata::assign(const vector<char> &di2, const bool &bsn = true, const char &check_data = 'y')
 {
@@ -955,6 +1004,9 @@ string intbigdata::get_string() const
 {
 	return string(*this);
 }
+////////////////
+//Capacity:
+////////////////////////////////
 //size
 inline unsigntp intbigdata::size()
 {
@@ -964,38 +1016,6 @@ inline unsigntp intbigdata::size()
 inline unsigntp intbigdata::max_size()
 {
 	return bigint.max_size();
-}
-//fix_data
-void intbigdata::fix_data()
-{
-	if (bigint.empty()) bigint.push_back(0);
-	vector<char>::reverse_iterator rit_de = bigint.rbegin();
-	while (rit_de != bigint.rend()) {
-		if (*rit_de < 0) *rit_de = -*rit_de;
-		if (*rit_de > 9) *rit_de = *rit_de%10;
-		++rit_de;
-	}
-	unsigntp ix2 = bigint.size()-1;
-	//remove zero
-	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
-	//zero no sign
-	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
-}
-//is_not_corrupt
-bool intbigdata::is_not_corrupt() const
-{
-	if (bigint.empty()) return false;
-	vector<char>::const_reverse_iterator rit_de = bigint.rbegin();
-	while (rit_de != bigint.rend()) {
-		if (*rit_de < 0 || *rit_de > 9) return false;
-		++rit_de;
-	}
-	//remove zero
-	unsigntp ix2 = bigint.size()-1;
-	if (bigint[ix2] == 0) return false;
-	//zero no sign
-	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) return false;
-	return true;
 }
 ////////////////
 //exception cerr: operator int(), get_unsigned, div, mod, sqrt, save_file, load_file
