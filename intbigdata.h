@@ -397,7 +397,7 @@ public:
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
-protected:
+//protected:
 	bool b_sign;
 	std::vector<char> bigint;
 	//Constructors:
@@ -412,7 +412,7 @@ protected:
 	bool is_not_corrupt() const;
 };
 //nonmember operators overload
-//overload operators: between intbigdata and int, ATTENTION: unsigned must be explicit conversion
+//overload operators: between intbigdata and int, ATTENTION: other types must be explicit converted
 inline intbigdata operator+(const intbigdata &bus1, const intbigdata &bus2) {return bus1.add(bus2);}
 inline intbigdata operator+(const intbigdata &bus1, const int &ib2) {return bus1.add(ib2);}
 inline intbigdata operator+(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).add(bus2);}

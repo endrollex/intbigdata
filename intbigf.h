@@ -16,6 +16,7 @@
 #include <sstream>
 #include "intbigdata.h"
 using std::ostringstream;
+using std::istringstream;
 namespace intbigd_fu
 {
 //skip tab
@@ -96,7 +97,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 	return de_res;
 }
 }
-//
+//do not inherit
 class intbigf
 {
 public:
@@ -104,7 +105,9 @@ public:
 	intbigf(): b_sign(true), bigint(1, 0), b_poi(0), b_exp(0) {};
 	intbigf(const std::string &str1);//structure form string, can deal with scientific notation
 	intbigf(const double &dou1_o);
-	
+	intbigf(const int &us1_o);
+	intbigf(const intbigdata &bus1);
+	intbigf(const char *cstr1);
 	
 	~intbigf() {};
 	//Traditional arithmetics:
@@ -113,10 +116,39 @@ public:
 	intbigf mul(const intbigf &bus2) const;
 	intbigf div(const intbigf &bus2) const;
 	//Operators:
+	operator int() const;
+	operator string() const;
+	operator double() const;
+	operator intbigdata() const;
 	
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigf &bus1);
 	
+	//overload operators: between intbigf and int, ATTENTION: unsigned must be explicit conversion
+	intbigf &operator+=(const intbigf &bus2) {return *this = this->add(bus2);}
+	intbigf &operator-=(const intbigf &bus2) {return *this = this->sub(bus2);}
+	intbigf &operator*=(const intbigf &bus2) {return *this = this->mul(bus2);}
+	intbigf &operator/=(const intbigf &bus2) {return *this = this->div(bus2);}
+	friend bool operator==(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 0;}
+	friend bool operator==(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == 0;}
+	friend bool operator==(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
+	friend bool operator!=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != 0;}
+	friend bool operator!=(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) != 0;}
+	friend bool operator!=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 0;}
+	friend bool operator>(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 1;}
+	friend bool operator>(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == 1;}
+	friend bool operator>(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 1;}
+	friend bool operator>=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != -1;}
+	friend bool operator>=(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) != -1;}
+	friend bool operator>=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != -1;}
+	friend bool operator<(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == -1;}
+	friend bool operator<(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == -1;}
+	friend bool operator<(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == -1;}
+	friend bool operator<=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != 1;}
+	friend bool operator<=(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) != 1;}
+	friend bool operator<=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 1;}
+	intbigf &operator+() {return *this;}
+	intbigf &operator-() {b_sign = !b_sign; return *this;}
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
@@ -127,12 +159,38 @@ public:
 	int b_exp;
 	//Constructors:
 	intbigf(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);
+	
+	intbigf(const std::vector<char> &di1, const bool &di1_sign);
+	
 	//Compare:
 	int who_big(const intbigf &bus2) const;
 	bool is_zero() const;
 	void fix_data();
 	bool is_not_corrupt() const;
 };
+//nonmember operators overload
+//overload operators: between intbigf and int, double, intbigdata, ATTENTION: other types must be explicit converted
+inline intbigf operator+(const intbigf &bus1, const intbigf &bus2) {return bus1.add(bus2);}
+inline intbigf operator+(const intbigf &bus1, const int &ib2) {return bus1.add(ib2);}
+inline intbigf operator+(const int &ib1, const intbigf &bus2) {return intbigf(ib1).add(bus2);}
+inline intbigf operator-(const intbigf &bus1, const intbigf &bus2) {return bus1.sub(bus2);}
+inline intbigf operator-(const intbigf &bus1, const int &ib2) {return bus1.sub(ib2);}
+inline intbigf operator-(const int &ib1, const intbigf &bus2) {return intbigf(ib1).sub(bus2);}
+
+
+inline intbigf operator*(const intbigf &bus1, const intbigf &bus2) {return bus1.mul(bus2);}
+inline intbigf operator*(const intbigf &bus1, const int &ib2) {return bus1.mul(ib2);}
+inline intbigf operator*(const int &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
+
+inline intbigf operator*(const intbigf &bus1, const intbigdata &bus2) {return bus1.mul(bus2);}
+inline intbigf operator*(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).mul(bus2);}
+inline intbigf operator*(const intbigf &bus1, const double &ib2) {return bus1.mul(ib2);}
+inline intbigf operator*(const double &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
+
+
+inline intbigf operator/(const intbigf &bus1, const intbigf &bus2) {return bus1.div(bus2);}
+inline intbigf operator/(const intbigf &bus1, const int &ib2) {return bus1.div(ib2);}
+inline intbigf operator/(const int &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
 // (\__/)
 //(='.'=)
 //(")_(") member
@@ -155,6 +213,7 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	//remove point zero
 	if (check_data == 'z') {
 		int ibuff = b_poi+b_exp;
+		if (ibuff < 0) ibuff = -ibuff;
 		if (bigint.size() > ibuff) while (bigint.front() == 0 && bigint.size() != ibuff) bigint.pop_front();
 	}
 	//for div
@@ -238,15 +297,37 @@ intbigf::intbigf(const std::string &str1)
 		if (bigint.size() == 1 && bigint[0] == 0) {b_sign = true; b_poi = 1; b_exp = 0;}
 	}
 }
+//structure4 int
+intbigf::intbigf(const int &us1_o)
+{
+	int ibuff, us1;
+	//sign
+	if (us1_o < 0) {b_sign = false; us1 = -us1_o;}
+	else {b_sign = true; us1 = us1_o;}
+	while (us1 != 0) {bigint.push_back(us1%10); us1 /= 10;}
+	if (us1_o == 0) bigint.push_back(0);
+	b_poi = bigint.size();
+	b_exp = 0;
+	
+}
+//structure5 c style string
+intbigf::intbigf(const char *cstr1)
+{
+	string str1(cstr1);
+	*this = intbigf(str1);
+}
 //structure7 double
 intbigf::intbigf(const double &dou1_o)
 {
-	ostringstream os;
-	os << dou1_o;
-	*this = intbigf(os.str());
+	ostringstream ostri;
+	ostri << dou1_o;
+	*this = intbigf(ostri.str());
 }
-
-
+//structure8 intbigdata
+intbigf::intbigf(const intbigdata &bus1)
+{
+	*this = intbigf(deque<char>(bus1.bigint.begin(), bus1.bigint.end()), -1, 0, bus1.b_sign, 'n');
+}
 
 
 
@@ -324,7 +405,7 @@ bool intbigf::is_not_corrupt() const
 //Traditional arithmetics:
 ////////////////////////////////
 //arithmetic encapsulate
-//add, sub, mul, div, pow, mod
+//add, sub, mul, div, pow
 //add
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
@@ -374,9 +455,8 @@ inline intbigf intbigf::mul(const intbigf &bus2) const
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, check_d);
+	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, 'z');
 }
-
 //div
 inline intbigf intbigf::div(const intbigf &bus2) const
 {
@@ -396,6 +476,39 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 ////////////////
 //Operators:
 ////////////////////////////////
+//operator int()
+intbigf::operator int() const
+{
+	int ret;
+	ostringstream ostri;
+	ostri << *this;
+	istringstream istri(ostri.str());
+	istri >> ret;	
+	return ret;
+}
+//operator string()
+intbigf::operator string() const
+{
+	ostringstream ostri;
+	ostri << *this;
+	return ostri.str();
+}
+//operator double()
+intbigf::operator double() const
+{
+	double ret;
+	ostringstream ostri;
+	ostri << *this;
+	istringstream istri(ostri.str());
+	istri >> ret;
+	return ret;
+}
+//operator intbigdata()
+intbigf::operator intbigdata() const
+{
+	vector<char> ret(bigint.begin()+(bigint.size()-b_poi+b_exp), bigint.end());
+	return intbigdata(ret, b_sign, 'n');
+}
 //istream &operator>>
 istream &operator>>(istream &in, intbigf &bus1)
 {
