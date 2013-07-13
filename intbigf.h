@@ -20,10 +20,31 @@
 #include <iterator>
 #include "intbigdata.h"
 using namespace std;
-using namespace intbigdata_func;
+//using namespace intbigdata_func;
 typedef deque<char>::size_type unsigntp;
+
+
+namespace intbigdata_func
+{
+//skip tab
+
+void pre_calc() {
+	
+	
+	
+	
+	
+	
+	
+	
+}
+
+
+
+}
+
 //
-class intbigf: public intbigdata
+class intbigf
 {
 public:
 	//Constructors:
@@ -36,7 +57,7 @@ public:
 	
 	//Traditional arithmetics:
 	intbigf add(const intbigf &bus2) const;
-	
+	intbigf sub(const intbigf &bus2) const;
 	
 	
 	
@@ -175,44 +196,59 @@ intbigf::intbigf(const std::string &str1)
 //add
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
-	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, i_offset, i_absob;
+	int b_poi1 = b_poi, b_poi2 = bus2.b_poi, i_offset, i_exp, i_absob;
+	deque<char> bus_temp;
+	char check_d = 'n';
+	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
+	
+	
+	
 	if (b_exp > bus2.b_exp) b_poi1 += b_exp-bus2.b_exp;
 	if (bus2.b_exp > b_exp) b_poi2 += bus2.b_exp-b_exp;
 	i_offset = (bigint.size()-b_poi1)-(bus2.bigint.size()-b_poi2);
-	deque<char> bus_temp;
 	if (i_offset < 0) {
 		bus_temp = bigint;
 		for (int ix = i_offset; ix < 0; ++ix) bus_temp.push_front(0);
-		i_offset = i_offset-(bigint.size()-b_poi)+b_exp;
-		if (b_sign == bus2.b_sign) return intbigf(add_f(bus_temp, bus2.bigint), -1, i_offset, b_sign, 'n');
-		else {
-			i_absob = abso_big(bus_temp, bus2.bigint);
-			if (i_absob == 1) return intbigf(sub_f(bus_temp, bus2.bigint), -1, i_offset, b_sign, 'n');
-			if (i_absob == -1) return intbigf(sub_f(bus2.bigint, bus_temp), -1, i_offset, bus2.b_sign, 'n');
-		}
+		i_exp = i_offset-(bigint.size()-b_poi)+b_exp;
+		bus1_p = &bus_temp;
 	}
 	if (i_offset > 0) {
 		bus_temp = bus2.bigint;
 		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
-		i_offset = -i_offset;
-		i_offset = i_offset-(bus2.bigint.size()-bus2.b_poi)+bus2.b_exp;
-		if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus_temp), -1, i_offset, b_sign, 'n');
-		else {
-			i_absob = abso_big(bigint, bus_temp);
-			if (i_absob == 1) return intbigf(sub_f(bigint, bus_temp), -1, i_offset, b_sign, 'n');
-			if (i_absob == -1) return intbigf(sub_f(bus_temp, bigint), -1, i_offset, bus2.b_sign, 'n');
-		}
+		i_exp = -i_offset-(bus2.bigint.size()-bus2.b_poi)+bus2.b_exp;
+		bus2_p = &bus_temp;
 	}
-	i_offset = -(bigint.size()-b_poi)+b_exp;
-	if (b_sign == bus2.b_sign) return intbigf(add_f(bigint, bus2.bigint), -1, i_offset, b_sign, 'y');
+	if (i_offset == 0) {i_exp = -(bigint.size()-b_poi)+b_exp; check_d = 'y';}
+	
+	
+	
+	
+	
+	if (b_sign == bus2.b_sign) return intbigf(add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
 	else {
-		i_absob = abso_big(bigint, bus2.bigint);
-		if (i_absob == 1) return intbigf(sub_f(bigint, bus2.bigint), -1, i_offset, b_sign, 'y');
-		if (i_absob == -1) return intbigf(sub_f(bus2.bigint, bigint), -1, i_offset, bus2.b_sign, 'y');
+		i_absob = abso_big(*bus1_p, *bus2_p);
+		if (i_absob == 1) return intbigf(sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
+		if (i_absob == -1) return intbigf(sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, check_d);
 	}
 	return intbigf();
 }
-
+//sub
+inline intbigf intbigf::sub(const intbigf &bus2) const
+{
+	
+	
+	
+	/*
+	int i_absob;
+	//sign
+	if (b_sign != bus2.b_sign) return intbigdata(add_f(bigint, bus2.bigint), b_sign, 'n');
+	else {
+		i_absob = abso_big(bigint, bus2.bigint);
+		if (i_absob == 1) return intbigdata(sub_f(bigint, bus2.bigint), b_sign, 'n');
+		if (i_absob == -1) return intbigdata(sub_f(bus2.bigint, bigint), !bus2.b_sign, 'n');
+	}
+	return intbigdata();*/
+}
 
 
 
