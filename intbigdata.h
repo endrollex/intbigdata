@@ -385,9 +385,10 @@ public:
 	void assign(const std::string &str1);
 	void assign(const int &us1);
 	void assign_unsigned(const unsigned &us1);//to avoid ambiguous with int
+	void assign(const char *cstr1);
 	void swap(intbigdata &bus2);
 	void clear();//to assign 0
-	//intbigdata operators:
+	//Class operators:
 	std::string scientific(const int &i_point) const;//scientific notation
 	int save_file(const std::string file_name_o, const std::string file_msg_o) const;
 	int load_file(const string &file_name);
@@ -523,8 +524,7 @@ intbigdata::intbigdata(const int &us1_o)
 //structure5 c style string
 intbigdata::intbigdata(const char *cstr1)
 {
-	string str1(cstr1);
-	*this = intbigdata(str1);
+	*this = intbigdata(string(cstr1));
 }
 //structure6 unsigned
 intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
@@ -864,9 +864,14 @@ inline void intbigdata::assign(const int &us1)
 	*this = intbigdata(us1);
 }
 //assign_unsigned
-void intbigdata::assign_unsigned(const unsigned &us1)
+inline void intbigdata::assign_unsigned(const unsigned &us1)
 {
 	*this = intbigdata(us1, 1);
+}
+//assign6 overload
+inline void intbigdata::assign(const char *cstr1)
+{
+	*this = intbigdata(string(cstr1));
 }
 //swap
 inline void intbigdata::swap(intbigdata &bus2)
@@ -882,23 +887,25 @@ inline void intbigdata::clear()
 	bigint.assign(1, 0);
 	b_sign = true;
 }
+////////////////
+//Class operators:
+////////////////////////////////
 //scientific
 string intbigdata::scientific(const int &i_point = 6) const
 {
 	string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
-	vector<char> d_one(1, 1);
 	if (bigint.size() == 1) {s_scient = s_number[bigint[0]]; s_scient += "e+0"; return s_scient;}
 	//decimal point reserve
 	if (i_point < 1) i1_get = 6;
-	if ((unsigned)i_point > ixsz) i1_get = ixsz;
+	if (static_cast<unsigned>(i_point) > ixsz) i1_get = ixsz;
 	//sign
 	if (b_sign == false) s_scient += '-';
 	intbigdata i_round;
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
-		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, d_one);
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, vector<char>(1, 1));
 	}
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;

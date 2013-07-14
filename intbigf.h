@@ -84,7 +84,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
 	if (b_is_mod) return bu1;
-	//significant digits
+	//significant digits transfer
 	i_sigd = di_p_cou-di_p_siz;
 	if (i_sigd > 0) {
 		de_res.push_back(101);
@@ -149,6 +149,33 @@ public:
 	friend bool operator<=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 1;}
 	intbigf &operator+() {return *this;}
 	intbigf &operator-() {b_sign = !b_sign; return *this;}
+	
+	
+	//Modifiers:
+	void assign(const intbigdata &bus2);
+	void assign(const intbigf &bus2);
+	void assign(const std::string &str1);
+	void assign_int(const int &us1);
+	void assign(const double &us1);
+	void assign(const char *cstr1);
+	
+	void swap(intbigf &bus2);
+	void clear();//to assign 0
+	
+	
+	
+	
+	
+	//Class operators:
+	std::string scientific(const int &i_point) const;//scientific notation
+	int save_file(const std::string file_name_o, const std::string file_msg_o) const;
+	int load_file(const string &file_name);
+	int get_int() const;
+	double get_double() const;
+	std::string get_string() const;
+
+	
+	
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
@@ -173,24 +200,31 @@ public:
 inline intbigf operator+(const intbigf &bus1, const intbigf &bus2) {return bus1.add(bus2);}
 inline intbigf operator+(const intbigf &bus1, const int &ib2) {return bus1.add(ib2);}
 inline intbigf operator+(const int &ib1, const intbigf &bus2) {return intbigf(ib1).add(bus2);}
+inline intbigf operator+(const intbigf &bus1, const intbigdata &bus2) {return bus1.add(bus2);}
+inline intbigf operator+(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).add(bus2);}
+inline intbigf operator+(const intbigf &bus1, const double &ib2) {return bus1.add(ib2);}
+inline intbigf operator+(const double &ib1, const intbigf &bus2) {return intbigf(ib1).add(bus2);}
 inline intbigf operator-(const intbigf &bus1, const intbigf &bus2) {return bus1.sub(bus2);}
 inline intbigf operator-(const intbigf &bus1, const int &ib2) {return bus1.sub(ib2);}
 inline intbigf operator-(const int &ib1, const intbigf &bus2) {return intbigf(ib1).sub(bus2);}
-
-
+inline intbigf operator-(const intbigf &bus1, const intbigdata &bus2) {return bus1.sub(bus2);}
+inline intbigf operator-(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).sub(bus2);}
+inline intbigf operator-(const intbigf &bus1, const double &ib2) {return bus1.sub(ib2);}
+inline intbigf operator-(const double &ib1, const intbigf &bus2) {return intbigf(ib1).sub(bus2);}
 inline intbigf operator*(const intbigf &bus1, const intbigf &bus2) {return bus1.mul(bus2);}
 inline intbigf operator*(const intbigf &bus1, const int &ib2) {return bus1.mul(ib2);}
 inline intbigf operator*(const int &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
-
 inline intbigf operator*(const intbigf &bus1, const intbigdata &bus2) {return bus1.mul(bus2);}
 inline intbigf operator*(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).mul(bus2);}
 inline intbigf operator*(const intbigf &bus1, const double &ib2) {return bus1.mul(ib2);}
 inline intbigf operator*(const double &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
-
-
 inline intbigf operator/(const intbigf &bus1, const intbigf &bus2) {return bus1.div(bus2);}
 inline intbigf operator/(const intbigf &bus1, const int &ib2) {return bus1.div(ib2);}
 inline intbigf operator/(const int &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
+inline intbigf operator/(const intbigf &bus1, const intbigdata &bus2) {return bus1.div(bus2);}
+inline intbigf operator/(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).div(bus2);}
+inline intbigf operator/(const intbigf &bus1, const double &ib2) {return bus1.div(ib2);}
+inline intbigf operator/(const double &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
 // (\__/)
 //(='.'=)
 //(")_(") member
@@ -313,8 +347,7 @@ intbigf::intbigf(const int &us1_o)
 //structure5 c style string
 intbigf::intbigf(const char *cstr1)
 {
-	string str1(cstr1);
-	*this = intbigf(str1);
+	*this = intbigf(string(cstr1));
 }
 //structure7 double
 intbigf::intbigf(const double &dou1_o)
@@ -328,12 +361,6 @@ intbigf::intbigf(const intbigdata &bus1)
 {
 	*this = intbigf(deque<char>(bus1.bigint.begin(), bus1.bigint.end()), -1, 0, bus1.b_sign, 'n');
 }
-
-
-
-
-
-
 ////////////////
 //Compare:
 ////////////////////////////////
@@ -553,6 +580,171 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 	}
 	return out;
 }
+////////////////
+//Modifiers:
+////////////////////////////////
+//assign1
+inline void intbigf::assign(const intbigdata &bus2)
+{
+	*this = intbigf(deque<char>(bus2.bigint.begin(), bus2.bigint.end()), -1, 0, bus2.b_sign, 'n');
+}
+//assign2 overload
+inline void intbigf::assign(const intbigf &bus2)
+{
+	//sign
+	b_sign = bus2.b_sign;
+	bigint = bus2.bigint;
+	b_poi = bus2.b_poi;
+	b_exp = bus2.b_exp;	
+}
+//assign3 overload
+inline void intbigf::assign(const string &str1)
+{
+	*this = intbigf(str1);
+}
+//assign4 overload
+inline void intbigf::assign_int(const int &us1)
+{
+	*this = intbigf(us1);
+}
+//assign5 overload 
+inline void intbigf::assign(const double &us1)
+{
+	*this = intbigf(us1);
+}
+//assign6 overload
+inline void intbigf::assign(const char *cstr1)
+{
+	*this = intbigf(string(cstr1));
+}
+
+
+
+
+
+
+//swap
+inline void intbigf::swap(intbigf &bus2)
+{
+	bigint.swap(bus2.bigint);
+	bool b_temp = b_sign;
+	b_sign = bus2.b_sign;
+	bus2.b_sign = b_temp;
+	int b_poi_t = b_poi, b_exp_t = b_exp;
+	b_poi = bus2.b_poi;
+	bus2.b_poi = b_poi_t;
+	b_exp = bus2.b_exp;
+	bus2.b_exp = b_exp_t;
+}
+//clear, assign 0
+inline void intbigf::clear()
+{
+	bigint.assign(1, 0);
+	b_sign = true;
+	b_poi = 0;
+	b_exp = 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////
+//Class operators:
+////////////////////////////////
+//scientific
+string intbigf::scientific(const int &i_point = 6) const
+{
+	
+	string s_number("0123456789"), s_temp, s_scient;
+	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
+	
+	if (bigint.size() == 1) {s_scient = s_number[bigint[0]]; s_scient += "e+0"; return s_scient;}
+	//decimal point reserve
+	if (i_point < 1) i1_get = 6;
+	if (static_cast<unsigned>(i_point) > ixsz) i1_get = ixsz;
+	//sign
+	if (b_sign == false) s_scient += '-';
+	intbigf i_round;
+	//round
+	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
+	if (i1_get != ixsz) {
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, deque<char>(1, 1));
+	}
+	
+	
+	//remove tail zero
+	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;
+	deque<char>::reverse_iterator d_it = i_round.bigint.rbegin();
+	for (; d_it != i_round.bigint.rbegin()+(i_round.bigint.size()-ix1); ++d_it) {
+		s_temp += s_number[*d_it];
+	}
+	s_scient += s_temp[0];
+	s_scient += '.';
+	s_scient.append(s_temp, 1, s_temp.size()-1);
+	s_scient += "e+";
+	//s_temp clear
+	s_temp.clear();
+	while (ixsz != 0) {s_temp += s_number[ixsz%10]; ixsz /= 10;}
+	string::reverse_iterator s_it = s_temp.rbegin();
+	while (s_it != s_temp.rend()) s_scient += *s_it++;
+	return s_scient;
+}
+
+//save_file
+int intbigf::save_file(const string file_name_o = "auto", const string file_msg_o = "nomessage") const
+{
+
+	return 0;
+}
+//load_file
+int intbigf::load_file(const string &file_name)
+{
+
+	return 0;
+}
+
+
+
+
+//get_int
+int intbigf::get_int() const
+{
+	return int(*this);
+}
+//get_double
+double intbigf::get_double() const
+{
+	return double(*this);
+}
+//get_string
+string intbigf::get_string() const
+{
+	return string(*this);
+}
+
+
+
+
+
+
+
 ////////////////
 //Capacity:
 ////////////////////////////////
