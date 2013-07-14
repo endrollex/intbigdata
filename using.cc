@@ -18,6 +18,9 @@ int main()
 	r2 = 2/i2;
 	r3 = r1*r2;
 	
+	r2 = r2 + 12345;
+	r2.round_self(-3, true);
+		
 	cout << r1 << endl;
 	cout << r2 << endl;
 	cout << r3 << endl;

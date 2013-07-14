@@ -56,9 +56,9 @@ inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 ////////////////
 ////////////////
 template <typename Tve>
-void significant_fix(Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision)
+void significant_fix(Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision, const bool &force_round = false)
 {
-	if (limit_digits_type == 1) {
+	if (limit_digits_type == 1 || force_round) {
 		if (bigint.size() > i_sigd) {
 			int ibuff = bigint.size()-i_sigd-1;
 			digits_offset -= ibuff+1;
@@ -82,10 +82,10 @@ void significant_fix(Tve &bigint, int &digits_offset, const int &i_sigd = digits
 //significant_fix_point
 ////////////////
 ////////////////
-void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &fix_point = 6)
+void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &fix_point = 6, const bool &force_round = false)
 {
 	int i_sigd = poi_exp+fix_point, i_dummy = 0;
-	significant_fix(bigint, i_dummy, i_sigd);
+	significant_fix(bigint, i_dummy, i_sigd, false);
 }
 ////////////////deque use
 //divf_f, y = a/b (a>=b && b!=0)
@@ -200,6 +200,8 @@ public:
 	void assign_int(const int &us1);
 	void assign(const double &us1);
 	void assign(const char *cstr1);
+	intbigf round(const int &digits, const bool &is_point) const;
+	void round_self(const int &digits, const bool &is_point);
 	void swap(intbigf &bus2);
 	void clear();
 	//Class operators:
@@ -586,7 +588,7 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 		ibuff = bus1.b_poi+bus1.b_exp;
 		if (bus1.bigint.size()-ibuff > intbigd_fu::cout_fixed) {
 			dec_temp = bus1.bigint;
-			intbigd_fu::significant_fix_point(dec_temp, bus1.b_poi+bus1.b_exp, intbigd_fu::cout_fixed);
+			intbigd_fu::significant_fix_point(dec_temp, bus1.b_poi+bus1.b_exp, intbigd_fu::cout_fixed, false);
 			dec_p = &dec_temp;
 		}
 		i_poi_fix = intbigd_fu::cout_fixed-((*dec_p).size()-ibuff);
@@ -660,6 +662,23 @@ inline void intbigf::assign(const double &us1)
 inline void intbigf::assign(const char *cstr1)
 {
 	*this = intbigf(string(cstr1));
+}
+
+//round
+intbigf intbigf::round(const int &digits, const bool &is_point = false) const
+{
+	intbigf ret(*this);
+	int i_dummy = 0;
+	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, true);
+	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, true);
+	return ret;
+}
+//round_self
+void intbigf::round_self(const int &digits, const bool &is_point = false)
+{
+	int i_dummy = 0;
+	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, true);
+	else intbigd_fu::significant_fix(bigint, i_dummy, digits, true);
 }
 //swap
 inline void intbigf::swap(intbigf &bus2)
