@@ -5,13 +5,13 @@
 using namespace std;
 int main()
 {
-	intbigdata i(4294967290);
 	
-	cout << (int)i << endl;
+	intbigdata i1("12345");
+	intbigf i2("12345");
 	
+	cout << (i1 != i2) << endl;
 	
-
-	
+		
 	
 	return 0;
 }

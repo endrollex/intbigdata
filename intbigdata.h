@@ -394,7 +394,7 @@ public:
 	//Class operators:
 	std::string scientific(const int &i_point) const;//scientific notation
 	int save_file(const std::string file_name_o, const std::string file_msg_o) const;
-	int load_file(const string &file_name);
+	int load_file(const std::string &file_name);
 	int get_int() const;
 	unsigned get_unsigned() const;
 	std::string get_string() const;
@@ -937,7 +937,7 @@ int intbigdata::save_file(const string file_name_o = "auto", const string file_m
 int intbigdata::load_file(const string &file_name)
 {
 	string::size_type pos1, pos2;
-	int i_iscomment = 0;
+	int is_comm = 0;
 	string s_line, s_lineadd;
 	ifstream infile(file_name.c_str());
 	if (!infile) {cerr << "intbigdata.h: open file faile" << endl; return -1;}
@@ -950,14 +950,14 @@ int intbigdata::load_file(const string &file_name)
 		if (pos1 != string::npos && pos2 != string::npos) s_line.replace(pos1, pos2-pos1+2, "");
 		if (pos1 != string::npos && pos2 == string::npos) {
 			s_line.assign(s_line.begin(), s_line.begin()+pos1);
-			i_iscomment = 1;
+			is_comm = 1;
 		}
 		if (pos1 == string::npos && pos2 != string::npos) {
 			s_line.assign(s_line.begin()+pos2+2, s_line.end());
-			i_iscomment = 0;
+			is_comm = 0;
 		}
-		if (i_iscomment != 2 && s_line.size() != 0) s_lineadd += s_line;
-		if (i_iscomment == 1) i_iscomment = 2;
+		if (is_comm != 2 && s_line.size() != 0) s_lineadd += s_line;
+		if (is_comm == 1) is_comm = 2;
 	}
 	*this = intbigdata(s_lineadd);
 	infile.close();

@@ -103,7 +103,7 @@ public:
 	intbigf(): b_sign(true), bigint(1, 0), b_poi(0), b_exp(0) {};
 	intbigf(const std::string &str1);//structure form string, can deal with scientific notation
 	intbigf(const double &dou1_o);
-	intbigf(const int &us1_o);
+	intbigf(const int &us1_o, const int &dummy);
 	intbigf(const intbigdata &bus1);
 	intbigf(const char *cstr1);
 	intbigf(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);//inconvenience
@@ -118,10 +118,8 @@ public:
 	operator string() const;
 	operator double() const;
 	operator intbigdata() const;
-	
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigf &bus1);
-	
 	//overload operators: between intbigf and int, ATTENTION: unsigned must be explicit conversion
 	intbigf &operator+=(const intbigf &bus2) {return *this = this->add(bus2);}
 	intbigf &operator-=(const intbigf &bus2) {return *this = this->sub(bus2);}
@@ -130,9 +128,24 @@ public:
 	friend bool operator==(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 0;}
 	friend bool operator==(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == 0;}
 	friend bool operator==(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
+	friend bool operator==(const intbigf &bus1, const intbigdata &ib2) {return bus1.who_big(ib2) == 0;}
+	friend bool operator==(const intbigdata &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
+	friend bool operator==(const intbigf &bus1, const double &ib2) {return bus1.who_big(ib2) == 0;}
+	friend bool operator==(const double &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
+	
+	
+	
 	friend bool operator!=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != 0;}
 	friend bool operator!=(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) != 0;}
 	friend bool operator!=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 0;}
+	
+	template <typename Tve>
+	friend bool operator!=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 0;}
+	template <typename Tve>
+	friend bool operator!=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 0;}
+	
+	
+	
 	friend bool operator>(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 1;}
 	friend bool operator>(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == 1;}
 	friend bool operator>(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 1;}
@@ -147,8 +160,6 @@ public:
 	friend bool operator<=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 1;}
 	intbigf &operator+() {return *this;}
 	intbigf &operator-() {b_sign = !b_sign; return *this;}
-	
-	
 	//Modifiers:
 	void assign(const intbigdata &bus2);
 	void assign(const intbigf &bus2);
@@ -156,18 +167,12 @@ public:
 	void assign_int(const int &us1);
 	void assign(const double &us1);
 	void assign(const char *cstr1);
-	
 	void swap(intbigf &bus2);
-	void clear();//to assign 0
-	
-	
-	
-	
-	
+	void clear();
 	//Class operators:
 	std::string scientific(const int &i_point) const;//scientific notation
 	int save_file(const std::string file_name_o, const std::string file_msg_o) const;
-	int load_file(const string &file_name);
+	int load_file(const std::string &file_name);
 	int get_int() const;
 	double get_double() const;
 	std::string get_string() const;
@@ -325,7 +330,7 @@ intbigf::intbigf(const std::string &str1)
 	}
 }
 //structure4 int
-intbigf::intbigf(const int &us1_o)
+intbigf::intbigf(const int &us1_o, const int &dummy)
 {
 	int ibuff, us1;
 	//sign
@@ -335,7 +340,6 @@ intbigf::intbigf(const int &us1_o)
 	if (us1_o == 0) bigint.push_back(0);
 	b_poi = bigint.size();
 	b_exp = 0;
-	
 }
 //structure5 c style string
 intbigf::intbigf(const char *cstr1)
@@ -610,12 +614,6 @@ inline void intbigf::assign(const char *cstr1)
 {
 	*this = intbigf(string(cstr1));
 }
-
-
-
-
-
-
 //swap
 inline void intbigf::swap(intbigf &bus2)
 {
@@ -637,27 +635,6 @@ inline void intbigf::clear()
 	b_poi = 0;
 	b_exp = 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ////////////////
 //Class operators:
 ////////////////////////////////
@@ -698,23 +675,57 @@ string intbigf::scientific(const int &i_point = 6) const
 	s_scient += s_temp;
 	return s_scient;
 }
-
 //save_file
 int intbigf::save_file(const string file_name_o = "auto", const string file_msg_o = "nomessage") const
 {
-
+	string file_name(file_name_o), file_msg("//");
+	if (file_name == "auto") {
+		file_name.assign("intbigf_");
+		file_name += this->scientific(6);
+		file_name += ".txt";
+	}
+	ofstream outfile(file_name.c_str());
+	if (!outfile) {cerr << "intbigdata.h: open file failed" << endl; return -1;}
+	if (file_msg_o != "nomessage") {
+		file_msg += file_msg_o;
+		outfile << file_msg << endl;
+	}
+	outfile << static_cast<string>(*this);
+	outfile.close();
+	outfile.clear();
 	return 0;
 }
 //load_file
 int intbigf::load_file(const string &file_name)
 {
-
+	string::size_type pos1, pos2;
+	int is_comm = 0;
+	string s_line, s_lineadd;
+	ifstream infile(file_name.c_str());
+	if (!infile) {cerr << "intbigf.h: open file faile" << endl; return -1;}
+	while (getline(infile, s_line)) {
+		//ignore comments
+		pos1 = s_line.find("//");
+		if (pos1 != string::npos) s_line.assign(s_line.begin(), s_line.begin()+pos1);
+		pos1 = s_line.find("/*");
+		pos2 = s_line.find("*/");
+		if (pos1 != string::npos && pos2 != string::npos) s_line.replace(pos1, pos2-pos1+2, "");
+		if (pos1 != string::npos && pos2 == string::npos) {
+			s_line.assign(s_line.begin(), s_line.begin()+pos1);
+			is_comm = 1;
+		}
+		if (pos1 == string::npos && pos2 != string::npos) {
+			s_line.assign(s_line.begin()+pos2+2, s_line.end());
+			is_comm = 0;
+		}
+		if (is_comm != 2 && s_line.size() != 0) s_lineadd += s_line;
+		if (is_comm == 1) is_comm = 2;
+	}
+	*this = intbigdata(s_lineadd);
+	infile.close();
+	infile.clear();
 	return 0;
 }
-
-
-
-
 //get_int
 int intbigf::get_int() const
 {
@@ -730,13 +741,6 @@ string intbigf::get_string() const
 {
 	return string(*this);
 }
-
-
-
-
-
-
-
 ////////////////
 //Capacity:
 ////////////////////////////////
@@ -750,4 +754,8 @@ inline unsigntp intbigf::max_size()
 {
 	return bigint.max_size();
 }
+////////////////
+//exception or cerr: div, save_file, load_file
+////////////////
+////////////////
 #endif
