@@ -23,6 +23,8 @@ using std::ofstream;
 using std::ifstream;
 using std::cerr;
 using std::endl;
+using std::ostringstream;
+using std::istringstream;
 typedef vector<char>::size_type unsigntp;
 namespace intbigd_fu
 {
@@ -329,6 +331,7 @@ public:
 	intbigdata(const int &us1_o);
 	intbigdata(const char *cstr1);
 	intbigdata(const unsigned &us1_o, const int &dummy);//explicit convert unsigned to intbigdata
+	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience
 	~intbigdata() {};
 	//Traditional arithmetics:
 	intbigdata add(const intbigdata &bus2) const;
@@ -398,19 +401,17 @@ public:
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
-//protected:
-	bool b_sign;
-	std::vector<char> bigint;
-	//Constructors:
-	//sample: if int i = 190, convert to vector<char> d: 091
-	//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
-	intbigdata(const std::vector<char> &di1, const bool &bsn, const char &check_data);//inconvenience
-	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};
+	//Objects:
+	bool b_sign;//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
+	std::vector<char> bigint;//sample: if int i = 190, convert to vector<char> d: 091
 	//Compare:
 	int who_big(const intbigdata &bus2) const;
 	bool is_zero() const;
 	void fix_data();
-	bool is_not_corrupt() const;
+	bool is_not_corrupt() const;	
+private:	
+	//Constructors:
+	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};
 };
 //nonmember operators overload
 //overload operators: between intbigdata and int, ATTENTION: other types must be explicit converted
@@ -444,7 +445,7 @@ intbigdata::intbigdata(const vector<char> &di1, const bool &bsn = true, const ch
 	bigint = di1;
 	if (bigint.empty()) {bigint.push_back(0); b_sign = true;}
 	//check data and fix
-	if (check_data != 'n') this->fix_data();
+	if (check_data == 'y') this->fix_data();
 }
 //structure3 string
 intbigdata::intbigdata(const std::string &str1)
@@ -734,28 +735,14 @@ intbigdata intbigdata::sqrt() const
 //Operators:
 ////////////////////////////////
 //operator int()
-////////////////original
 intbigdata::operator int() const
 {
-	//int, 32-bit, -2147483648 to 2147483647
-	//the const -2147483648 some compiler warning (cc1plus), so ignore
-	string s_max("2147483647");
-	intbigdata ibd_max(s_max);
-	vector<char>::const_reverse_iterator v_it;
-	int get_int = 0;
-	if (intbigd_fu::abso_big(bigint, ibd_max.bigint) == 1) {
-		//cerr << intbigdata.h: out of range << endl;
-		ibd_max.bigint = intbigd_fu::div_f(bigint, ibd_max.bigint, true);
-		v_it = ibd_max.bigint.rbegin();
-		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
-	}
-	else {
-		v_it = bigint.rbegin();
-		while (v_it != bigint.rend()) get_int = get_int*10+*v_it++;
-	}
-	//sign
-	if (b_sign == false) get_int = -get_int;
-	return get_int;
+	int ret;
+	ostringstream ostri;
+	ostri << *this;
+	istringstream istri(ostri.str());
+	istri >> ret;
+	return ret;	
 }
 //operator string()
 intbigdata::operator string() const
@@ -919,9 +906,8 @@ string intbigdata::scientific(const int &i_point = 6) const
 	s_scient += "e+";
 	//s_temp clear
 	s_temp.clear();
-	while (ixsz != 0) {s_temp += s_number[ixsz%10]; ixsz /= 10;}
-	string::reverse_iterator s_it = s_temp.rbegin();
-	while (s_it != s_temp.rend()) s_scient += *s_it++;
+	while (ixsz != 0) {s_temp = s_number[ixsz%10]+s_temp; ixsz /= 10;}
+	s_scient += s_temp;
 	return s_scient;
 }
 //save_file
@@ -984,27 +970,14 @@ int intbigdata::get_int() const
 	return int(*this);
 }
 //get_unsigned
-////////////////from int()
 unsigned intbigdata::get_unsigned() const
 {
-	//unsigned, 32-bit, 0 to 4294967295
-	string s_max("4294967295");
-	intbigdata ibd_max(s_max);
-	vector<char>::const_reverse_iterator v_it;
-	unsigned get_int = 0;
-	if (intbigd_fu::abso_big(bigint, ibd_max.bigint) == 1) {
-		//cerr << intbigdata.h: out of range << endl;
-		ibd_max.bigint = intbigd_fu::div_f(bigint, ibd_max.bigint, true);
-		v_it = ibd_max.bigint.rbegin();
-		while (v_it != ibd_max.bigint.rend()) get_int = get_int*10+*v_it++;
-	}
-	else {
-		v_it = bigint.rbegin();
-		while (v_it != bigint.rend()) get_int = get_int*10+*v_it++;
-	}
-	//sign
-	if (b_sign == false) get_int = -get_int;
-	return get_int;
+	unsigned ret;
+	ostringstream ostri;
+	ostri << *this;
+	istringstream istri(ostri.str());
+	istri >> ret;
+	return ret;		
 }
 //get_string
 string intbigdata::get_string() const
@@ -1025,7 +998,7 @@ inline unsigntp intbigdata::max_size()
 	return bigint.max_size();
 }
 ////////////////
-//exception cerr: operator int(), get_unsigned, div, mod, sqrt, save_file, load_file
+//exception or cerr: div, mod, sqrt, save_file, load_file
 ////////////////
 ////////////////
 #endif

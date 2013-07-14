@@ -15,8 +15,6 @@
 #define INTBIGDAF_H
 #include <sstream>
 #include "intbigdata.h"
-using std::ostringstream;
-using std::istringstream;
 namespace intbigd_fu
 {
 //skip tab
@@ -108,7 +106,7 @@ public:
 	intbigf(const int &us1_o);
 	intbigf(const intbigdata &bus1);
 	intbigf(const char *cstr1);
-	
+	intbigf(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);//inconvenience
 	~intbigf() {};
 	//Traditional arithmetics:
 	intbigf add(const intbigf &bus2) const;
@@ -173,27 +171,22 @@ public:
 	int get_int() const;
 	double get_double() const;
 	std::string get_string() const;
-
-	
-	
 	//Capacity:
 	unsigntp size();
 	unsigntp max_size();
-//protected:
+	//Objects:
 	bool b_sign;
 	std::deque<char> bigint;
-	int b_poi;
-	int b_exp;
-	//Constructors:
-	intbigf(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);
-	
-	intbigf(const std::vector<char> &di1, const bool &di1_sign);
-	
+	int b_poi;//point position
+	int b_exp;//exponent
 	//Compare:
 	int who_big(const intbigf &bus2) const;
 	bool is_zero() const;
 	void fix_data();
-	bool is_not_corrupt() const;
+	bool is_not_corrupt() const;	
+private:
+	//Constructors:
+	intbigf(const std::vector<char> &di1, const bool &di1_sign);
 };
 //nonmember operators overload
 //overload operators: between intbigf and int, double, intbigdata, ATTENTION: other types must be explicit converted
@@ -510,7 +503,7 @@ intbigf::operator int() const
 	ostringstream ostri;
 	ostri << *this;
 	istringstream istri(ostri.str());
-	istri >> ret;	
+	istri >> ret;
 	return ret;
 }
 //operator string()
@@ -674,7 +667,6 @@ string intbigf::scientific(const int &i_point = 6) const
 	
 	string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
-	
 	if (bigint.size() == 1) {s_scient = s_number[bigint[0]]; s_scient += "e+0"; return s_scient;}
 	//decimal point reserve
 	if (i_point < 1) i1_get = 6;
@@ -687,8 +679,6 @@ string intbigf::scientific(const int &i_point = 6) const
 	if (i1_get != ixsz) {
 		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, deque<char>(1, 1));
 	}
-	
-	
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;
 	deque<char>::reverse_iterator d_it = i_round.bigint.rbegin();
@@ -698,12 +688,14 @@ string intbigf::scientific(const int &i_point = 6) const
 	s_scient += s_temp[0];
 	s_scient += '.';
 	s_scient.append(s_temp, 1, s_temp.size()-1);
-	s_scient += "e+";
+	s_scient += "e";
 	//s_temp clear
-	s_temp.clear();
-	while (ixsz != 0) {s_temp += s_number[ixsz%10]; ixsz /= 10;}
-	string::reverse_iterator s_it = s_temp.rbegin();
-	while (s_it != s_temp.rend()) s_scient += *s_it++;
+	s_temp.clear();	
+	int ibuff = b_poi+b_exp-1;
+	if (ibuff < 0) 	s_scient += "-";
+	else s_scient += "+";
+	while (ibuff != 0) {s_temp = s_number[ibuff%10]+s_temp; ibuff /= 10;}
+	s_scient += s_temp;
 	return s_scient;
 }
 
