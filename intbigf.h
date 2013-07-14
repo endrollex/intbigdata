@@ -1,8 +1,3 @@
-/**
- *
- * The library is not fininshed!!
- *
-*/
 ////////////////
 //intbigf.h, calculate big float, environment: C++03 x86
 //craft by endrollex, 2013.7.3
@@ -13,13 +8,25 @@
 ////////////////
 #ifndef INTBIGDAF_H
 #define INTBIGDAF_H
-#include <sstream>
 #include "intbigdata.h"
 namespace intbigd_fu
 {
 //skip tab
-//global var, significant digits
-int sig_digs = 64;
+//global var, significant digits, rounding or truncation, cout type
+unsigned digits_precision = 64;
+int digits_precision_affect = 1;
+int limit_digits_type = 1;
+int cout_type = 1;
+unsigned cout_fiexed = 6;
+//global set function
+void precision(unsigned i_value = 64) {digits_precision = i_value;}
+void precision_affect_div() {digits_precision_affect = 1;}
+void precision_affect_all() {digits_precision_affect = 2;}
+void rounding() {limit_digits_type = 1;}
+void truncation() {limit_digits_type = 2;}
+void cout_default {cout_type = 1;}
+void scientific() {cout_type = 2;}
+void fixed(unsigned i_value = 6;) {cout_type = 3; cout_fiexed = i_value}
 ////////////////
 //prepare calc point float
 ////////////////
@@ -43,6 +50,33 @@ inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 	}
 	if (i_offset == 0) {i_exp = -(bus1.size()-b_poi1_o)+b_exp1; check_d = 'z';}
 }
+////////////////
+//significant_fix
+////////////////
+////////////////
+template <typename Tve>
+void significant_fix(Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision)
+{
+	if (limit_digits_type == 1) {
+		if (bigint.size() > i_sigd) {
+			int ibuff = bigint.size()-i_sigd-1;
+			digits_offset -= ibuff+1;
+			while (ibuff != 0) {bigint.pop_front(); --ibuff;}
+			if (bigint[bigint.size()-i_sigd-1] >= 5) {
+				bigint.pop_front();
+				bigint = add_f(bigint, Tve(1, 1));
+			}
+			else bigint.pop_front();
+		}
+	}
+	else {
+		if (bigint.size() > i_sigd) {
+			int ibuff = bigint.size()-i_sigd;
+			digits_offset -= ibuff;
+			while (ibuff != 0) {bigint.pop_front(); --ibuff;}		
+		}
+	}
+}
 ////////////////deque use
 //divf_f, y = a/b (a>=b && b!=0)
 ////////////////
@@ -51,7 +85,9 @@ template <typename Tve>
 Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 {
 	unsigntp difsize = bigint.size()-di2.size()+1;
-	int i_sigd= sig_digs-difsize, ibuff = 0, di_p_siz, di_p_cou = 0;
+	int i_sigd= digits_precision-difsize+1, ibuff = 0, di_p_siz, di_p_cou = 0;
+	//rounding
+	if (limit_digits_type == 1) ++i_sigd;
 	unsigntp ix1, ix2;
 	if (difsize > bigint.size()) {ibuff = bigint.size()-difsize; difsize = bigint.size();}
 	//deque
@@ -79,11 +115,13 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 			}
 		}
 	}
+	if (b_is_mod) return bu1;
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
-	if (b_is_mod) return bu1;
 	//significant digits transfer
 	i_sigd = di_p_cou-di_p_siz;
+	//rounding
+	significant_fix(de_res, i_sigd);
 	if (i_sigd > 0) {
 		de_res.push_back(101);
 		while (i_sigd > 0) {
@@ -120,44 +158,29 @@ public:
 	operator intbigdata() const;
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigf &bus1);
-	//overload operators: between intbigf and int, ATTENTION: unsigned must be explicit conversion
+	//overload operators:
 	intbigf &operator+=(const intbigf &bus2) {return *this = this->add(bus2);}
 	intbigf &operator-=(const intbigf &bus2) {return *this = this->sub(bus2);}
 	intbigf &operator*=(const intbigf &bus2) {return *this = this->mul(bus2);}
 	intbigf &operator/=(const intbigf &bus2) {return *this = this->div(bus2);}
 	friend bool operator==(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 0;}
-	friend bool operator==(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == 0;}
-	friend bool operator==(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
-	friend bool operator==(const intbigf &bus1, const intbigdata &ib2) {return bus1.who_big(ib2) == 0;}
-	friend bool operator==(const intbigdata &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
-	friend bool operator==(const intbigf &bus1, const double &ib2) {return bus1.who_big(ib2) == 0;}
-	friend bool operator==(const double &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
-	
-	
-	
+	template <typename Tve> friend bool operator==(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 0;}
+	template <typename Tve> friend bool operator==(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
 	friend bool operator!=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != 0;}
-	friend bool operator!=(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) != 0;}
-	friend bool operator!=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 0;}
-	
-	template <typename Tve>
-	friend bool operator!=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 0;}
-	template <typename Tve>
-	friend bool operator!=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 0;}
-	
-	
-	
+	template <typename Tve> friend bool operator!=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 0;}
+	template <typename Tve> friend bool operator!=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 0;}
 	friend bool operator>(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 1;}
-	friend bool operator>(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == 1;}
-	friend bool operator>(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 1;}
+	template <typename Tve> friend bool operator>(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 1;}
+	template <typename Tve> friend bool operator>(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 1;}	
 	friend bool operator>=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != -1;}
-	friend bool operator>=(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) != -1;}
-	friend bool operator>=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != -1;}
+	template <typename Tve> friend bool operator>=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != -1;}
+	template <typename Tve> friend bool operator>=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != -1;}
 	friend bool operator<(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == -1;}
-	friend bool operator<(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) == -1;}
-	friend bool operator<(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == -1;}
+	template <typename Tve> friend bool operator<(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) == -1;}
+	template <typename Tve> friend bool operator<(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == -1;}
 	friend bool operator<=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != 1;}
-	friend bool operator<=(const intbigf &bus1, const int &ib2) {return bus1.who_big(ib2) != 1;}
-	friend bool operator<=(const int &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 1;}
+	template <typename Tve> friend bool operator<=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 1;}
+	template <typename Tve> friend bool operator<=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 1;}
 	intbigf &operator+() {return *this;}
 	intbigf &operator-() {b_sign = !b_sign; return *this;}
 	//Modifiers:
@@ -194,35 +217,19 @@ private:
 	intbigf(const std::vector<char> &di1, const bool &di1_sign);
 };
 //nonmember operators overload
-//overload operators: between intbigf and int, double, intbigdata, ATTENTION: other types must be explicit converted
+//overload operators:
 inline intbigf operator+(const intbigf &bus1, const intbigf &bus2) {return bus1.add(bus2);}
-inline intbigf operator+(const intbigf &bus1, const int &ib2) {return bus1.add(ib2);}
-inline intbigf operator+(const int &ib1, const intbigf &bus2) {return intbigf(ib1).add(bus2);}
-inline intbigf operator+(const intbigf &bus1, const intbigdata &bus2) {return bus1.add(bus2);}
-inline intbigf operator+(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).add(bus2);}
-inline intbigf operator+(const intbigf &bus1, const double &ib2) {return bus1.add(ib2);}
-inline intbigf operator+(const double &ib1, const intbigf &bus2) {return intbigf(ib1).add(bus2);}
+template <typename Tve> inline intbigf operator+(const intbigf &bus1, const Tve &ib2) {return bus1.add(ib2);}
+template <typename Tve> inline intbigf operator+(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).add(bus2);}
 inline intbigf operator-(const intbigf &bus1, const intbigf &bus2) {return bus1.sub(bus2);}
-inline intbigf operator-(const intbigf &bus1, const int &ib2) {return bus1.sub(ib2);}
-inline intbigf operator-(const int &ib1, const intbigf &bus2) {return intbigf(ib1).sub(bus2);}
-inline intbigf operator-(const intbigf &bus1, const intbigdata &bus2) {return bus1.sub(bus2);}
-inline intbigf operator-(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).sub(bus2);}
-inline intbigf operator-(const intbigf &bus1, const double &ib2) {return bus1.sub(ib2);}
-inline intbigf operator-(const double &ib1, const intbigf &bus2) {return intbigf(ib1).sub(bus2);}
+template <typename Tve> inline intbigf operator-(const intbigf &bus1, const Tve &ib2) {return bus1.sub(ib2);}
+template <typename Tve> inline intbigf operator-(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).sub(bus2);}
 inline intbigf operator*(const intbigf &bus1, const intbigf &bus2) {return bus1.mul(bus2);}
-inline intbigf operator*(const intbigf &bus1, const int &ib2) {return bus1.mul(ib2);}
-inline intbigf operator*(const int &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
-inline intbigf operator*(const intbigf &bus1, const intbigdata &bus2) {return bus1.mul(bus2);}
-inline intbigf operator*(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).mul(bus2);}
-inline intbigf operator*(const intbigf &bus1, const double &ib2) {return bus1.mul(ib2);}
-inline intbigf operator*(const double &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
+template <typename Tve> inline intbigf operator*(const intbigf &bus1, const Tve &ib2) {return bus1.mul(ib2);}
+template <typename Tve> inline intbigf operator*(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
 inline intbigf operator/(const intbigf &bus1, const intbigf &bus2) {return bus1.div(bus2);}
-inline intbigf operator/(const intbigf &bus1, const int &ib2) {return bus1.div(ib2);}
-inline intbigf operator/(const int &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
-inline intbigf operator/(const intbigf &bus1, const intbigdata &bus2) {return bus1.div(bus2);}
-inline intbigf operator/(const intbigdata &bus1, const intbigf &bus2) {return intbigf(bus1).div(bus2);}
-inline intbigf operator/(const intbigf &bus1, const double &ib2) {return bus1.div(ib2);}
-inline intbigf operator/(const double &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
+template <typename Tve> inline intbigf operator/(const intbigf &bus1, const Tve &ib2) {return bus1.div(ib2);}
+template <typename Tve> inline intbigf operator/(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
 // (\__/)
 //(='.'=)
 //(")_(") member
@@ -248,7 +255,7 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 		if (ibuff < 0) ibuff = -ibuff;
 		if (bigint.size() > ibuff) while (bigint.front() == 0 && bigint.size() != ibuff) bigint.pop_front();
 	}
-	//for div
+	//for div, rounding and significant fix
 	if (check_data == 'd' && bigint.back() == 101) {
 		bigint.pop_back();
 		int i_count = 1, ibuff = 0;
@@ -260,6 +267,12 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 		}
 		bigint.pop_back();
 		b_poi -= ibuff+2;
+	}
+	else {
+		if (intbigd_fu::digits_precision_affect == 2) {
+			int i_dummy = 0;
+			intbigd_fu::significant_fix(bigint, i_dummy);
+		}
 	}
 }
 //structure3 string

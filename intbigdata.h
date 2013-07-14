@@ -1,6 +1,6 @@
 ////////////////
 //intbigdata.h, calculate big number, environment: C++03 x86
-//craft by endrollex, 2012.10.03
+//craft by endrollex, 2012.10.03, 2013.07.14
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
 //           that means the intbigdata.h is less efficient.
@@ -14,6 +14,7 @@
 #include <vector>
 #include <string>
 #include <iterator>
+#include <sstream>
 using std::deque;
 using std::vector;
 using std::string;
@@ -284,9 +285,9 @@ Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 			}
 		}
 	}
+	if (b_is_mod) {ve_res.assign(bu1.begin(), bu1.end()); return ve_res;}
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
-	if (b_is_mod) {ve_res.assign(bu1.begin(), bu1.end()); return ve_res;}
 	ve_res.assign(de_res.begin(), de_res.end());
 	return ve_res;
 }
@@ -352,30 +353,30 @@ public:
 	//memo: defining own copy constructors need string and also int, otherwise will cause ambiguous with copy 0
 	//use synthesized copy constructors to save code lines
 	//
-	//overload operators: between intbigdata and int, ATTENTION: unsigned must be explicit conversion
+	//overload operators:
 	intbigdata &operator+=(const intbigdata &bus2) {return *this = this->add(bus2);}
 	intbigdata &operator-=(const intbigdata &bus2) {return *this = this->sub(bus2);}
 	intbigdata &operator*=(const intbigdata &bus2) {return *this = this->mul(bus2);}
 	intbigdata &operator/=(const intbigdata &bus2) {return *this = this->div(bus2);}
 	intbigdata &operator%=(const intbigdata &bus2) {return *this = this->mod(bus2);}
 	friend bool operator==(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) == 0;}
-	friend bool operator==(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == 0;}
-	friend bool operator==(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == 0;}
+	template <typename Tve> friend bool operator==(const intbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 0;}
+	template <typename Tve> friend bool operator==(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == 0;}
 	friend bool operator!=(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) != 0;}
-	friend bool operator!=(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != 0;}
-	friend bool operator!=(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != 0;}
+	template <typename Tve> friend bool operator!=(const intbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 0;}
+	template <typename Tve> friend bool operator!=(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != 0;}
 	friend bool operator>(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) == 1;}
-	friend bool operator>(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == 1;}
-	friend bool operator>(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == 1;}
+	template <typename Tve> friend bool operator>(const intbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 1;}
+	template <typename Tve> friend bool operator>(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == 1;}
 	friend bool operator>=(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) != -1;}
-	friend bool operator>=(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != -1;}
-	friend bool operator>=(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != -1;}
+	template <typename Tve> friend bool operator>=(const intbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) != -1;}
+	template <typename Tve> friend bool operator>=(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != -1;}
 	friend bool operator<(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) == -1;}
-	friend bool operator<(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) == -1;}
-	friend bool operator<(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == -1;}
+	template <typename Tve> friend bool operator<(const intbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) == -1;}
+	template <typename Tve> friend bool operator<(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) == -1;}
 	friend bool operator<=(const intbigdata &bus1, const intbigdata &bus2) {return bus1.who_big(bus2) != 1;}
-	friend bool operator<=(const intbigdata &bus1, const int &ib2) {return bus1.who_big(ib2) != 1;}
-	friend bool operator<=(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != 1;}
+	template <typename Tve> friend bool operator<=(const intbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 1;}
+	template <typename Tve> friend bool operator<=(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).who_big(bus2) != 1;}
 	intbigdata &operator++();
 	intbigdata &operator--();
 	intbigdata operator++(int);
@@ -414,22 +415,22 @@ private:
 	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};
 };
 //nonmember operators overload
-//overload operators: between intbigdata and int, ATTENTION: other types must be explicit converted
+//overload operators:
 inline intbigdata operator+(const intbigdata &bus1, const intbigdata &bus2) {return bus1.add(bus2);}
-inline intbigdata operator+(const intbigdata &bus1, const int &ib2) {return bus1.add(ib2);}
-inline intbigdata operator+(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).add(bus2);}
+template <typename Tve> inline intbigdata operator+(const intbigdata &bus1, const Tve &ib2) {return bus1.add(ib2);}
+template <typename Tve> inline intbigdata operator+(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).add(bus2);}
 inline intbigdata operator-(const intbigdata &bus1, const intbigdata &bus2) {return bus1.sub(bus2);}
-inline intbigdata operator-(const intbigdata &bus1, const int &ib2) {return bus1.sub(ib2);}
-inline intbigdata operator-(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).sub(bus2);}
+template <typename Tve> inline intbigdata operator-(const intbigdata &bus1, const Tve &ib2) {return bus1.sub(ib2);}
+template <typename Tve> inline intbigdata operator-(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).sub(bus2);}
 inline intbigdata operator*(const intbigdata &bus1, const intbigdata &bus2) {return bus1.mul(bus2);}
-inline intbigdata operator*(const intbigdata &bus1, const int &ib2) {return bus1.mul(ib2);}
-inline intbigdata operator*(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).mul(bus2);}
+template <typename Tve> inline intbigdata operator*(const intbigdata &bus1, const Tve &ib2) {return bus1.mul(ib2);}
+template <typename Tve> inline intbigdata operator*(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).mul(bus2);}
 inline intbigdata operator/(const intbigdata &bus1, const intbigdata &bus2) {return bus1.div(bus2);}
-inline intbigdata operator/(const intbigdata &bus1, const int &ib2) {return bus1.div(ib2);}
-inline intbigdata operator/(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).div(bus2);}
+template <typename Tve> inline intbigdata operator/(const intbigdata &bus1, const Tve &ib2) {return bus1.div(ib2);}
+template <typename Tve> inline intbigdata operator/(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).div(bus2);}
 inline intbigdata operator%(const intbigdata &bus1, const intbigdata &bus2) {return bus1.mod(bus2);}
-inline intbigdata operator%(const intbigdata &bus1, const int &ib2) {return bus1.mod(ib2);}
-inline intbigdata operator%(const int &ib1, const intbigdata &bus2) {return intbigdata(ib1).mod(bus2);}
+template <typename Tve> inline intbigdata operator%(const intbigdata &bus1, const Tve &ib2) {return bus1.mod(ib2);}
+template <typename Tve> inline intbigdata operator%(const Tve &ib1, const intbigdata &bus2) {return intbigdata(ib1).mod(bus2);}
 // __  (\_ 
 //(_ \ ( '> 
 //  ) \/_)=
