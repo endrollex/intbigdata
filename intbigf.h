@@ -17,16 +17,17 @@ unsigned digits_precision = 64;
 int digits_precision_affect = 1;
 int limit_digits_type = 1;
 int cout_type = 1;
-unsigned cout_fiexed = 6;
+unsigned cout_scientific = 16;
+unsigned cout_fixed = 64;
 //global set function
 void precision(unsigned i_value = 64) {digits_precision = i_value;}
 void precision_affect_div() {digits_precision_affect = 1;}
 void precision_affect_all() {digits_precision_affect = 2;}
 void rounding() {limit_digits_type = 1;}
 void truncation() {limit_digits_type = 2;}
-void cout_default {cout_type = 1;}
-void scientific() {cout_type = 2;}
-void fixed(unsigned i_value = 6;) {cout_type = 3; cout_fiexed = i_value}
+void cout_default() {cout_type = 1;}
+void scientific(unsigned i_value = 16) {cout_type = 2; cout_scientific = i_value;}
+void fixed(unsigned i_value = 64) {cout_type = 3; cout_fixed = i_value;}
 ////////////////
 //prepare calc point float
 ////////////////
@@ -73,9 +74,18 @@ void significant_fix(Tve &bigint, int &digits_offset, const int &i_sigd = digits
 		if (bigint.size() > i_sigd) {
 			int ibuff = bigint.size()-i_sigd;
 			digits_offset -= ibuff;
-			while (ibuff != 0) {bigint.pop_front(); --ibuff;}		
+			while (ibuff != 0) {bigint.pop_front(); --ibuff;}
 		}
 	}
+}
+////////////////
+//significant_fix_point
+////////////////
+////////////////
+void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &fix_point = 6)
+{
+	int i_sigd = poi_exp+fix_point, i_dummy = 0;
+	significant_fix(bigint, i_dummy, i_sigd);
 }
 ////////////////deque use
 //divf_f, y = a/b (a>=b && b!=0)
@@ -543,8 +553,7 @@ intbigf::operator double() const
 //operator intbigdata()
 intbigf::operator intbigdata() const
 {
-	vector<char> ret(bigint.begin()+(bigint.size()-b_poi+b_exp), bigint.end());
-	return intbigdata(ret, b_sign, 'n');
+	return intbigdata(vector<char>(bigint.begin()+(bigint.size()-b_poi+b_exp), bigint.end()), b_sign, 'n');
 }
 //istream &operator>>
 istream &operator>>(istream &in, intbigf &bus1)
@@ -563,31 +572,56 @@ istream &operator>>(istream &in, intbigf &bus1)
 //ostream &operator<<
 ostream &operator<<(ostream &out, const intbigf &bus1)
 {
-	deque<char>::const_reverse_iterator rit_de = bus1.bigint.rbegin();
+	//scientific
+	if (intbigd_fu::cout_type == 2) {
+		out << bus1.scientific(intbigd_fu::cout_scientific);
+		return out;
+	}
+	const deque<char> *dec_p = &bus1.bigint;
+	int i_poi_fix = 0, ibuff;
+	bool poi_couted = false;
+	deque<char> dec_temp;
+	//fixed
+	if (intbigd_fu::cout_type == 3) {
+		ibuff = bus1.b_poi+bus1.b_exp;
+		if (bus1.bigint.size()-ibuff > intbigd_fu::cout_fixed) {
+			dec_temp = bus1.bigint;
+			intbigd_fu::significant_fix_point(dec_temp, bus1.b_poi+bus1.b_exp, intbigd_fu::cout_fixed);
+			dec_p = &dec_temp;
+		}
+		i_poi_fix = intbigd_fu::cout_fixed-((*dec_p).size()-ibuff);
+	}
+	deque<char>::const_reverse_iterator rit_de = (*dec_p).rbegin();
 	//sign
 	if (bus1.b_sign == false) out << '-';
-	int ibuff = bus1.b_poi+bus1.b_exp;
+	ibuff = bus1.b_poi+bus1.b_exp;
 	if (ibuff <= 0) {
-		if (bus1.bigint.size() == 1 && bus1.bigint.back() == 0) {out << '0'; return out;}
-		out << "0.";
-		while (ibuff < 0) {out << '0'; ++ibuff;}
-		while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+		if ((*dec_p).size() == 1 && (*dec_p).back() == 0) out << '0';
+		else {
+			out << "0.";
+			poi_couted = true;
+			while (ibuff < 0) {out << '0'; ++ibuff;}
+			while (rit_de != (*dec_p).rend()) out << (int)*rit_de++;
+		}
 	}
 	else {
-		if (ibuff != bus1.bigint.size()) {
-			if (bus1.bigint.size() > ibuff) {
-				while (rit_de != bus1.bigint.rbegin()+ibuff) out << (int)*rit_de++;
+		if (ibuff != (*dec_p).size()) {
+			if ((*dec_p).size() > ibuff) {
+				while (rit_de != (*dec_p).rbegin()+ibuff) out << (int)*rit_de++;
 				out << '.';
-				while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+				poi_couted = true;
+				while (rit_de != (*dec_p).rend()) out << (int)*rit_de++;
 			}
 			else {
-				ibuff = ibuff-bus1.bigint.size();
-				while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+				ibuff = ibuff-(*dec_p).size();
+				while (rit_de != (*dec_p).rend()) out << (int)*rit_de++;
 				for (unsigned ix = 0; ix != ibuff; ++ix) out << '0';
 			}
 		}
-		else while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
+		else while (rit_de != (*dec_p).rend()) out << (int)*rit_de++;
 	}
+	if (i_poi_fix > 0 && !poi_couted) out << '.';
+	while (i_poi_fix > 0) {out << '0'; --i_poi_fix;}
 	return out;
 }
 ////////////////
@@ -654,7 +688,6 @@ inline void intbigf::clear()
 //scientific
 string intbigf::scientific(const int &i_point = 6) const
 {
-	
 	string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
 	if (bigint.size() == 1) {s_scient = s_number[bigint[0]]; s_scient += "e+0"; return s_scient;}
@@ -680,10 +713,11 @@ string intbigf::scientific(const int &i_point = 6) const
 	s_scient.append(s_temp, 1, s_temp.size()-1);
 	s_scient += "e";
 	//s_temp clear
-	s_temp.clear();	
+	s_temp.clear();
 	int ibuff = b_poi+b_exp-1;
-	if (ibuff < 0) 	s_scient += "-";
+	if (ibuff < 0) {s_scient += "-"; ibuff = -ibuff;}
 	else s_scient += "+";
+	if (ibuff == 0) s_temp = '0';
 	while (ibuff != 0) {s_temp = s_number[ibuff%10]+s_temp; ibuff /= 10;}
 	s_scient += s_temp;
 	return s_scient;
