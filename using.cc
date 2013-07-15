@@ -1,4 +1,4 @@
-#include <iostream>
+/*#include <iostream>
 #include <string>
 #include <iomanip>
 #include <ctime>
@@ -25,6 +25,49 @@ int main()
 	
 	t = clock() - t;
 	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;	
+	
+	return 0;
+}
+*/
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+#include "intbigf.h"
+using namespace std;
+void frac_test(const intbigf &a)
+{
+	for (int x = 1; x != (int)a+1; ++x) {
+		
+		intbigf y = a/(intbigf)x;
+		ostringstream os;
+		os << setprecision(6) << "a = " << (int)a << ", "<< y << "^" << x << ": ";
+		
+		string str_co = os.str();
+
+		cout << str_co << y.pow_int1(x) << endl;
+	}
+}
+int main()
+{
+	intbigd_fu::precision_affect_all();
+	intbigd_fu::fixed(6);
+	//intbigd_fu::scientific();
+		
+	clock_t t = clock();
+	
+	//frac_test(100);
+	
+	intbigf i1("54.321"), i2("0.005");
+	
+	cout << i1*i2 << endl;
+	
+	
+	t = clock() - t;
+	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;
 	
 	return 0;
 }

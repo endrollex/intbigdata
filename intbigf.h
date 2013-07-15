@@ -29,7 +29,7 @@ void cout_default() {cout_type = 1;}
 void scientific(unsigned i_value = 16) {cout_type = 2; cout_scientific = i_value;}
 void fixed(unsigned i_value = 64) {cout_type = 3; cout_fixed = i_value;}
 ////////////////
-//prepare calc point float
+//pre_fcalc, prepare calc point float
 ////////////////
 ////////////////
 template <typename Tve> 
@@ -161,6 +161,22 @@ public:
 	intbigf sub(const intbigf &bus2) const;
 	intbigf mul(const intbigf &bus2) const;
 	intbigf div(const intbigf &bus2) const;
+	//Power functions:
+	intbigf pow_int(const int &ib) const;
+	intbigf pow_int1(const int &ib) const;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//Operators:
 	operator int() const;
 	operator string() const;
@@ -242,6 +258,9 @@ template <typename Tve> inline intbigf operator*(const Tve &ib1, const intbigf &
 inline intbigf operator/(const intbigf &bus1, const intbigf &bus2) {return bus1.div(bus2);}
 template <typename Tve> inline intbigf operator/(const intbigf &bus1, const Tve &ib2) {return bus1.div(ib2);}
 template <typename Tve> inline intbigf operator/(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
+//
+const intbigf intbigf_one(deque<char>(1, 1), 1, 0, true, 'n');
+bool off_scientific = false;
 // (\__/)
 //(='.'=)
 //(")_(") member
@@ -258,6 +277,32 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	b_poi = bpi;
 	if (b_poi == -1) b_poi = bigint.size();
 	b_exp = bep;
+	
+	
+	
+
+	
+	
+	
+		
+	if (b_poi == -2) {
+		
+		b_poi = bigint.size()-bep;
+		b_exp = 0;
+		
+	}
+	
+	
+	std::cout << "big " << intbigdata(bigint) << endl;
+	std::cout << "size " << bigint.size() << endl;
+	std::cout << "p " << b_poi << endl;
+	std::cout << "e " << b_exp << endl;
+	
+	
+	
+	
+	
+	
 	if (bigint.empty()) {bigint.push_back(0); b_sign = true;}
 	//check data and fix
 	if (check_data == 'y') this->fix_data();
@@ -375,7 +420,9 @@ intbigf::intbigf(const char *cstr1)
 intbigf::intbigf(const double &dou1_o)
 {
 	ostringstream ostri;
+	off_scientific = true;
 	ostri << dou1_o;
+	off_scientific = false;
 	*this = intbigf(ostri.str());
 }
 //structure8 intbigdata
@@ -494,6 +541,8 @@ inline intbigf intbigf::sub(const intbigf &bus2) const
 	return intbigf();
 }
 //mul
+
+/*
 inline intbigf intbigf::mul(const intbigf &bus2) const
 {
 	int i_offset, i_exp, i_absob;
@@ -506,6 +555,57 @@ inline intbigf intbigf::mul(const intbigf &bus2) const
 	//sign
 	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, 'z');
 }
+*/
+
+
+
+inline intbigf intbigf::mul(const intbigf &bus2) const
+{
+	
+	
+	
+	
+	int r_poi3 = (bigint.size()+b_exp-b_poi)+(bus2.bigint.size()+bus2.b_exp-bus2.b_poi);
+	
+	
+	
+	
+	
+		
+	//sign
+	return intbigf(intbigd_fu::mul_f(bigint, bus2.bigint), -2, r_poi3, b_sign == bus2.b_sign, 'z');
+	
+	
+	//return intbigf(intbigd_fu::mul_f(bigint, bus2.bigint), -1, -r_poi3, b_sign == bus2.b_sign, 'z');
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //div
 inline intbigf intbigf::div(const intbigf &bus2) const
 {
@@ -523,6 +623,65 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false), -1, 0, b_sign == bus2.b_sign, 'd');
 }
 ////////////////
+////Power functions:
+////////////////////////////////
+intbigf intbigf::pow_int(const int &ib) const
+{
+	intbigf ret;
+	bool reci = false;
+	int ibx = ib, i_dummy = 0, r_poi2 = bigint.size()+b_exp-b_poi, r_poi1, r_poi3, ibuff;
+	
+	
+	
+	
+	
+	
+	if (ibx == 0) {ret.bigint[0] = 1; return ret;}
+	//sign
+	if (ib < 0) ibx = -ibx;
+	if (ibx%2 == 1) ret.b_sign = b_sign;
+	ret = *this;
+	ret.b_poi = ret.b_poi+ret.b_exp;
+	ret.b_exp = 0;
+	for (int ixc = 1; ixc != ibx; ++ixc) {
+		r_poi1 = ret.bigint.size()-ret.b_poi;
+		r_poi3 = r_poi1+r_poi2;
+		intbigd_fu::mul_fself(ret.bigint, bigint);
+		ret.b_poi = ret.bigint.size()-r_poi3;
+		//remove point zero
+		ibuff = ret.b_poi+ret.b_exp;
+		if (ibuff < 0) ibuff = -ibuff;
+		if (ret.bigint.size() > ibuff) while (ret.bigint.front() == 0 && ret.bigint.size() != ibuff) ret.bigint.pop_front();
+		if (intbigd_fu::digits_precision_affect == 2) intbigd_fu::significant_fix(ret.bigint, i_dummy);
+	}
+	if (ib < 0) return intbigf_one.div(ret);
+	return ret;
+}
+
+
+intbigf intbigf::pow_int1(const int &ib) const
+{
+	intbigf ret;
+	ret = *this;
+	for (int ixc = 1; ixc != ib; ++ixc) {
+		ret = ret.mul(*this);
+	}
+	return ret;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////
 //Operators:
 ////////////////////////////////
 //operator int()
@@ -530,7 +689,9 @@ intbigf::operator int() const
 {
 	int ret;
 	ostringstream ostri;
+	off_scientific = true;
 	ostri << *this;
+	off_scientific = false;
 	istringstream istri(ostri.str());
 	istri >> ret;
 	return ret;
@@ -539,7 +700,9 @@ intbigf::operator int() const
 intbigf::operator string() const
 {
 	ostringstream ostri;
+	off_scientific = true;
 	ostri << *this;
+	off_scientific = false;
 	return ostri.str();
 }
 //operator double()
@@ -547,7 +710,9 @@ intbigf::operator double() const
 {
 	double ret;
 	ostringstream ostri;
+	off_scientific = true;
 	ostri << *this;
+	off_scientific = false;
 	istringstream istri(ostri.str());
 	istri >> ret;
 	return ret;
@@ -575,7 +740,7 @@ istream &operator>>(istream &in, intbigf &bus1)
 ostream &operator<<(ostream &out, const intbigf &bus1)
 {
 	//scientific
-	if (intbigd_fu::cout_type == 2) {
+	if (intbigd_fu::cout_type == 2 && !off_scientific) {
 		out << bus1.scientific(intbigd_fu::cout_scientific);
 		return out;
 	}
@@ -708,7 +873,6 @@ string intbigf::scientific(const int &i_point = 6) const
 {
 	string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
-	if (bigint.size() == 1) {s_scient = s_number[bigint[0]]; s_scient += "e+0"; return s_scient;}
 	//decimal point reserve
 	if (i_point < 1) i1_get = 6;
 	if (static_cast<unsigned>(i_point) > ixsz) i1_get = ixsz;
@@ -727,7 +891,7 @@ string intbigf::scientific(const int &i_point = 6) const
 		s_temp += s_number[*d_it];
 	}
 	s_scient += s_temp[0];
-	s_scient += '.';
+	if (s_temp.size() != 1) s_scient += '.';
 	s_scient.append(s_temp, 1, s_temp.size()-1);
 	s_scient += "e";
 	//s_temp clear

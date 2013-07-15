@@ -444,7 +444,7 @@ public:
 	bool is_zero() const;
 	void fix_data();
 	bool is_not_corrupt() const;	
-private:	
+//private:
 	//Constructors:
 	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};
 };
@@ -936,7 +936,7 @@ string intbigdata::scientific(const int &i_point = 6) const
 		s_temp += s_number[*d_it];
 	}	
 	s_scient += s_temp[0];
-	s_scient += '.';
+	if (s_temp.size() != 1) s_scient += '.';
 	s_scient.append(s_temp, 1, s_temp.size()-1);
 	s_scient += "e+";
 	//s_temp clear
