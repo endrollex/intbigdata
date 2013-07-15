@@ -291,7 +291,6 @@ Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 	ve_res.assign(de_res.begin(), de_res.end());
 	return ve_res;
 }
-//Compare:
 ////////////////
 //abso_big, compare absolute value, return 1 = first big, -1 = second big, 0 = equal
 ////////////////
@@ -309,6 +308,41 @@ int abso_big(const Tve2 &bigint, const Tve &di2)
 		else {if (*d_it1 != *d_it2) return -1;}
 	}
 	return 0;
+}
+////////////////
+//pow_f
+////////////////
+////////////////
+template <typename Tve>
+Tve pow_f(const Tve &bus1, const unsigned &exp)
+{
+	Tve ret;
+	if (exp == 0) {ret.push_back(1); return ret;}
+	ret = bus1;
+	for (unsigned ixc = 1; ixc != exp; ++ixc) intbigd_fu::mul_fself(ret, bus1);
+	return ret;
+}
+////////////////
+//karatsuba algorithm
+////////////////
+////////////////
+template <typename Tve>
+Tve karatsuba(const Tve &num1, const Tve &num2)
+{
+	unsigned num1siz = num1.size(), num2siz = num2.size(), m_comp = 70000;
+	if (num1siz < m_comp || num2siz < m_comp) return mul_f(num1, num2);
+	unsigned m_fix = 3000, m;
+	m = num1siz > num2siz ? num2siz-m_fix : num1siz-m_fix;
+	Tve low1(num1.begin(), num1.begin()+m), high1(num1.begin()+m, num1.end()),
+		low2(num2.begin(), num2.begin()+m), high2(num2.begin()+m, num2.end()),
+		z0, z1, z2;
+	z2 = mul_f(high1, high2);
+	z0 = mul_f(low1, low2);
+	z1 = sub_f(sub_f(mul_f(add_f(low1, high1), add_f(low2, high2)), z2), z0);
+	Tve base1p(m*2, 0), base2p(m , 0);
+	base1p.push_back(1);
+	base2p.push_back(1);
+	return add_f(add_f(mul_f(z2, base1p), mul_f(z1, base2p)), z0);
 }
 }
 ////////////////
@@ -439,7 +473,7 @@ template <typename Tve> inline intbigdata operator%(const Tve &ib1, const intbig
 //Constructors:
 ////////////////////////////////
 //structure2 vector
-intbigdata::intbigdata(const vector<char> &di1, const bool &bsn = true, const char &check_data = 'y')
+intbigdata::intbigdata(const vector<char> &di1, const bool &bsn = true, const char &check_data = 'n')
 {
 	//sign
 	b_sign = bsn;

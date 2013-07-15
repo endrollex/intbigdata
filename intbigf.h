@@ -250,7 +250,7 @@ template <typename Tve> inline intbigf operator/(const Tve &ib1, const intbigf &
 ////////////////////////////////
 //structure2 deque
 intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
-	const bool &bsn = true, const char &check_data = 'y')
+	const bool &bsn = true, const char &check_data = 'n')
 {
 	//sign
 	b_sign = bsn;

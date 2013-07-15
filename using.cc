@@ -1,35 +1,33 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <ctime>
 #include "intbigf.h"
 using namespace std;
 int main()
 {
-	intbigd_fu::precision(33);
-	intbigd_fu::precision_affect_all();
-	intbigd_fu::fixed(32);
+	clock_t t = clock();
 	
-	int i = 0;
+	intbigdata n1, n2, nres;
+	vector<char> res;
 	
-	intbigf i1("7");
-	intbigf i2("1.7");
-	intbigf r1, r2, r3, r4(i);
-	r1 = 1/i1;
-	r2 = 2/i2;
-	r3 = r1*r2;
+	n1.load_file("num1.txt");
+	n2.load_file("num2.txt");
 	
-	r2 = r2 + 12345;
-	r2.round_self(-3, true);
-		
-	cout << r1 << endl;
-	cout << r2 << endl;
-	cout << r3 << endl;
-	cout << r4 << endl;
+	res = intbigd_fu::karatsuba(n1.bigint, n2.bigint);
 	
-	cout << r1.size() << endl;
-	cout << r2.size() << endl;
-	cout << r3.size() << endl;
-	cout << r4.size() << endl;
+	nres.assign(res);
+	
+	
+	cout << nres << endl;
+	
+	//cout << n1*n2 << endl;
+	
+	cout << n1.size() << endl;
+	cout << n2.size() << endl;
+	
+	t = clock() - t;
+	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;	
 	
 	return 0;
 }
