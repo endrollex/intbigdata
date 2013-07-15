@@ -663,7 +663,6 @@ inline void intbigf::assign(const char *cstr1)
 {
 	*this = intbigf(string(cstr1));
 }
-
 //round
 intbigf intbigf::round(const int &digits, const bool &is_point = false) const
 {
@@ -746,7 +745,7 @@ int intbigf::save_file(const string file_name_o = "auto", const string file_msg_
 {
 	string file_name(file_name_o), file_msg("//");
 	if (file_name == "auto") {
-		file_name.assign("intbigf_");
+		file_name.assign("num_");
 		file_name += this->scientific(6);
 		file_name += ".txt";
 	}

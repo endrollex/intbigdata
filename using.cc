@@ -11,18 +11,15 @@ int main()
 	intbigdata n1, n2, nres;
 	vector<char> res;
 	
-	n1.load_file("num1.txt");
-	n2.load_file("num2.txt");
+	n1.assign("12345678123456781234567812345678");
+	n2.assign("987654321987654321987654321987654321");
 	
-	res = intbigd_fu::karatsuba(n1.bigint, n2.bigint);
+	//res = intbigd_fu::karatsuba(n1.bigint, n2.bigint);
 	
 	nres.assign(res);
 	
-	
 	cout << nres << endl;
-	
-	//cout << n1*n2 << endl;
-	
+	cout << n1*n2 << endl;
 	cout << n1.size() << endl;
 	cout << n2.size() << endl;
 	
