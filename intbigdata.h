@@ -245,7 +245,7 @@ void mul_fself(Tve &bigint, const Tve &di2)
 			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += ipos2;
 			else de_res.push_back(ipos2);
 		}
-		++ix1;		
+		++ix1;
 	}
 		++ix2;
 		ix1 = 0;
@@ -434,8 +434,8 @@ public:
 	unsigned get_unsigned() const;
 	std::string get_string() const;
 	//Capacity:
-	unsigntp size();
-	unsigntp max_size();
+	unsigntp size() const;
+	unsigntp max_size() const;
 	//Objects:
 	bool b_sign;//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
 	std::vector<char> bigint;//sample: if int i = 190, convert to vector<char> d: 091
@@ -1023,12 +1023,12 @@ string intbigdata::get_string() const
 //Capacity:
 ////////////////////////////////
 //size
-inline unsigntp intbigdata::size()
+inline unsigntp intbigdata::size() const
 {
 	return bigint.size();
 }
 //max_size
-inline unsigntp intbigdata::max_size()
+inline unsigntp intbigdata::max_size() const
 {
 	return bigint.max_size();
 }

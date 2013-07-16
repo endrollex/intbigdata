@@ -41,29 +41,30 @@ using namespace std;
 void frac_test(const intbigf &a)
 {
 	for (int x = 1; x != (int)a+1; ++x) {
-		
 		intbigf y = a/(intbigf)x;
-		ostringstream os;
-		os << setprecision(6) << "a = " << (int)a << ", "<< y << "^" << x << ": ";
-		
-		string str_co = os.str();
-
-		cout << str_co << y.pow_int1(x) << endl;
+		cout << (y).pow_int(x) << endl;
 	}
 }
 int main()
 {
-	intbigd_fu::precision_affect_all();
-	intbigd_fu::fixed(6);
-	//intbigd_fu::scientific();
+	intbigd_fu::precision_affect_all(200);
+	//intbigd_fu::fixed(9);
+	intbigd_fu::scientific();
 		
 	clock_t t = clock();
 	
 	//frac_test(100);
 	
-	intbigf i1("54.321"), i2("0.005");
+
+	intbigf f("0.000245");
 	
-	cout << i1*i2 << endl;
+	intbigf f2 = f.pow_int(-44);
+	
+	cout << f2 << endl;
+	
+	cout << pow(0.000245, -44) << endl;	
+	
+	
 	
 	
 	t = clock() - t;
