@@ -47,24 +47,22 @@ void frac_test(const intbigf &a)
 }
 int main()
 {
-	intbigd_fu::precision_affect_all(200);
+	intbigd_fu::precision_affect_all();
 	//intbigd_fu::fixed(9);
-	intbigd_fu::scientific();
+	//intbigd_fu::scientific();
 		
 	clock_t t = clock();
 	
 	//frac_test(100);
-	
 
 	intbigf f("0.000245");
-	
 	intbigf f2 = f.pow_int(-44);
-	
 	cout << f2 << endl;
+	cout << pow(0.000245, -44) << endl;
 	
-	cout << pow(0.000245, -44) << endl;	
 	
-	
+	cout << intbigf(1)/7 << endl;
+	cout << (intbigf(1)/7).size() << endl;
 	
 	
 	t = clock() - t;

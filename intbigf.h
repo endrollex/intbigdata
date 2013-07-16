@@ -132,35 +132,35 @@ void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &f
 template <typename Tve>
 Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 {
-	unsigntp difsize = bigint.size()-di2.size()+1;
-	
-	
-	
-	
-	
-	int i_sigd= digits_precision-static_cast<int>(difsize)+1, ibuff = 0, di_p_siz, di_p_cou = 0;
-	
-	
-	
-	
-	
+	int ibuff = 0, di_p_cou = 0, di_p_siz, difsize, i_sigd;
+	unsigntp ix1, ix2;	
+	difsize = bigint.size()-di2.size()+1;
+	i_sigd= digits_precision-difsize+1;
+	if (i_sigd < 0) i_sigd = 0;	
+	if (difsize < 1) {
+		ibuff = -difsize+2;
+		difsize = bigint.size();
+	}
 	
 	//rounding
 	if (limit_digits_type == 1) ++i_sigd;
-	unsigntp ix1, ix2;
-	if (difsize > bigint.size()) {
-		ibuff = static_cast<int>(bigint.size())-static_cast<int>(difsize);
-		difsize = bigint.size();
-	}
+
+	
 	//deque
 	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
+	
 	di_p_siz = di_p.size();
+	
 	for (int ix= 0; ix != i_sigd+ibuff; ++ix) di_p.push_front(0);
+	
+	
 	//sub_reverse_
 	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
+		
+		
+		
 		//stop div
 		if (di_p_cou >= di_p_siz) if (bu1.back() == 0 && bu1.size() == 1) break;
-		
 		
 		
 		
@@ -182,13 +182,23 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 			}
 		}
 	}
+	
+	
+	
 	if (b_is_mod) return bu1;
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
 	//significant digits transfer
 	i_sigd = di_p_cou-di_p_siz;
+	
+	
+	
 	//rounding
 	significant_fix_div(de_res, i_sigd);
+	
+	
+	
+	
 	if (i_sigd > 0) {
 		de_res.push_back(101);
 		while (i_sigd > 0) {
@@ -197,6 +207,24 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 		}
 		de_res.push_back(101);
 	}
+	
+	
+	
+	
+	if (i_sigd < 0) {
+		i_sigd = -i_sigd;
+		de_res.push_back(101);
+		while (i_sigd > 0) {
+			de_res.push_back(i_sigd%100);
+			i_sigd = i_sigd/100;
+		}
+		de_res.push_back(102);
+	}
+	
+	
+	
+	
+	
 	return de_res;
 }
 }
@@ -345,7 +373,15 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 		while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 	}
 	//for div, rounding and significant fix
-	if (check_data == 'd' && bigint.back() == 101) {
+	
+	
+	
+	if (check_data == 'd' && bigint.back()-100 > 0) {
+		
+		bool digit_sign = true;
+		if (bigint.back() == 102) digit_sign = false;
+		
+		
 		bigint.pop_back();
 		int i_count = 1, ibuff = 0;
 		while (bigint.back() != 101 && bigint.size() != 1) {
@@ -355,7 +391,14 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 			--b_poi;
 		}
 		bigint.pop_back();
-		b_poi -= ibuff+2;
+		
+		
+		if (digit_sign) b_poi -= ibuff+2;
+		else b_poi -= -ibuff+2;
+		
+		
+		
+		
 	}
 	else {
 		if (intbigd_fu::digits_precision_affect == 2) {
@@ -598,9 +641,15 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
+	
+	
+
+	
 	//
 	//sign
 	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false), -1, 0, b_sign == bus2.b_sign, 'd');
+	
+	
 }
 ////////////////
 ////Power functions:
