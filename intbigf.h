@@ -21,7 +21,7 @@ unsigned cout_scientific = 16;
 int cout_fixed = 64;
 //global set function
 void precision(int i_value = 64) {if (i_value < 0) i_value = -i_value; digits_precision = i_value;}
-void precision_affect_div(int i_value = digits_precision)
+void precision_affect_div_inf(int i_value = digits_precision)
 {
 	digits_precision_affect = 1;
 	if (i_value < 0) i_value = -i_value;
@@ -130,7 +130,7 @@ void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &f
 ////////////////
 ////////////////from div_f
 template <typename Tve>
-Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
+Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod, const bool &force_lim)
 {
 	int ibuff = 0, di_p_cou = 0, di_p_siz, difsize, i_sigd;
 	unsigntp ix1, ix2;	
@@ -141,30 +141,16 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 		ibuff = -difsize+2;
 		difsize = bigint.size();
 	}
-	
 	//rounding
 	if (limit_digits_type == 1) ++i_sigd;
-
-	
 	//deque
 	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
-	
 	di_p_siz = di_p.size();
-	
 	for (int ix= 0; ix != i_sigd+ibuff; ++ix) di_p.push_front(0);
-	
-	
 	//sub_reverse_
 	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
-		
-		
-		
 		//stop div
 		if (di_p_cou >= di_p_siz) if (bu1.back() == 0 && bu1.size() == 1) break;
-		
-		
-		
-		
 		++di_p_cou;
 		bu1.push_front(*d_it);
 		//remove zero
@@ -182,49 +168,24 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 			}
 		}
 	}
-	
-	
-	
 	if (b_is_mod) return bu1;
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
 	//significant digits transfer
 	i_sigd = di_p_cou-di_p_siz;
-	
-	
-	
-	//rounding
-	significant_fix_div(de_res, i_sigd);
-	
-	
-	
-	
-	if (i_sigd > 0) {
+	//truncation or rounding
+	if (digits_precision_affect == 2 || force_lim) significant_fix_div(de_res, i_sigd);
+	if (i_sigd != 0) {
+		ibuff = i_sigd;
+        if (i_sigd < 0) ibuff = -ibuff;
 		de_res.push_back(101);
-		while (i_sigd > 0) {
-			de_res.push_back(i_sigd%100);
-			i_sigd = i_sigd/100;
+		while (ibuff > 0) {
+			de_res.push_back(ibuff%100);
+			ibuff = ibuff/100;
 		}
-		de_res.push_back(101);
+		if (i_sigd > 0) de_res.push_back(101);
+		else de_res.push_back(102);
 	}
-	
-	
-	
-	
-	if (i_sigd < 0) {
-		i_sigd = -i_sigd;
-		de_res.push_back(101);
-		while (i_sigd > 0) {
-			de_res.push_back(i_sigd%100);
-			i_sigd = i_sigd/100;
-		}
-		de_res.push_back(102);
-	}
-	
-	
-	
-	
-	
 	return de_res;
 }
 }
@@ -248,23 +209,6 @@ public:
 	intbigf div(const intbigf &bus2) const;
 	//Power functions:
 	intbigf pow_int(const int &ib) const;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	//Operators:
 	operator int() const;
 	operator string() const;
@@ -373,15 +317,9 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 		while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 	}
 	//for div, rounding and significant fix
-	
-	
-	
 	if (check_data == 'd' && bigint.back()-100 > 0) {
-		
 		bool digit_sign = true;
 		if (bigint.back() == 102) digit_sign = false;
-		
-		
 		bigint.pop_back();
 		int i_count = 1, ibuff = 0;
 		while (bigint.back() != 101 && bigint.size() != 1) {
@@ -391,15 +329,10 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 			--b_poi;
 		}
 		bigint.pop_back();
-		
-		
 		if (digit_sign) b_poi -= ibuff+2;
 		else b_poi -= -ibuff+2;
-		
-		
-		
-		
 	}
+	//other lim
 	else {
 		if (intbigd_fu::digits_precision_affect == 2) {
 			intbigd_fu::significant_fix(bigint);
@@ -641,15 +574,10 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
-	
-	
-
-	
 	//
-	//sign
-	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false), -1, 0, b_sign == bus2.b_sign, 'd');
-	
-	
+	int iabsobig = intbigd_fu::abso_big(*bus2_p, *bus2_p);
+	if (iabsobig == -1) intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false, true), -1, 0, b_sign == bus2.b_sign, 'd');
+	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false, false), -1, 0, b_sign == bus2.b_sign, 'd');
 }
 ////////////////
 ////Power functions:
@@ -665,32 +593,9 @@ intbigf intbigf::pow_int(const int &ib) const
 	for (int ixc = 1; ixc != ibx; ++ixc) {
 		ret = ret.mul(*this);
 	}
-	
-	
-	
-	
-	
-	
 	if (ib < 0) return intbigf_one.div(ret);
 	return ret;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ////////////////
 //Operators:
 ////////////////////////////////
