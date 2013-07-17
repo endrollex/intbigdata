@@ -130,7 +130,7 @@ void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &f
 ////////////////
 ////////////////from div_f
 template <typename Tve>
-Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod, const bool &force_lim)
+Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 {
 	int ibuff = 0, di_p_cou = 0, di_p_siz, difsize, i_sigd;
 	unsigntp ix1, ix2;	
@@ -175,7 +175,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod, const bool &
 	//significant digits transfer
 	i_sigd = di_p_cou-di_p_siz;
 	//truncation or rounding
-	if (digits_precision_affect == 2 || force_lim) significant_fix_div(de_res, i_sigd);
+	if (digits_precision_affect == 2) significant_fix_div(de_res, i_sigd);
 	if (i_sigd != 0) {
 		ibuff = i_sigd;
         if (i_sigd < 0) ibuff = -ibuff;
@@ -577,9 +577,7 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//
-	int iabsobig = intbigd_fu::abso_big(*bus2_p, *bus2_p);
-	if (iabsobig == -1) intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false, true), -1, 0, b_sign == bus2.b_sign, 'd');
-	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false, false), -1, 0, b_sign == bus2.b_sign, 'd');
+	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false), -1, 0, b_sign == bus2.b_sign, 'd');
 }
 ////////////////
 ////Power functions:
