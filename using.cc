@@ -49,27 +49,23 @@ void frac_test(const intbigf &a)
 int main()
 {
 	//intbigd_fu::precision_affect_div_inf();
-	intbigd_fu::precision_affect_all();
+	//intbigd_fu::precision_affect_all();
 	//intbigd_fu::truncation();
-	
 	//intbigd_fu::fixed(9);
 	//intbigd_fu::scientific();
 	
 	clock_t t = clock();
 	
-	//frac_test(100);
+	deque<char> de(1, 1);
+	de.push_front(0);
+	de.push_front(0);
 	
+	intbigf it(de, 1, 2);
 	
-	intbigf f("0.000245");
-	intbigf f2 = f.pow_int(-44);
+	cout << it << endl;
+	cout << it.is_not_corrupt() << endl;
+	
 
-	
-	cout << f2 << endl;
-	
-	cout << intbigf(1)/7 << endl;
-	
-	
-	
 	t = clock() - t;
 	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;
 	

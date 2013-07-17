@@ -618,8 +618,7 @@ bool intbigdata::is_not_corrupt() const
 		++rit_de;
 	}
 	//remove zero
-	unsigntp ix2 = bigint.size()-1;
-	if (bigint[ix2] == 0) return false;
+	if (bigint.back() == 0 && bigint.size() != 1) return false;
 	//zero no sign
 	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) return false;
 	return true;

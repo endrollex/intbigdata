@@ -168,6 +168,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod, const bool &
 			}
 		}
 	}
+	//not for float
 	if (b_is_mod) return bu1;
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
@@ -477,6 +478,7 @@ void intbigf::fix_data()
 	unsigntp ix2 = bigint.size()-1;
 	//remove zero
 	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
+	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 	//zero no sign
 	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
 	//
@@ -495,8 +497,8 @@ bool intbigf::is_not_corrupt() const
 		++rit_de;
 	}
 	//remove zero
-	unsigntp ix2 = bigint.size()-1;
-	if (bigint[ix2] == 0) return false;
+	if (bigint.back() == 0 && bigint.size() != 1) return false;
+	if (bigint.front() == 0 && b_poi+b_exp < bigint.size()) return false;
 	//zero no sign
 	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) return false;
 	//
@@ -780,7 +782,7 @@ inline void intbigf::clear()
 {
 	bigint.assign(1, 0);
 	b_sign = true;
-	b_poi = 0;
+	b_poi = 1;
 	b_exp = 0;
 }
 ////////////////
