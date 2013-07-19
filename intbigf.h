@@ -33,8 +33,8 @@ void precision_affect_all(int i_value = digits_precision)
 	if (i_value < 0) i_value = -i_value;
 	digits_precision = i_value;
 }
-void rounding() {limit_digits_type = 1;}
-void truncation() {limit_digits_type = 2;}
+void round() {limit_digits_type = 1;}
+void trunc() {limit_digits_type = 2;}
 void cout_default() {cout_type = 1;}
 void scientific(unsigned i_value = 16) {cout_type = 2; cout_scientific = i_value;}
 void fixed(int i_value = 64) {cout_type = 3; if (i_value < 0) i_value = -i_value; cout_fixed = i_value;}
@@ -66,10 +66,13 @@ inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 ////////////////
 ////////////////from significant_fix_div
 template <typename Tve>
-void significant_fix(Tve &bigint, const int &i_sigd = digits_precision, const bool &force_round = false)
+void significant_fix(Tve &bigint, const int &i_sigd = digits_precision, const int &force_round = 0)
 {
 	int ibuff;
-	if (limit_digits_type == 1 || force_round) {
+	bool is_round = false;
+	if (limit_digits_type == 1 || force_round == 1) is_round = true;
+	if (force_round == 2) is_round = false;
+	if (is_round) {
 		if (static_cast<int>(bigint.size()) > i_sigd) {
 			ibuff = bigint.size()-i_sigd-1;
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
@@ -79,7 +82,6 @@ void significant_fix(Tve &bigint, const int &i_sigd = digits_precision, const bo
 			}
 			else bigint.pop_front();
 		}
-
 	}
 	else {
 		if (static_cast<int>(bigint.size()) > i_sigd) {
@@ -93,10 +95,13 @@ void significant_fix(Tve &bigint, const int &i_sigd = digits_precision, const bo
 ////////////////
 ////////////////orginal
 template <typename Tve>
-void significant_fix_div(Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision, const bool &force_round = false)
+void significant_fix_div(Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision, const int &force_round = 0)
 {
 	int ibuff;
-	if (limit_digits_type == 1 || force_round) {
+	bool is_round = false;
+	if (limit_digits_type == 1 || force_round == 1) is_round = true;
+	if (force_round == 2) is_round = false;
+	if (is_round) {
 		if (static_cast<int>(bigint.size()) > i_sigd) {
 			ibuff = bigint.size()-i_sigd-1;
 			digits_offset -= ibuff+1;
@@ -120,7 +125,7 @@ void significant_fix_div(Tve &bigint, int &digits_offset, const int &i_sigd = di
 //significant_fix_point
 ////////////////
 ////////////////
-void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &fix_point = 6, const bool &force_round = false)
+void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &fix_point = 6, const int &force_round = 0)
 {
 	int i_sigd = poi_exp+fix_point;
 	significant_fix(bigint, i_sigd, force_round);
@@ -168,7 +173,6 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
 			}
 		}
 	}
-	//not for float
 	if (b_is_mod) return bu1;
 	//remove zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
@@ -210,6 +214,11 @@ public:
 	intbigf div(const intbigf &bus2) const;
 	//Power functions:
 	intbigf pow_int(const int &ib) const;
+	//Rounding and remainder functions:
+	intbigf trunc(const int &digits, const bool &is_point) const;
+	void trunc_self(const int &digits, const bool &is_point);
+	intbigf round(const int &digits, const bool &is_point) const;
+	void round_self(const int &digits, const bool &is_point);
 	//Operators:
 	operator int() const;
 	operator string() const;
@@ -249,8 +258,6 @@ public:
 	void assign_int(const int &us1);
 	void assign(const double &us1);
 	void assign(const char *cstr1);
-	intbigf round(const int &digits, const bool &is_point) const;
-	void round_self(const int &digits, const bool &is_point);
 	void swap(intbigf &bus2);
 	void clear();
 	//Class operators:
@@ -597,6 +604,37 @@ intbigf intbigf::pow_int(const int &ib) const
 	return ret;
 }
 ////////////////
+////Rounding and remainder functions:
+////////////////////////////////
+//round
+intbigf intbigf::trunc(const int &digits, const bool &is_point = false) const
+{
+	intbigf ret(*this);
+	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 2);
+	else intbigd_fu::significant_fix(ret.bigint, digits, 2);
+	return ret;
+}
+//round_self
+void intbigf::trunc_self(const int &digits, const bool &is_point = false)
+{
+	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 2);
+	else intbigd_fu::significant_fix(bigint, digits, 2);
+}
+//round
+intbigf intbigf::round(const int &digits, const bool &is_point = false) const
+{
+	intbigf ret(*this);
+	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 1);
+	else intbigd_fu::significant_fix(ret.bigint, digits, 1);
+	return ret;
+}
+//round_self
+void intbigf::round_self(const int &digits, const bool &is_point = false)
+{
+	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 1);
+	else intbigd_fu::significant_fix(bigint, digits, 1);
+}
+////////////////
 //Operators:
 ////////////////////////////////
 //operator int()
@@ -668,7 +706,8 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 		ibuff = bus1.b_poi+bus1.b_exp;
 		if (-ibuff <= intbigd_fu::cout_fixed && static_cast<int>(bus1.bigint.size())-ibuff > intbigd_fu::cout_fixed) {
 			intf_temp = bus1;
-			intf_temp.round_self(intbigd_fu::cout_fixed, true);
+			if (intbigd_fu::limit_digits_type == 1) intf_temp.round_self(intbigd_fu::cout_fixed, true);
+			else intf_temp.trunc_self(intbigd_fu::cout_fixed, true);
 			intf_p = &intf_temp;
 		}
 		if (-ibuff > intbigd_fu::cout_fixed) {
@@ -747,20 +786,6 @@ inline void intbigf::assign(const double &us1)
 inline void intbigf::assign(const char *cstr1)
 {
 	*this = intbigf(string(cstr1));
-}
-//round
-intbigf intbigf::round(const int &digits, const bool &is_point = false) const
-{
-	intbigf ret(*this);
-	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, true);
-	else intbigd_fu::significant_fix(ret.bigint, digits, true);
-	return ret;
-}
-//round_self
-void intbigf::round_self(const int &digits, const bool &is_point = false)
-{
-	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, true);
-	else intbigd_fu::significant_fix(bigint, digits, true);
 }
 //swap
 inline void intbigf::swap(intbigf &bus2)
