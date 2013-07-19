@@ -608,16 +608,13 @@ intbigf intbigf::pow_int(const int &ib) const
 //root_int, method: paper-and-pencil nth roots
 intbigf intbigf::root_int(const int &n) const
 {
-	//y^n+remainder = x
+	//wikipedia.org: paper-and-pencil nth roots
 	
-	int rad_p = b_poi+b_exp;
+	int rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1, offset1;
 	
 	
-	int offset1 = rad_p%n, offset2 = 0, preci = 0;
+	offset1 = rad_p%n;
 	if (bigint.size() > rad_p) offset2 = (bigint.size()-rad_p)%n;
-	
-	
-	
 	
 	preci = intbigd_fu::digits_precision+1-(bigint.size()+offset1+offset2)/n;
 	if (preci < 0) preci = 0;
@@ -627,45 +624,56 @@ intbigf intbigf::root_int(const int &n) const
 	intbigf ret;
 	deque<char> proc1(bigint.begin()+bigint.size()-offset1, bigint.end()),
 		proc2(bigint.begin(), bigint.begin()+bigint.size()-offset1),
-		base_pn(n, 0), beta(1, 0), y(1, 0), base_y, rema, basen_yn, temp;
+		base_pn(n, 0), beta(1, 0), y(1, 0), base_y, pick_t, pick_t_setp, pick1, pick2;
 	for (int ix = 0; ix != preci+offset2; ++ix) proc2.push_front(0);
+	base_pn.push_back(1);
 	
-	
-	base_pn.push_front(1);
-	
-	
-	deque<char>::reverse_iterator rit = proc2.rbegin();
+	deque<char>::const_reverse_iterator rit = proc2.rbegin();
 	
 	bool has_init = false;
-	//while (rit != proc2.rend()) {
-		
+	while (rit != proc2.rend()) {
 		if (has_init) for (int ix = 0; ix != n; ++ix) proc1.push_front(*rit++);
 		
-		
-		
-		y[0] = 0;
-		beta[0] = 1;
+		pick_t.assign(1, 0);
+		iwhobig = 1;
 		
 		base_y = y;
-		base_y.push_back(0);
+		//base_y.push_front(0);
+		if (y.size() == 1 && y[0] == 0) base_y = y;
+		else base_y.push_front(0);
 		
 		
+		pick2 = intbigd_fu::mul_f(base_pn, intbigd_fu::pow_f(y, n));
+		beta[0] = 0;
+		while (iwhobig == 1) {
+			pick_t_setp = pick_t;
+			++beta[0];
+			pick1 = intbigd_fu::pow_f(intbigd_fu::add_f(base_y, beta), n);
+			pick_t = intbigd_fu::sub_f(pick1, pick2);
+			iwhobig = intbigd_fu::abso_big(proc1, pick_t);
+		}
 		
-		basen_yn = intbigd_fu::mul_f(base_pn, intbigd_fu::pow_f(y, n));
-		rema = intbigd_fu::pow_f(intbigd_fu::add_f(base_y, beta), n);
-		
-		temp = intbigd_fu::sub_f(rema, basen_yn);
-		
-		
-		
-		
-		
+		//if (iwhobig == -1) {
+			
+			
+			//if (iwhobig != 1) proc1 = intbigd_fu::sub_f(proc1, pick_t_setp);//
+			
+			if (iwhobig != 1) intbigd_fu::sub_fself(proc1, pick_t_setp);
+			
+			
+			if (iwhobig != 1) {
+				if (y.size() == 1 && y[0] == 0) y[0] = --beta[0];
+				else y.push_front(--beta[0]);
+			}
+			
+		//}
+		//else {proc1.assign(1, 0); y.push_back(beta[0]);}
 		
 		
 		
 		has_init = true;
 		
-	//}
+	}
 	
 	
 	
@@ -678,7 +686,7 @@ intbigf intbigf::root_int(const int &n) const
 	
 	
 	
-	ret.bigint = temp;
+	ret.bigint = y;
 	
 	
 	

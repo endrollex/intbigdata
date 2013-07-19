@@ -52,7 +52,7 @@ int main()
 	intbigd_fu::precision_affect_all();
 	intbigd_fu::trunc();
 	//intbigd_fu::round();
-	intbigd_fu::fixed(9);
+	//intbigd_fu::fixed(9);
 	//intbigd_fu::scientific();
 	
 	clock_t t = clock();
@@ -66,9 +66,9 @@ int main()
 	intbigf n3 = 3;
 	
 	cout << n3 << endl;
-	cout << n3.root_int(3) << endl;
-	
-	
+	cout << n3.root_int(66) << endl;
+	//cout << cbrt(3.0) << endl;
+	cout << "1.4422495703074083823216383107801" << endl;
 	
 
 	t = clock() - t;
