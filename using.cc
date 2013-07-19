@@ -63,10 +63,11 @@ int main()
 	intbigf n1("14422");
 	intbigf n2("59720728576");
 	
-	intbigf n3 = n1.pow_int(2)*300/n2;
+	intbigf n3 = 3;
 	
 	cout << n3 << endl;
-	cout << n3.round(7) << endl;
+	cout << n3.root_int(3) << endl;
+	
 	
 	
 

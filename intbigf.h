@@ -214,6 +214,7 @@ public:
 	intbigf div(const intbigf &bus2) const;
 	//Power functions:
 	intbigf pow_int(const int &ib) const;
+	intbigf root_int(const int &n) const;
 	//Rounding and remainder functions:
 	intbigf trunc(const int &digits, const bool &is_point) const;
 	void trunc_self(const int &digits, const bool &is_point);
@@ -589,6 +590,7 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 ////////////////
 ////Power functions:
 ////////////////////////////////
+//pow_int
 intbigf intbigf::pow_int(const int &ib) const
 {
 	intbigf ret;
@@ -603,6 +605,93 @@ intbigf intbigf::pow_int(const int &ib) const
 	if (ib < 0) return intbigf_one.div(ret);
 	return ret;
 }
+//root_int, method: paper-and-pencil nth roots
+intbigf intbigf::root_int(const int &n) const
+{
+	//y^n+remainder = x
+	
+	int rad_p = b_poi+b_exp;
+	
+	
+	int offset1 = rad_p%n, offset2 = 0, preci = 0;
+	if (bigint.size() > rad_p) offset2 = (bigint.size()-rad_p)%n;
+	
+	
+	
+	
+	preci = intbigd_fu::digits_precision+1-(bigint.size()+offset1+offset2)/n;
+	if (preci < 0) preci = 0;
+	else preci = preci*n;
+	
+	
+	intbigf ret;
+	deque<char> proc1(bigint.begin()+bigint.size()-offset1, bigint.end()),
+		proc2(bigint.begin(), bigint.begin()+bigint.size()-offset1),
+		base_pn(n, 0), beta(1, 0), y(1, 0), base_y, rema, basen_yn, temp;
+	for (int ix = 0; ix != preci+offset2; ++ix) proc2.push_front(0);
+	
+	
+	base_pn.push_front(1);
+	
+	
+	deque<char>::reverse_iterator rit = proc2.rbegin();
+	
+	bool has_init = false;
+	//while (rit != proc2.rend()) {
+		
+		if (has_init) for (int ix = 0; ix != n; ++ix) proc1.push_front(*rit++);
+		
+		
+		
+		y[0] = 0;
+		beta[0] = 1;
+		
+		base_y = y;
+		base_y.push_back(0);
+		
+		
+		
+		basen_yn = intbigd_fu::mul_f(base_pn, intbigd_fu::pow_f(y, n));
+		rema = intbigd_fu::pow_f(intbigd_fu::add_f(base_y, beta), n);
+		
+		temp = intbigd_fu::sub_f(rema, basen_yn);
+		
+		
+		
+		
+		
+		
+		
+		
+		has_init = true;
+		
+	//}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	ret.bigint = temp;
+	
+	
+	
+	return ret;
+	
+	
+}
+
+
+
+
+
+
 ////////////////
 ////Rounding and remainder functions:
 ////////////////////////////////

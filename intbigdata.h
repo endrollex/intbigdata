@@ -721,45 +721,44 @@ intbigdata intbigdata::sqrt() const
 	ib_20.bigint.push_back(2);
 	intbigd_fu::sub_fself_contra(ib_rootsqr.bigint, rema);
 	//iterate
-	//skip tab
 	while (v_it != bigint.rend()) {
-	//add the two digits
-	rema.push_front(*v_it++);
-	rema.push_front(*v_it++);
-	while (rema.back() == 0 && rema.size() != 1) rema.pop_back();
-	ib_20p.bigint = intbigd_fu::mul_f(ib_20.bigint, de_root);
-	//formula: x(20p+x) <= remainder
-	//try division
-	di_temp.bigint.assign(rema.begin(), rema.end());
-	ix = 0;
-	while (intbigd_fu::abso_big(di_temp.bigint, ib_20p.bigint) != -1) {
-		intbigd_fu::sub_fself(di_temp.bigint, ib_20p.bigint);
-		++ix;
-	}
-	//note: ix < 10
-	if (ix > 9) ix = 9;
-	//try division end, ix = try quetient
-	//_division 2, find the part of the root
-	ib_20p.bigint[0] = ix;
-	i_temp = 1;
-	//note:
-	if (ix == 1 && di_temp.is_zero()) {i_temp = 2; ib_20p.bigint[0] = 0;}
-	while (i_temp == 1) {
+		//add the two digits
+		rema.push_front(*v_it++);
+		rema.push_front(*v_it++);
+		while (rema.back() == 0 && rema.size() != 1) rema.pop_back();
+		ib_20p.bigint = intbigd_fu::mul_f(ib_20.bigint, de_root);
+		//formula: x(20p+x) <= remainder
+		//try division
 		di_temp.bigint.assign(rema.begin(), rema.end());
 		ix = 0;
-		//note: ix < 10
-		while (intbigd_fu::abso_big(di_temp.bigint, ib_20p.bigint) != -1 && ix != 9) {
+		while (intbigd_fu::abso_big(di_temp.bigint, ib_20p.bigint) != -1) {
 			intbigd_fu::sub_fself(di_temp.bigint, ib_20p.bigint);
 			++ix;
 		}
-		if (ix < ib_20p.bigint[0]) --ib_20p.bigint[0];
-		else {
-			i_temp = 2;
-			if (ix > ib_20p.bigint[0]) di_temp.bigint = intbigd_fu::add_f(di_temp.bigint, ib_20p.bigint);
+		//note: ix < 10
+		if (ix > 9) ix = 9;
+		//try division end, ix = try quetient
+		//_division 2, find the part of the root
+		ib_20p.bigint[0] = ix;
+		i_temp = 1;
+		//note:
+		if (ix == 1 && di_temp.is_zero()) {i_temp = 2; ib_20p.bigint[0] = 0;}
+		while (i_temp == 1) {
+			di_temp.bigint.assign(rema.begin(), rema.end());
+			ix = 0;
+			//note: ix < 10
+			while (intbigd_fu::abso_big(di_temp.bigint, ib_20p.bigint) != -1 && ix != 9) {
+				intbigd_fu::sub_fself(di_temp.bigint, ib_20p.bigint);
+				++ix;
+			}
+			if (ix < ib_20p.bigint[0]) --ib_20p.bigint[0];
+			else {
+				i_temp = 2;
+				if (ix > ib_20p.bigint[0]) di_temp.bigint = intbigd_fu::add_f(di_temp.bigint, ib_20p.bigint);
+			}
 		}
-	}
-	de_root.push_front(ib_20p.bigint[0]);
-	if (ib_20p.bigint[0] != 0) rema.assign(di_temp.bigint.begin(), di_temp.bigint.end());
+		de_root.push_front(ib_20p.bigint[0]);
+		if (ib_20p.bigint[0] != 0) rema.assign(di_temp.bigint.begin(), di_temp.bigint.end());
 	}
 	ib_root_res.bigint.assign(de_root.begin(), de_root.end());
 	return ib_root_res;
