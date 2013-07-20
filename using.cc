@@ -33,11 +33,17 @@ int main()
 	
 	//frac_test(100);
 	
-	intbigf n1 = "3";
-	intbigf n2 = "-1";
+	intbigf n1 = "1.23";
+	intbigf n2 = "2";
+	
+	intbigdata d1 = "123000000";
+	cout << d1.sqrt() << endl;
 	
 	cout << n1.root_int(n2) << endl;
+	//cout << n1.pow_int(5).root_int(n2) << endl;
+	//cout << n1.root_int(n2).pow_int(5) << endl;
 	//cout << setprecision(16) << n1.get_double()/n2.get_double() << endl;
+	cout << setprecision(16) << pow((double)n1, (double)(1/n2)) << endl;
 	
 
 	t = clock() - t;

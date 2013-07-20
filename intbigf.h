@@ -623,8 +623,12 @@ intbigf intbigf::root_int(const int &n_o) const
 	if (n_o == 1) return *this;
 	if (n_o == -1) return intbigf_one.div(*this);
 	//wikipedia.org: paper-and-pencil nth roots
+	intbigf y;
 	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1, offset1 = 0, offset_f = 0;
 	if (n < 0) n = -n;
+	if (n%2 == 1) y.b_sign = b_sign;
+	else if (!b_sign) cerr << "intbigdata.h: imaginary number" << endl;
+	//
 	if (rad_p > 0) {
 		offset1 = rad_p%n;
 		if (bigint.size() < rad_p) size_fix = rad_p;
@@ -641,7 +645,6 @@ intbigf intbigf::root_int(const int &n_o) const
 	if (preci < 0) preci = 0;
 	else preci = preci*n;
 	//take apart
-	intbigf y;
 	deque<char> base_pn(n, 0), beta(1, 0), proc1, proc2, base_y, pick_t, pick_t_setp, pick1, pick2;
 	if (size_fix == bigint.size()) {
 		proc1.assign(bigint.begin()+size_fix-offset1, bigint.end());
@@ -666,6 +669,7 @@ intbigf intbigf::root_int(const int &n_o) const
 	//loop
 	while (rit != proc2.rend()) {
 		if (proc_go) for (int ix = 0; ix != n; ++ix) proc1.push_front(*rit++);
+		while (proc1.size() != 1 && proc1.back() == 0) proc1.pop_back();
 		pick_t.assign(1, 0);
 		iwhobig = 1;
 		base_y = y.bigint;
@@ -694,7 +698,6 @@ intbigf intbigf::root_int(const int &n_o) const
 		}
 		proc_go = true;
 	}
-	
 	if (n_o < 0) return intbigf_one.div(y);
 	return y;
 }
@@ -1024,7 +1027,7 @@ inline unsigntp intbigf::max_size() const
 	return bigint.max_size();
 }
 ////////////////
-//exception or cerr: div, save_file, load_file
+//exception or cerr: div, save_file, load_file, root_int
 ////////////////
 ////////////////
 #endif
