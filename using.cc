@@ -8,19 +8,21 @@
 using namespace std;
 int main()
 {
+	clock_t t = clock();
+
 	intbigd_fu::precision_affect_div_inf();
-	intbigd_fu::precision_affect_all();
+	intbigd_fu::precision_affect_all(16);
 	intbigd_fu::trunc();
 	//intbigd_fu::round();
 	//intbigd_fu::fixed(9);
 	//intbigd_fu::scientific();
 	
-	clock_t t = clock();
 	
-	intbigf n3 = 3000;
+	intbigf n3 = "3e-2";
+	//n3 = 0.003;
+	n3 = "3e-11";
 	
-	cout << n3.root_int(3) << endl;
-	cout << "1.4422495703074083823216383107801" << endl;
+	cout << n3.root_int(4) << endl;
 	
 
 	t = clock() - t;

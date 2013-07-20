@@ -609,26 +609,54 @@ intbigf intbigf::pow_int(const int &ib) const
 intbigf intbigf::root_int(const int &n) const
 {
 	//wikipedia.org: paper-and-pencil nth roots
-	int rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1, offset1;
-	offset1 = rad_p%n;
-	if (bigint.size() > rad_p) offset2 = (bigint.size()-rad_p)%n;
-	preci = intbigd_fu::digits_precision+1-(bigint.size()+offset1+offset2)/n;
+	int size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1, offset1 = 0, offset_f = 0;
+	if (rad_p > 0) {
+		offset1 = rad_p%n;
+		if (bigint.size() < rad_p) size_fix = rad_p;
+		if (size_fix > rad_p) offset2 = (size_fix-rad_p)%n;
+	}
+	else {
+		offset1 = n-(-rad_p)%n;
+		if (offset1 < 0) offset1 = -offset1;
+		if (size_fix < offset1) offset_f = offset1-size_fix;
+		else offset2 = (size_fix-offset1)%n;
+		if (offset2 < 0) offset2 = -offset2;
+	}
+	preci = intbigd_fu::digits_precision+1-(size_fix+offset1+offset2+offset_f)/n;
 	if (preci < 0) preci = 0;
 	else preci = preci*n;
+	//
 	intbigf y;
-	deque<char> proc1(bigint.begin()+bigint.size()-offset1, bigint.end()),
-		proc2(bigint.begin(), bigint.begin()+bigint.size()-offset1),
-		base_pn(n, 0), beta(1, 0), base_y, pick_t, pick_t_setp, pick1, pick2;
+	deque<char> base_pn(n, 0), beta(1, 0), proc1, proc2, base_y, pick_t, pick_t_setp, pick1, pick2;
+	if (rad_p > 0) {
+		if (size_fix == bigint.size()) {
+			proc1.assign(bigint.begin()+size_fix-offset1, bigint.end());
+			proc2.assign(bigint.begin(), bigint.begin()+size_fix-offset1);
+		}
+		else {
+			pick_t = bigint;
+			for (int ix = 0; ix != size_fix-bigint.size(); ++ix) pick_t.push_front(0);
+			proc1.assign(pick_t.begin()+size_fix-offset1, pick_t.end());
+			proc2.assign(pick_t.begin(), pick_t.begin()+size_fix-offset1);
+		}	
+	}
+	else {
+		proc1.assign(bigint.begin()+size_fix-offset1, bigint.end());
+		for(int ix = 0; ix != offset_f; ++ix) proc1.push_front(0);
+		if (size_fix-offset1 > 0) proc2.assign(bigint.begin(), bigint.begin()+size_fix-offset1);
+	}
+	//
 	for (int ix = 0; ix != preci+offset2; ++ix) proc2.push_front(0);
 	base_pn.push_back(1);
 	deque<char>::const_reverse_iterator rit = proc2.rbegin();
-	bool has_init = false;
-	
-	
-	
+	bool proc_go = false;
+	y.b_poi = rad_p/n;
+	if (offset1 != 0) ++y.b_poi;
+	if (rad_p <= 0) --y.b_poi;
+	if (proc1.empty()) proc_go = true;
 	//loop
 	while (rit != proc2.rend()) {
-		if (has_init) for (int ix = 0; ix != n; ++ix) proc1.push_front(*rit++);
+		if (proc_go) for (int ix = 0; ix != n; ++ix) proc1.push_front(*rit++);
 		pick_t.assign(1, 0);
 		iwhobig = 1;
 		base_y = y.bigint;
@@ -639,6 +667,7 @@ intbigf intbigf::root_int(const int &n) const
 		while (iwhobig == 1) {
 			pick_t_setp = pick_t;
 			++beta[0];
+			//
 			pick1 = intbigd_fu::pow_f(intbigd_fu::add_f(base_y, beta), n);
 			pick_t = intbigd_fu::sub_f(pick1, pick2);
 			iwhobig = intbigd_fu::abso_big(proc1, pick_t);
@@ -652,18 +681,11 @@ intbigf intbigf::root_int(const int &n) const
 			intbigd_fu::sub_fself(proc1, pick_t_setp);
 			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = --beta[0];
 			else y.bigint.push_front(--beta[0]);
-		}		
-		has_init = true;
+		}
+		proc_go = true;
 	}
-	
-	
 	return y;
 }
-
-
-
-
-
 ////////////////
 ////Rounding and remainder functions:
 ////////////////////////////////
