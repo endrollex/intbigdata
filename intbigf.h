@@ -89,6 +89,7 @@ void significant_fix(Tve &bigint, const int &i_sigd = digits_precision, const in
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
 		}
 	}
+	while (bigint.size() != 1 && bigint.front() == 0) bigint.pop_front();
 }
 ////////////////
 //significant_fix_div ATTENTION: zero is spical
@@ -120,6 +121,7 @@ void significant_fix_div(Tve &bigint, int &digits_offset, const int &i_sigd = di
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
 		}
 	}
+	//no remove tail zero
 }
 ////////////////
 //significant_fix_point
@@ -559,25 +561,6 @@ inline intbigf intbigf::sub(const intbigf &bus2) const
 	}
 	return intbigf();
 }
-/*
-//mul
-inline intbigf intbigf::mul(const intbigf &bus2) const
-{
-	int i_offset, i_exp, i_absob;
-	deque<char> bus_temp;
-	char check_d = 'n';
-	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
-	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
-	if (i_offset < 0) bus1_p = &bus_temp;
-	if (i_offset > 0) bus2_p = &bus_temp;
-	//sign
-	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, 'z');
-}
-
-//*/
-
-
-///*
 //mul
 inline intbigf intbigf::mul(const intbigf &bus2) const
 {
@@ -590,10 +573,7 @@ inline intbigf intbigf::mul(const intbigf &bus2) const
 		if (size1 < absp1) i_p1 = size1;
 		if (size1 > absp1) i_p1 = absp1-size1;
 	}
-	else {
-		cerr << "p " << endl;
-		i_p1 = absp1-size1;
-	}
+	else i_p1 = absp1-size1;
 	if (absp2 > 0) {
 		if (size2 < absp2) i_p2 = i_p2-size2;
 		if (size2 > absp2) i_p2 = absp2-size2;
@@ -603,18 +583,6 @@ inline intbigf intbigf::mul(const intbigf &bus2) const
 	//sign
 	return intbigf(intbigd_fu::mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'z');
 }
-
-//*/
-
-
-
-
-
-
-
-
-
-
 //div
 inline intbigf intbigf::div(const intbigf &bus2) const
 {
@@ -634,8 +602,6 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 ////Power functions:
 ////////////////////////////////
 //pow_int
-
-/*
 intbigf intbigf::pow_int(const int &ib) const
 {
 	intbigf ret;
@@ -650,42 +616,6 @@ intbigf intbigf::pow_int(const int &ib) const
 	if (ib < 0) return intbigf_one.div(ret);
 	return ret;
 }
-//*/
-
-
-
-
-
-intbigf intbigf::pow_int(const int &ib) const
-{
-	intbigf ret;
-	int ibx = ib;
-	if (ib == 0) {ret.bigint[0] = 1; return ret;}
-	if (ib < 0) ibx = -ibx;
-	if (ibx%2 == 1) ret.b_sign = b_sign;
-	ret = *this;
-	for (int ixc = 1; ixc != ibx; ++ixc) {
-		ret = ret.mul(*this);
-	}
-	if (ib < 0) return intbigf_one.div(ret);
-	return ret;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //root_int, method: paper-and-pencil nth roots
 intbigf intbigf::root_int(const int &n) const
 {
@@ -992,9 +922,11 @@ string intbigf::scientific(const int &i_point = 6) const
 	for (; d_it != i_round.bigint.rbegin()+(i_round.bigint.size()-ix1); ++d_it) {
 		s_temp += s_number[*d_it];
 	}
+	if (s_temp.empty()) s_temp = '0';
 	s_scient += s_temp[0];
-	if (s_temp.size() != 1) s_scient += '.';
+	if (s_temp.size() != 1) {s_scient += '.';
 	s_scient.append(s_temp, 1, s_temp.size()-1);
+	}
 	s_scient += "e";
 	//s_temp clear
 	s_temp.clear();

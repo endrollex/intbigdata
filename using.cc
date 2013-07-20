@@ -9,11 +9,17 @@ using namespace std;
 void frac_test(const intbigf &a)
 {
 	for (int x = 1; x != (int)a+1; ++x) {
-		intbigf y = a/(intbigf)x;
-		cout << y.pow_int(x) << endl;
+		intbigf y = a/x;
+		cout << ((y-1).pow_int(x)) << endl;
 	}
 }
-
+void frac_test2(const double &a)
+{
+	for (int x = 1; x != (int)a+1; ++x) {
+		double y = a/x;
+		cout << pow(y-1, x) << endl;
+	}
+}
 int main()
 {
 	clock_t t = clock();
@@ -22,20 +28,16 @@ int main()
 	intbigd_fu::precision_affect_all();
 	intbigd_fu::trunc();
 	//intbigd_fu::round();
-	//intbigd_fu::fixed(9);
+	//intbigd_fu::fixed(6);
 	//intbigd_fu::scientific();
 	
-	//frac_test(50);
-
+	//frac_test(100);
 	
-	intbigf n1 = "123456";
-	cout << "n1 p " << n1.b_poi << endl;
-	cout << "n1 e " << n1.b_exp << endl;
+	intbigf n1 = "3";
+	intbigf n2 = "3";
 	
-	intbigf n2 = "2";
-	
-	cout << n1.pow_int(n2) << endl;
-	cout << setprecision(16) << pow(n1.get_double(), n2.get_double()) << endl;
+	cout << n1.root_int(n2) << endl;
+	//cout << setprecision(16) << n1.get_double()/n2.get_double() << endl;
 	
 
 	t = clock() - t;
