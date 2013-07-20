@@ -135,7 +135,7 @@ void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &f
 ////////////////
 ////////////////from div_f
 template <typename Tve>
-Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
+Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 {
 	int ibuff = 0, di_p_cou = 0, di_p_siz, difsize, i_sigd;
 	unsigntp ix1, ix2;	
@@ -559,6 +559,7 @@ inline intbigf intbigf::sub(const intbigf &bus2) const
 	}
 	return intbigf();
 }
+/*
 //mul
 inline intbigf intbigf::mul(const intbigf &bus2) const
 {
@@ -572,6 +573,48 @@ inline intbigf intbigf::mul(const intbigf &bus2) const
 	//sign
 	return intbigf(intbigd_fu::mul_f(*bus1_p, *bus2_p), -1, i_exp+i_exp, b_sign == bus2.b_sign, 'z');
 }
+
+//*/
+
+
+///*
+//mul
+inline intbigf intbigf::mul(const intbigf &bus2) const
+{
+	int i_p1 = 0, i_p2 = 0, i_exp, absp1, absp2, size1, size2;
+	absp1 = b_poi+b_exp;
+	absp2 = bus2.b_poi+bus2.b_exp;
+	size1 = bigint.size();
+	size2 = bus2.bigint.size();
+	if (absp1 > 0) {
+		if (size1 < absp1) i_p1 = size1;
+		if (size1 > absp1) i_p1 = absp1-size1;
+	}
+	else {
+		cerr << "p " << endl;
+		i_p1 = absp1-size1;
+	}
+	if (absp2 > 0) {
+		if (size2 < absp2) i_p2 = i_p2-size2;
+		if (size2 > absp2) i_p2 = absp2-size2;
+	}
+	else i_p2 = absp2-size2;
+	i_exp = i_p1+i_p2;
+	//sign
+	return intbigf(intbigd_fu::mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'z');
+}
+
+//*/
+
+
+
+
+
+
+
+
+
+
 //div
 inline intbigf intbigf::div(const intbigf &bus2) const
 {
@@ -591,6 +634,8 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 ////Power functions:
 ////////////////////////////////
 //pow_int
+
+/*
 intbigf intbigf::pow_int(const int &ib) const
 {
 	intbigf ret;
@@ -605,6 +650,42 @@ intbigf intbigf::pow_int(const int &ib) const
 	if (ib < 0) return intbigf_one.div(ret);
 	return ret;
 }
+//*/
+
+
+
+
+
+intbigf intbigf::pow_int(const int &ib) const
+{
+	intbigf ret;
+	int ibx = ib;
+	if (ib == 0) {ret.bigint[0] = 1; return ret;}
+	if (ib < 0) ibx = -ibx;
+	if (ibx%2 == 1) ret.b_sign = b_sign;
+	ret = *this;
+	for (int ixc = 1; ixc != ibx; ++ixc) {
+		ret = ret.mul(*this);
+	}
+	if (ib < 0) return intbigf_one.div(ret);
+	return ret;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //root_int, method: paper-and-pencil nth roots
 intbigf intbigf::root_int(const int &n) const
 {
@@ -625,25 +706,19 @@ intbigf intbigf::root_int(const int &n) const
 	preci = intbigd_fu::digits_precision+1-(size_fix+offset1+offset2+offset_f)/n;
 	if (preci < 0) preci = 0;
 	else preci = preci*n;
-	//
+	//take apart
 	intbigf y;
 	deque<char> base_pn(n, 0), beta(1, 0), proc1, proc2, base_y, pick_t, pick_t_setp, pick1, pick2;
-	if (rad_p > 0) {
-		if (size_fix == bigint.size()) {
-			proc1.assign(bigint.begin()+size_fix-offset1, bigint.end());
-			proc2.assign(bigint.begin(), bigint.begin()+size_fix-offset1);
-		}
-		else {
-			pick_t = bigint;
-			for (int ix = 0; ix != size_fix-bigint.size(); ++ix) pick_t.push_front(0);
-			proc1.assign(pick_t.begin()+size_fix-offset1, pick_t.end());
-			proc2.assign(pick_t.begin(), pick_t.begin()+size_fix-offset1);
-		}	
-	}
-	else {
+	if (size_fix == bigint.size()) {
 		proc1.assign(bigint.begin()+size_fix-offset1, bigint.end());
 		for(int ix = 0; ix != offset_f; ++ix) proc1.push_front(0);
 		if (size_fix-offset1 > 0) proc2.assign(bigint.begin(), bigint.begin()+size_fix-offset1);
+	}
+	else {
+		pick_t = bigint;
+		for (int ix = 0; ix != size_fix-bigint.size(); ++ix) pick_t.push_front(0);
+		proc1.assign(pick_t.begin()+size_fix-offset1, pick_t.end());
+		proc2.assign(pick_t.begin(), pick_t.begin()+size_fix-offset1);
 	}
 	//
 	for (int ix = 0; ix != preci+offset2; ++ix) proc2.push_front(0);
@@ -664,14 +739,15 @@ intbigf intbigf::root_int(const int &n) const
 		else base_y.push_front(0);
 		pick2 = intbigd_fu::mul_f(base_pn, intbigd_fu::pow_f(y.bigint, n));
 		beta[0] = 0;
+		//
 		while (iwhobig == 1) {
 			pick_t_setp = pick_t;
 			++beta[0];
-			//
 			pick1 = intbigd_fu::pow_f(intbigd_fu::add_f(base_y, beta), n);
 			pick_t = intbigd_fu::sub_f(pick1, pick2);
 			iwhobig = intbigd_fu::abso_big(proc1, pick_t);
 		}
+		//
 		if (iwhobig == 0) {
 			proc1.assign(1, 0);
 			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = beta[0];

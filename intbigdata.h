@@ -259,7 +259,7 @@ void mul_fself(Tve &bigint, const Tve &di2)
 ////////////////
 ////////////////
 template <typename Tve>
-Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod)
+Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 {
 	unsigntp difsize = bigint.size()-di2.size()+1;
 	//deque

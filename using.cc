@@ -6,23 +6,36 @@
 #include <sstream>
 #include "intbigf.h"
 using namespace std;
+void frac_test(const intbigf &a)
+{
+	for (int x = 1; x != (int)a+1; ++x) {
+		intbigf y = a/(intbigf)x;
+		cout << y.pow_int(x) << endl;
+	}
+}
+
 int main()
 {
 	clock_t t = clock();
 
 	intbigd_fu::precision_affect_div_inf();
-	intbigd_fu::precision_affect_all(16);
+	intbigd_fu::precision_affect_all();
 	intbigd_fu::trunc();
 	//intbigd_fu::round();
 	//intbigd_fu::fixed(9);
 	//intbigd_fu::scientific();
 	
+	//frac_test(50);
+
 	
-	intbigf n3 = "3e-2";
-	//n3 = 0.003;
-	n3 = "3e-11";
+	intbigf n1 = "123456";
+	cout << "n1 p " << n1.b_poi << endl;
+	cout << "n1 e " << n1.b_exp << endl;
 	
-	cout << n3.root_int(4) << endl;
+	intbigf n2 = "2";
+	
+	cout << n1.pow_int(n2) << endl;
+	cout << setprecision(16) << pow(n1.get_double(), n2.get_double()) << endl;
 	
 
 	t = clock() - t;
