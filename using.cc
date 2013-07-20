@@ -34,7 +34,7 @@ int main()
 	//frac_test(100);
 	
 	intbigf n1 = "3";
-	intbigf n2 = "3";
+	intbigf n2 = "-1";
 	
 	cout << n1.root_int(n2) << endl;
 	//cout << setprecision(16) << n1.get_double()/n2.get_double() << endl;

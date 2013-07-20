@@ -617,10 +617,14 @@ intbigf intbigf::pow_int(const int &ib) const
 	return ret;
 }
 //root_int, method: paper-and-pencil nth roots
-intbigf intbigf::root_int(const int &n) const
+intbigf intbigf::root_int(const int &n_o) const
 {
+	if (n_o == 0) throw intbigdata_error();
+	if (n_o == 1) return *this;
+	if (n_o == -1) return intbigf_one.div(*this);
 	//wikipedia.org: paper-and-pencil nth roots
-	int size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1, offset1 = 0, offset_f = 0;
+	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1, offset1 = 0, offset_f = 0;
+	if (n < 0) n = -n;
 	if (rad_p > 0) {
 		offset1 = rad_p%n;
 		if (bigint.size() < rad_p) size_fix = rad_p;
@@ -690,6 +694,8 @@ intbigf intbigf::root_int(const int &n) const
 		}
 		proc_go = true;
 	}
+	
+	if (n_o < 0) return intbigf_one.div(y);
 	return y;
 }
 ////////////////
