@@ -738,18 +738,12 @@ intbigf intbigf::pow(const double &ib, const bool &is_root = false) const
 	if (ib < 0) dou1 = -dou1;
 	int i2 = 1, i1, i_gcd;
 	//float*10 will lost precision sometimes
-	while (dou1-static_cast<int>(dou1+0.000001) > 0) {
-		i2 *= 10; dou1 *= 10.0;
-	}
+	while (dou1-static_cast<int>(dou1+0.000001) > 0) {i2 *= 10; dou1 *= 10.0;}
 	i1 = static_cast<int>(dou1+0.000001);
 	i_gcd = intbigd_fu::gcd(i1, i2);
 	i1 = i1/i_gcd;
 	i2 = i2/i_gcd;
-	if (is_root) {
-		i_gcd = i1;
-		i1 = i2;
-		i2 = i_gcd;
-	}
+	if (is_root) {i_gcd = i1; i1 = i2; i2 = i_gcd;}
 	//
 	intbigf ret(*this);
 	if (ib > 0) return (ret.root_int(i2)).pow_int(i1);

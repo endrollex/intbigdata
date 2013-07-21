@@ -45,7 +45,9 @@ int main()
 	//cout << n1.root(n2) << endl;
 	
 	cout << n1.pow_frac(3, 2) << endl;
-
+	
+	cout << intbigf(100000).root(2) << endl;
+	
 	t = clock() - t;
 	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;
 	
