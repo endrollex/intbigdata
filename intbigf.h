@@ -3,7 +3,7 @@
 //craft by endrollex, 2013.7.3
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
-//           that means the intbigf.h is less efficient.
+//           that means the intbigf.h is poor efficient.
 ////////////////
 ////////////////
 #ifndef INTBIGDAF_H
@@ -195,6 +195,16 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 	}
 	return de_res;
 }
+////////////////
+//gcd
+////////////////
+////////////////
+int gcd(const int &v1_o, const int &v2_o)
+{
+	int v1 = v1_o, v2 = v2_o;
+	while (v2 != 0) {int temp = v2; v2 = v1%v2; v1 = temp;}
+	return v1;
+}
 }
 //do not inherit
 class intbigf
@@ -217,6 +227,11 @@ public:
 	//Power functions:
 	intbigf pow_int(const int &ib) const;
 	intbigf root_int(const int &n) const;
+	intbigf pow(const double &ib, const bool &is_root) const;
+	intbigf root(const double &ib) const;
+	intbigf pow_frac(const int &nume, const int &deno, const bool &sign);
+	//Exponential and logarithmic functions:
+	//
 	//Rounding and remainder functions:
 	intbigf trunc(const int &digits, const bool &is_point) const;
 	void trunc_self(const int &digits, const bool &is_point);
@@ -661,11 +676,15 @@ intbigf intbigf::root_int(const int &n_o) const
 	for (int ix = 0; ix != preci+offset2; ++ix) proc2.push_front(0);
 	base_pn.push_back(1);
 	deque<char>::const_reverse_iterator rit = proc2.rbegin();
-	bool proc_go = false;
+	bool proc_go = false, y_zero = true;
 	y.b_poi = rad_p/n;
 	if (offset1 != 0) ++y.b_poi;
 	if (rad_p <= 0) --y.b_poi;
 	if (proc1.empty()) proc_go = true;
+	//for guess
+	deque<char> nbase_nf1(n-1, 0);
+	int ibuff = n;
+	while (ibuff != 0) {nbase_nf1.push_back(ibuff%10); ibuff /= 10;}
 	//loop
 	while (rit != proc2.rend()) {
 		if (proc_go) for (int ix = 0; ix != n; ++ix) proc1.push_front(*rit++);
@@ -673,10 +692,20 @@ intbigf intbigf::root_int(const int &n_o) const
 		pick_t.assign(1, 0);
 		iwhobig = 1;
 		base_y = y.bigint;
-		if (y.bigint.size() == 1 && y.bigint[0] == 0) base_y = y.bigint;
+		y_zero = (y.bigint.size() == 1 && y.bigint[0] == 0);
+		if (y_zero) base_y = y.bigint;
 		else base_y.push_front(0);
 		pick2 = intbigd_fu::mul_f(base_pn, intbigd_fu::pow_f(y.bigint, n));
 		beta[0] = 0;
+		//guess
+		if (!y_zero) {
+			deque<char> d_temp(y.bigint);
+			d_temp = intbigd_fu::mul_f(nbase_nf1, intbigd_fu::pow_f(d_temp, n-1));
+			if (intbigd_fu::abso_big(proc1, d_temp) == 1) d_temp = intbigd_fu::div_f(proc1, d_temp);
+			else d_temp.assign(1, 0);
+			beta[0] = d_temp[0]/2;
+			if (beta[0] != 0) --beta[0];
+		}
 		//
 		while (iwhobig == 1) {
 			pick_t_setp = pick_t;
@@ -686,20 +715,59 @@ intbigf intbigf::root_int(const int &n_o) const
 			iwhobig = intbigd_fu::abso_big(proc1, pick_t);
 		}
 		//
+		y_zero = (y.bigint.size() == 1 && y.bigint[0] == 0);
 		if (iwhobig == 0) {
 			proc1.assign(1, 0);
-			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = beta[0];
+			if (y_zero) y.bigint[0] = beta[0];
 			else y.bigint.push_back(beta[0]);
 		}
 		else {
 			intbigd_fu::sub_fself(proc1, pick_t_setp);
-			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = --beta[0];
+			if (y_zero) y.bigint[0] = --beta[0];
 			else y.bigint.push_front(--beta[0]);
 		}
 		proc_go = true;
 	}
 	if (n_o < 0) return intbigf_one.div(y);
 	return y;
+}
+//pow
+intbigf intbigf::pow(const double &ib, const bool &is_root = false) const
+{
+	float dou1 = ib;
+	if (ib < 0) dou1 = -dou1;
+	int i2 = 1, i1, i_gcd;
+	//float*10 will lost precision sometimes
+	while (dou1-static_cast<int>(dou1+0.000001) > 0) {
+		i2 *= 10; dou1 *= 10.0;
+	}
+	i1 = static_cast<int>(dou1+0.000001);
+	i_gcd = intbigd_fu::gcd(i1, i2);
+	i1 = i1/i_gcd;
+	i2 = i2/i_gcd;
+	if (is_root) {
+		i_gcd = i1;
+		i1 = i2;
+		i2 = i_gcd;
+	}
+	//
+	intbigf ret(*this);
+	if (ib > 0) return (ret.root_int(i2)).pow_int(i1);
+	if (ib < 0) return intbigf_one.div((ret.root_int(i2)).pow_int(i1));
+	return intbigf_one;
+}
+//root
+inline intbigf intbigf::root(const double &ib) const
+{
+	return this->pow(ib, true);
+}
+//pow_frac
+intbigf intbigf::pow_frac(const int &nume, const int &deno, const bool &sign = true)
+{
+	intbigf ret(*this);
+	if (sign) return (ret.root_int(deno)).pow_int(nume);
+	if (!sign) return intbigf_one.div((ret.root_int(deno)).pow_int(nume));
+	return intbigf_one;
 }
 ////////////////
 ////Rounding and remainder functions:

@@ -26,25 +26,25 @@ int main()
 
 	intbigd_fu::precision_affect_div_inf();
 	intbigd_fu::precision_affect_all();
-	intbigd_fu::trunc();
+	//intbigd_fu::trunc();
 	//intbigd_fu::round();
 	//intbigd_fu::fixed(6);
 	//intbigd_fu::scientific();
 	
 	//frac_test(100);
 	
-	intbigf n1 = "1.23";
-	intbigf n2 = "2";
+	intbigf n1 = "3";
+	intbigf n2 = "12.5";
+	n2 = 1.5;
 	
-	intbigdata d1 = "123000000";
-	cout << d1.sqrt() << endl;
+	//cout << n1.pow_int(n2) << endl;
+	//cout << setprecision(16) << pow((double)n1, (double)(1/n2)) << endl;
+	cout << setprecision(16) << pow((double)n1, (double)(n2)) << endl;
 	
-	cout << n1.root_int(n2) << endl;
-	//cout << n1.pow_int(5).root_int(n2) << endl;
-	//cout << n1.root_int(n2).pow_int(5) << endl;
-	//cout << setprecision(16) << n1.get_double()/n2.get_double() << endl;
-	cout << setprecision(16) << pow((double)n1, (double)(1/n2)) << endl;
+	cout << n1.pow(n2) << endl;
+	//cout << n1.root(n2) << endl;
 	
+	cout << n1.pow_frac(3, 2) << endl;
 
 	t = clock() - t;
 	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;
