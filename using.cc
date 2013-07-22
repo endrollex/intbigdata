@@ -39,14 +39,14 @@ int main()
 	
 	//cout << n1.pow_int(n2) << endl;
 	//cout << setprecision(16) << pow((double)n1, (double)(1/n2)) << endl;
-	cout << setprecision(16) << pow((double)n1, (double)(n2)) << endl;
+	//cout << setprecision(16) << pow((double)n1, (double)(n2)) << endl;
 	
-	cout << n1.pow(n2) << endl;
+	//cout << n1.pow(n2) << endl;
 	//cout << n1.root(n2) << endl;
 	
-	cout << n1.pow_frac(3, 2) << endl;
+	//cout << n1.pow_frac(3, 2) << endl;
 	
-	cout << intbigf(100000).root(2) << endl;
+	cout << intbigf(-0.03).root(3) << endl;
 	
 	t = clock() - t;
 	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;

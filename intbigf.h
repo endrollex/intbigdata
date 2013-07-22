@@ -639,7 +639,8 @@ intbigf intbigf::root_int(const int &n_o) const
 	if (n_o == -1) return intbigf_one.div(*this);
 	//wikipedia.org: paper-and-pencil nth roots
 	intbigf y;
-	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1, offset1 = 0, offset_f = 0;
+	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1,
+		offset1 = 0, offset_f = 0, ibuff;
 	if (n < 0) n = -n;
 	if (n%2 == 1) y.b_sign = b_sign;
 	else if (!b_sign) cerr << "intbigdata.h: imaginary number" << endl;
@@ -662,7 +663,9 @@ intbigf intbigf::root_int(const int &n_o) const
 	//take apart
 	deque<char> base_pn(n, 0), beta(1, 0), proc1, proc2, base_y, pick_t, pick_t_setp, pick1, pick2;
 	if (size_fix == bigint.size()) {
-		proc1.assign(bigint.begin()+size_fix-offset1, bigint.end());
+		ibuff = size_fix-offset1;
+		if (ibuff < 0) ibuff = 0;
+		proc1.assign(bigint.begin()+ibuff, bigint.end());
 		for(int ix = 0; ix != offset_f; ++ix) proc1.push_front(0);
 		if (size_fix-offset1 > 0) proc2.assign(bigint.begin(), bigint.begin()+size_fix-offset1);
 	}
@@ -676,15 +679,11 @@ intbigf intbigf::root_int(const int &n_o) const
 	for (int ix = 0; ix != preci+offset2; ++ix) proc2.push_front(0);
 	base_pn.push_back(1);
 	deque<char>::const_reverse_iterator rit = proc2.rbegin();
-	bool proc_go = false, y_zero = true;
+	bool proc_go = false;
 	y.b_poi = rad_p/n;
 	if (offset1 != 0) ++y.b_poi;
 	if (rad_p <= 0) --y.b_poi;
 	if (proc1.empty()) proc_go = true;
-	//for guess
-	deque<char> nbase_nf1(n-1, 0);
-	int ibuff = n;
-	while (ibuff != 0) {nbase_nf1.push_back(ibuff%10); ibuff /= 10;}
 	//loop
 	while (rit != proc2.rend()) {
 		if (proc_go) for (int ix = 0; ix != n; ++ix) proc1.push_front(*rit++);
@@ -692,20 +691,10 @@ intbigf intbigf::root_int(const int &n_o) const
 		pick_t.assign(1, 0);
 		iwhobig = 1;
 		base_y = y.bigint;
-		y_zero = (y.bigint.size() == 1 && y.bigint[0] == 0);
-		if (y_zero) base_y = y.bigint;
+		if (y.bigint.size() == 1 && y.bigint[0] == 0) base_y = y.bigint;
 		else base_y.push_front(0);
 		pick2 = intbigd_fu::mul_f(base_pn, intbigd_fu::pow_f(y.bigint, n));
 		beta[0] = 0;
-		//guess
-		if (!y_zero) {
-			deque<char> d_temp(y.bigint);
-			d_temp = intbigd_fu::mul_f(nbase_nf1, intbigd_fu::pow_f(d_temp, n-1));
-			if (intbigd_fu::abso_big(proc1, d_temp) == 1) d_temp = intbigd_fu::div_f(proc1, d_temp);
-			else d_temp.assign(1, 0);
-			beta[0] = d_temp[0]/2;
-			if (beta[0] != 0) --beta[0];
-		}
 		//
 		while (iwhobig == 1) {
 			pick_t_setp = pick_t;
@@ -715,15 +704,14 @@ intbigf intbigf::root_int(const int &n_o) const
 			iwhobig = intbigd_fu::abso_big(proc1, pick_t);
 		}
 		//
-		y_zero = (y.bigint.size() == 1 && y.bigint[0] == 0);
 		if (iwhobig == 0) {
 			proc1.assign(1, 0);
-			if (y_zero) y.bigint[0] = beta[0];
+			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = beta[0];
 			else y.bigint.push_back(beta[0]);
 		}
 		else {
 			intbigd_fu::sub_fself(proc1, pick_t_setp);
-			if (y_zero) y.bigint[0] = --beta[0];
+			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = --beta[0];
 			else y.bigint.push_front(--beta[0]);
 		}
 		proc_go = true;
