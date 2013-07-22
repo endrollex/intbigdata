@@ -45,8 +45,15 @@ int main()
 	//cout << n1.root(n2) << endl;
 	
 	//cout << n1.pow_frac(3, 2) << endl;
+	//cout << intbigf(10).root(4) << endl;
 	
-	cout << intbigf(-0.03).root(3) << endl;
+	
+	intbigf a = 1.99526, b = 2.01788, A = 0.3, B = 0.30490, Z = 2, res;
+	res = A+(B-A)/(b-a)*(Z-a);
+	cout << res << endl;
+	
+	
+	
 	
 	t = clock() - t;
 	cout << "It took me " << ((float)t)/CLOCKS_PER_SEC << " seconds." << endl;

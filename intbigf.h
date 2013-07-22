@@ -1,5 +1,5 @@
 ////////////////
-//intbigf.h, calculate big float, environment: C++03 x86
+//intbigf.h, calculate big float number, environment: C++03 x86
 //craft by endrollex, 2013.7.3
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
@@ -12,14 +12,20 @@
 namespace intbigd_fu
 {
 //skip tab
+////////////////
 //global var, significant digits, rounding or truncation, cout type
+////////////////
+////////////////
 int digits_precision = 64;
 int digits_precision_affect = 1;
 int limit_digits_type = 1;
 int cout_type = 1;
 unsigned cout_scientific = 16;
 int cout_fixed = 64;
+////////////////
 //global set function
+////////////////
+////////////////
 void precision(int i_value = 64) {if (i_value < 0) i_value = -i_value; digits_precision = i_value;}
 void precision_affect_div_inf(int i_value = digits_precision)
 {
