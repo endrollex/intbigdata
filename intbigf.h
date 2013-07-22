@@ -4,6 +4,7 @@
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
 //           that means the intbigf.h is poor efficient.
+//Confucius: Yu Su Ze Bu Da
 ////////////////
 ////////////////
 #ifndef INTBIGDAF_H
