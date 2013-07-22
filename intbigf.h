@@ -639,8 +639,8 @@ intbigf intbigf::root_int(const int &n_o) const
 	if (n_o == -1) return intbigf_one.div(*this);
 	//wikipedia.org: paper-and-pencil nth roots
 	intbigf y;
-	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0, iwhobig = 1,
-		offset1 = 0, offset_f = 0, ibuff;
+	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0,
+		iwhobig = 1, offset1 = 0, offset_f = 0, ibuff;
 	if (n < 0) n = -n;
 	if (n%2 == 1) y.b_sign = b_sign;
 	else if (!b_sign) cerr << "intbigdata.h: imaginary number" << endl;
