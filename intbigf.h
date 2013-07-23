@@ -4,7 +4,6 @@
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
 //           that means the intbigf.h is poor efficient.
-//Confucius: Yu Su Ze Bu Da
 ////////////////
 ////////////////
 #ifndef INTBIGDAF_H
@@ -1087,4 +1086,5 @@ inline unsigntp intbigf::max_size() const
 //exception or cerr: div, save_file, load_file, root_int
 ////////////////
 ////////////////
+//Confucius: Yu Su Ze Bu Da
 #endif
