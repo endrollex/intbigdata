@@ -1,5 +1,5 @@
 ////////////////
-//intbigdata.h, calculate big number, environment: C++03 x86
+//intbigdata.h, slow calculate big number, environment: C++03 x86
 //craft by endrollex, 2012.10.03, 2013.07.14
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
