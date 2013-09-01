@@ -1,7 +1,9 @@
 intbigdata
 ==========
 
-C++ calculate big number library
+C++
+
+Slow calculate big number library
 
 Hello!
 
