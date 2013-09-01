@@ -3,7 +3,7 @@ intbigdata
 
 C++
 
-Slow calculate big number library
+intbigdata - slow calculate big number library
 
 Hello!
 
