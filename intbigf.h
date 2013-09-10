@@ -596,7 +596,7 @@ inline intbigf intbigf::mul(const intbigf &bus2) const
 	}
 	else i_p1 = absp1-size1;
 	if (absp2 > 0) {
-		if (size2 < absp2) i_p2 = i_p2-size2;
+		if (size2 < absp2) i_p2 = size2;
 		if (size2 > absp2) i_p2 = absp2-size2;
 	}
 	else i_p2 = absp2-size2;
