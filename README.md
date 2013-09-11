@@ -5,6 +5,10 @@ C++
 
 intbigdata - slow calculate big number library
 
-Hello!
+Introduction:
+-------------
+* If BigDecimal is a sports car, then this project is a tricycle.
 
-Compile sample.cc to see how to use.
+How to Use:
+-----------
+Compile sample.cc to see, this readme is not finished yet.
