@@ -18,7 +18,7 @@ namespace intbigd_fu
 ////////////////
 int digits_precision = 64;
 int digits_precision_affect = 1;
-int limit_digits_type = 1;
+int digits_limit_type = 1;
 int cout_type = 1;
 unsigned cout_scientific = 16;
 int cout_fixed = 64;
@@ -27,7 +27,7 @@ int cout_fixed = 64;
 ////////////////
 ////////////////
 void precision(int i_value = 64) {if (i_value < 0) i_value = -i_value; digits_precision = i_value;}
-void precision_affect_div_inf(int i_value = digits_precision)
+void precision_affect_div(int i_value = digits_precision)
 {
 	digits_precision_affect = 1;
 	if (i_value < 0) i_value = -i_value;
@@ -39,8 +39,8 @@ void precision_affect_all(int i_value = digits_precision)
 	if (i_value < 0) i_value = -i_value;
 	digits_precision = i_value;
 }
-void round() {limit_digits_type = 1;}
-void trunc() {limit_digits_type = 2;}
+void round() {digits_limit_type = 1;}
+void trunc() {digits_limit_type = 2;}
 void cout_default() {cout_type = 1;}
 void scientific(unsigned i_value = 16) {cout_type = 2; cout_scientific = i_value;}
 void fixed(int i_value = 64) {cout_type = 3; if (i_value < 0) i_value = -i_value; cout_fixed = i_value;}
@@ -68,50 +68,21 @@ inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 	if (i_offset == 0) {i_exp = -(static_cast<int>(bus1.size())-b_poi1_o)+b_exp1; check_d = 'z';}
 }
 ////////////////
-//significant_fix, ATTENTION: zero is spical
+//significant_fix
 ////////////////
-////////////////from significant_fix_div
+////////////////
 template <typename Tve>
-void significant_fix(Tve &bigint, const int &i_sigd = digits_precision, const int &force_round = 0)
+void significant_fix(
+	Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision, const int &force_round = 0, const bool &is_div = false)
 {
 	int ibuff;
 	bool is_round = false;
-	if (limit_digits_type == 1 || force_round == 1) is_round = true;
+	if (digits_limit_type == 1 || force_round == 1) is_round = true;
 	if (force_round == 2) is_round = false;
 	if (is_round) {
 		if (static_cast<int>(bigint.size()) > i_sigd) {
 			ibuff = bigint.size()-i_sigd-1;
-			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
-			if (bigint[bigint.size()-i_sigd-1] >= 5) {
-				bigint.pop_front();
-				bigint = add_f(bigint, Tve(1, 1));
-			}
-			else bigint.pop_front();
-		}
-	}
-	else {
-		if (static_cast<int>(bigint.size()) > i_sigd) {
-			ibuff = bigint.size()-i_sigd;
-			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
-		}
-	}
-	while (bigint.size() != 1 && bigint.front() == 0) bigint.pop_front();
-}
-////////////////
-//significant_fix_div ATTENTION: zero is spical
-////////////////
-////////////////orginal
-template <typename Tve>
-void significant_fix_div(Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision, const int &force_round = 0)
-{
-	int ibuff;
-	bool is_round = false;
-	if (limit_digits_type == 1 || force_round == 1) is_round = true;
-	if (force_round == 2) is_round = false;
-	if (is_round) {
-		if (static_cast<int>(bigint.size()) > i_sigd) {
-			ibuff = bigint.size()-i_sigd-1;
-			digits_offset -= ibuff+1;
+			if (is_div) digits_offset -= ibuff+1;
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
 			if (bigint[bigint.size()-i_sigd-1] >= 5) {
 				bigint.pop_front();
@@ -127,7 +98,8 @@ void significant_fix_div(Tve &bigint, int &digits_offset, const int &i_sigd = di
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
 		}
 	}
-	//no remove tail zero
+	//tail zero
+	if (!is_div) while (bigint.size() != 1 && bigint.front() == 0) bigint.pop_front();
 }
 ////////////////
 //significant_fix_point
@@ -136,7 +108,7 @@ void significant_fix_div(Tve &bigint, int &digits_offset, const int &i_sigd = di
 void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &fix_point = 6, const int &force_round = 0)
 {
 	int i_sigd = poi_exp+fix_point;
-	significant_fix(bigint, i_sigd, force_round);
+	significant_fix(bigint, i_sigd, i_sigd, force_round);//first i_sigd is dummy
 }
 ////////////////deque use
 //divf_f, y = a/b (b!=0)
@@ -155,7 +127,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 		difsize = bigint.size();
 	}
 	//rounding
-	if (limit_digits_type == 1) ++i_sigd;
+	if (digits_limit_type == 1) ++i_sigd;
 	//deque
 	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
 	di_p_siz = di_p.size();
@@ -187,7 +159,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 	//significant digits transfer
 	i_sigd = di_p_cou-di_p_siz;
 	//truncation or rounding
-	if (digits_precision_affect == 2) significant_fix_div(de_res, i_sigd);
+	if (digits_precision_affect == 2) significant_fix(de_res, i_sigd, digits_precision, 0, true);
 	if (i_sigd != 0) {
 		ibuff = i_sigd;
         if (i_sigd < 0) ibuff = -ibuff;
@@ -325,6 +297,7 @@ template <typename Tve> inline intbigf operator/(const Tve &ib1, const intbigf &
 //
 const intbigf intbigf_one(deque<char>(1, 1), 1, 0, true, 'n');
 bool normal_stream = false;
+int i_dummy = 0;
 // (\__/)
 //(='.'=)
 //(")_(") member
@@ -367,7 +340,7 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	//other lim
 	else {
 		if (intbigd_fu::digits_precision_affect == 2) {
-			intbigd_fu::significant_fix(bigint);
+			intbigd_fu::significant_fix(bigint, i_dummy);
 		}
 	}
 	//is zero
@@ -765,28 +738,28 @@ intbigf intbigf::trunc(const int &digits, const bool &is_point = false) const
 {
 	intbigf ret(*this);
 	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 2);
-	else intbigd_fu::significant_fix(ret.bigint, digits, 2);
+	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, 2);
 	return ret;
 }
 //round_self
 void intbigf::trunc_self(const int &digits, const bool &is_point = false)
 {
 	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 2);
-	else intbigd_fu::significant_fix(bigint, digits, 2);
+	else intbigd_fu::significant_fix(bigint, i_dummy, digits, 2);
 }
 //round
 intbigf intbigf::round(const int &digits, const bool &is_point = false) const
 {
 	intbigf ret(*this);
 	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 1);
-	else intbigd_fu::significant_fix(ret.bigint, digits, 1);
+	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, 1);
 	return ret;
 }
 //round_self
 void intbigf::round_self(const int &digits, const bool &is_point = false)
 {
 	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 1);
-	else intbigd_fu::significant_fix(bigint, digits, 1);
+	else intbigd_fu::significant_fix(bigint, i_dummy, digits, 1);
 }
 ////////////////
 //Operators:
@@ -860,7 +833,7 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 		ibuff = bus1.b_poi+bus1.b_exp;
 		if (-ibuff <= intbigd_fu::cout_fixed && static_cast<int>(bus1.bigint.size())-ibuff > intbigd_fu::cout_fixed) {
 			intf_temp = bus1;
-			if (intbigd_fu::limit_digits_type == 1) intf_temp.round_self(intbigd_fu::cout_fixed, true);
+			if (intbigd_fu::digits_limit_type == 1) intf_temp.round_self(intbigd_fu::cout_fixed, true);
 			else intf_temp.trunc_self(intbigd_fu::cout_fixed, true);
 			intf_p = &intf_temp;
 		}

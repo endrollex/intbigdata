@@ -363,7 +363,7 @@ public:
 	friend std::istream &operator>>(std::istream &in, intbigdata &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigdata &bus1);
 	//memo: defining own copy constructors need string and also int, otherwise will cause ambiguous with copy 0
-	//use synthesized copy constructors to save code lines
+	//use synthesized copy constructors
 	//
 	//overload operators:
 	intbigdata &operator+=(const intbigdata &bus2) {return *this = this->add(bus2);}
@@ -400,7 +400,7 @@ public:
 	void assign(const intbigdata &bus2);
 	void assign(const std::string &str1);
 	void assign(const int &us1);
-	void assign_unsigned(const unsigned &us1);//to avoid ambiguous with int
+	void assign_unsigned(const unsigned &us1);//avoid ambiguous with int
 	void assign(const char *cstr1);
 	void swap(intbigdata &bus2);
 	void clear();//to assign 0
