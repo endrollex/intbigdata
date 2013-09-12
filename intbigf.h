@@ -65,7 +65,7 @@ inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
 		i_exp = -i_offset-(static_cast<int>(bus2.size())-b_poi2_o)+b_exp2;
 	}
-	if (i_offset == 0) {i_exp = -(static_cast<int>(bus1.size())-b_poi1_o)+b_exp1; check_d = 'z';}
+	if (i_offset == 0) {i_exp = -(static_cast<int>(bus1.size())-b_poi1_o)+b_exp1; check_d = 'n';}
 }
 ////////////////
 //significant_fix
@@ -201,6 +201,7 @@ public:
 	intbigf add(const intbigf &bus2) const;
 	intbigf sub(const intbigf &bus2) const;
 	intbigf mul(const intbigf &bus2) const;
+	void mul_self(const intbigf &bus2);
 	intbigf div(const intbigf &bus2) const;
 	//Power functions:
 	intbigf pow_int(const int &ib) const;
@@ -294,7 +295,10 @@ template <typename Tve> inline intbigf operator*(const Tve &ib1, const intbigf &
 inline intbigf operator/(const intbigf &bus1, const intbigf &bus2) {return bus1.div(bus2);}
 template <typename Tve> inline intbigf operator/(const intbigf &bus1, const Tve &ib2) {return bus1.div(ib2);}
 template <typename Tve> inline intbigf operator/(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
-//
+////////////////
+//global var
+////////////////
+////////////////
 const intbigf intbigf_one(deque<char>(1, 1), 1, 0, true, 'n');
 bool normal_stream = false;
 int i_dummy = 0;
@@ -317,8 +321,8 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	if (bigint.empty()) {bigint.push_back(0); b_sign = true; b_poi = 1; b_exp = 0;}	
 	//check data and fix
 	if (check_data == 'y') this->fix_data();
-	//remove zero
-	if (check_data == 'z') {
+	//remove tail zero
+	if (check_data == 'n') {
 		while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 	}
 	//for div, rounding and significant fix
@@ -407,8 +411,9 @@ intbigf::intbigf(const std::string &str1)
 		if (s_ixp != 0) {
 			for (unsigned ix = 0; ix != s_ixbu; ++ix) bigint.pop_back();
 			while (bigint.back() == 0 && bigint.size() != 1) {bigint.pop_back(); --b_exp;}
-			while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 		}
+		//remove tail zero
+		while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 		//zero no sign
 		if (bigint.size() == 1 && bigint[0] == 0) {b_sign = true; b_poi = 1; b_exp = 0;}
 	}
@@ -424,6 +429,8 @@ intbigf::intbigf(const int &us1_o, const int &dummy)
 	if (us1_o == 0) bigint.push_back(0);
 	b_poi = bigint.size();
 	b_exp = 0;
+	//remove tail zero
+	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 }
 //structure5 c style string
 intbigf::intbigf(const char *cstr1)
@@ -480,16 +487,13 @@ void intbigf::fix_data()
 		++rit_de;
 	}
 	unsigntp ix2 = bigint.size()-1;
-	//remove zero
-	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
+	//remove tail zero
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
+	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
 	//zero no sign
 	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) b_sign = true;
 	//
 	if (b_poi < 0) b_poi = 0;
-	//remove point zero
-	int ibuff = b_poi+b_exp;
-	if (bigint.size() > ibuff) while (bigint.front() == 0 && bigint.size() != ibuff) bigint.pop_front();
 }
 //is_not_corrupt
 bool intbigf::is_not_corrupt() const
@@ -500,16 +504,13 @@ bool intbigf::is_not_corrupt() const
 		if (*rit_de < 0 || *rit_de > 9) return false;
 		++rit_de;
 	}
-	//remove zero
+	//remove tail zero
+	if (bigint.front() == 0 && bigint.size() != 1) return false;
 	if (bigint.back() == 0 && bigint.size() != 1) return false;
-	if (bigint.front() == 0 && b_poi+b_exp < bigint.size()) return false;
 	//zero no sign
 	if (bigint.size() == 1 && bigint[0] == 0 && b_sign == false) return false;
 	//
 	if (b_poi < 0) return false;
-	//remove point zero
-	int ibuff = b_poi+b_exp;
-	if (bigint.size() > ibuff) if (bigint.front() == 0 && bigint.size() > ibuff) return false;
 	return true;
 }
 ////////////////
@@ -558,24 +559,22 @@ inline intbigf intbigf::sub(const intbigf &bus2) const
 //mul
 inline intbigf intbigf::mul(const intbigf &bus2) const
 {
-	int i_p1 = 0, i_p2 = 0, i_exp, absp1, absp2, size1, size2;
-	absp1 = b_poi+b_exp;
-	absp2 = bus2.b_poi+bus2.b_exp;
-	size1 = bigint.size();
-	size2 = bus2.bigint.size();
-	if (absp1 > 0) {
-		if (size1 < absp1) i_p1 = size1;
-		if (size1 > absp1) i_p1 = absp1-size1;
-	}
-	else i_p1 = absp1-size1;
-	if (absp2 > 0) {
-		if (size2 < absp2) i_p2 = size2;
-		if (size2 > absp2) i_p2 = absp2-size2;
-	}
-	else i_p2 = absp2-size2;
-	i_exp = i_p1+i_p2;
+	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
 	//sign
-	return intbigf(intbigd_fu::mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'z');
+	return intbigf(intbigd_fu::mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'n');
+}
+//mul_self
+inline void intbigf::mul_self(const intbigf &bus2)
+{
+	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
+	intbigd_fu::mul_fself(bigint, bus2.bigint);
+	//sign
+	b_poi = bigint.size();
+	b_exp = i_exp;
+	b_sign = (b_sign == bus2.b_sign);
+	//remove tail zero
+	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
+	if (intbigd_fu::digits_precision_affect == 2) intbigd_fu::significant_fix(bigint, i_dummy);
 }
 //div
 inline intbigf intbigf::div(const intbigf &bus2) const
@@ -605,7 +604,7 @@ intbigf intbigf::pow_int(const int &ib) const
 	if (ibx%2 == 1) ret.b_sign = b_sign;	
 	ret = *this;
 	for (int ixc = 1; ixc != ibx; ++ixc) {
-		ret = ret.mul(*this);
+		ret.mul_self(*this);
 	}
 	if (ib < 0) return intbigf_one.div(ret);
 	return ret;

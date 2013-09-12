@@ -274,7 +274,7 @@ Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 		ix2 = 0;
 		while (ix2 != 10) {
 			//spcial version for div
-			if (abso_big(bu1, di2) != -1) {
+			if (abso_big_tve(bu1, di2) != -1) {
 				//spcial version for div
 				sub_ffordiv(bu1, di2);
 				++ix2;
@@ -295,8 +295,26 @@ Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 //abso_big, compare absolute value, return 1 = first big, -1 = second big, 0 = equal
 ////////////////
 ////////////////original
+template <typename Tve>
+int abso_big(const Tve &bigint, const Tve &di2)
+{
+	if (bigint.size() > di2.size()) return 1;
+	if (bigint.size() < di2.size()) return -1;
+	if (bigint == di2) return 0;
+	typename Tve::const_reverse_iterator d_it1 = bigint.rbegin(), d_it2 = di2.rbegin();
+	for (; d_it1 != bigint.rend(); ++d_it1) {
+		if (d_it1 != bigint.rbegin()) ++d_it2;
+		if (*d_it1 > *d_it2)  return 1;
+		else {if (*d_it1 != *d_it2) return -1;}
+	}
+	return 0;
+}
+////////////////
+//abso_big_tve, compare different templete type
+////////////////
+////////////////from abso_big
 template <typename Tve, typename Tve2>
-int abso_big(const Tve2 &bigint, const Tve &di2)
+int abso_big_tve(const Tve2 &bigint, const Tve &di2)
 {
 	if (bigint.size() > di2.size()) return 1;
 	if (bigint.size() < di2.size()) return -1;
