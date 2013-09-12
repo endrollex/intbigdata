@@ -50,7 +50,7 @@ void fixed(int i_value = 64) {cout_type = 3; if (i_value < 0) i_value = -i_value
 ////////////////
 template <typename Tve> 
 inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
-	int &i_offset, int &i_exp, char &check_d, int b_poi1, int b_poi2, const int &b_exp1, const int &b_exp2) {
+	int &i_offset, int &i_exp, int b_poi1, int b_poi2, const int &b_exp1, const int &b_exp2) {
 	int b_poi1_o = b_poi1, b_poi2_o = b_poi2;
 	if (b_exp1 > b_exp2) b_poi1 += b_exp1-b_exp2;
 	if (b_exp2 > b_exp1) b_poi2 += b_exp2-b_exp1;
@@ -65,7 +65,7 @@ inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
 		i_exp = -i_offset-(static_cast<int>(bus2.size())-b_poi2_o)+b_exp2;
 	}
-	if (i_offset == 0) {i_exp = -(static_cast<int>(bus1.size())-b_poi1_o)+b_exp1; check_d = 'n';}
+	if (i_offset == 0) {i_exp = -(static_cast<int>(bus1.size())-b_poi1_o)+b_exp1;}
 }
 ////////////////
 //significant_fix
@@ -524,17 +524,16 @@ inline intbigf intbigf::add(const intbigf &bus2) const
 {
 	int i_offset, i_exp, i_absob;
 	deque<char> bus_temp;
-	char check_d = 'n';
-	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	if (b_sign == bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
+	if (b_sign == bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
 		i_absob = intbigd_fu::abso_big(*bus1_p, *bus2_p);
-		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
-		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, check_d);
+		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, 'n');
 	}
 	return intbigf();
 }
@@ -543,17 +542,16 @@ inline intbigf intbigf::sub(const intbigf &bus2) const
 {
 	int i_offset, i_exp, i_absob;
 	deque<char> bus_temp;
-	char check_d = 'n';
-	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	if (b_sign != bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
+	if (b_sign != bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
 		i_absob = intbigd_fu::abso_big(*bus1_p, *bus2_p);
-		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, check_d);
-		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, check_d);
+		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, 'n');
 	}
 	return intbigf();
 }
