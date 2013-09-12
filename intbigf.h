@@ -45,7 +45,7 @@ void cout_default() {cout_type = 1;}
 void scientific(unsigned i_value = 16) {cout_type = 2; cout_scientific = i_value;}
 void fixed(int i_value = 64) {cout_type = 3; if (i_value < 0) i_value = -i_value; cout_fixed = i_value;}
 ////////////////
-//pre_fcalc, prepare calc point float
+//pre_fcalc, prepare calc point float, add sub
 ////////////////
 ////////////////
 template <typename Tve> 
@@ -75,6 +75,7 @@ template <typename Tve>
 void significant_fix(
 	Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision, const int &force_round = 0, const bool &is_div = false)
 {
+	//digits_offset is for div only
 	int ibuff;
 	bool is_round = false;
 	if (digits_limit_type == 1 || force_round == 1) is_round = true;
@@ -119,14 +120,14 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 {
 	int ibuff = 0, di_p_cou = 0, di_p_siz, difsize, i_sigd;
 	unsigntp ix1, ix2;	
-	difsize = bigint.size()-di2.size()+1;
+	difsize = static_cast<int>(bigint.size())-static_cast<int>(di2.size())+1;
 	i_sigd= digits_precision-difsize+1;
-	if (i_sigd < 0) i_sigd = 0;	
+	if (i_sigd < 0) i_sigd = 0;
 	if (difsize < 1) {
 		ibuff = -difsize+2;
 		difsize = bigint.size();
 	}
-	//rounding
+	//if rounding
 	if (digits_limit_type == 1) ++i_sigd;
 	//deque
 	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
@@ -581,15 +582,8 @@ inline intbigf intbigf::div(const intbigf &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
 	//
-	int i_offset, i_exp, i_absob;
-	deque<char> bus_temp;
-	char check_d = 'n';
-	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, check_d, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
-	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
-	if (i_offset < 0) bus1_p = &bus_temp;
-	if (i_offset > 0) bus2_p = &bus_temp;
-	//
-	return intbigf(intbigd_fu::divf_f(*bus1_p, *bus2_p, false), -1, 0, b_sign == bus2.b_sign, 'd');
+	int i_exp = (b_poi+b_exp)-bigint.size()-(bus2.b_poi+bus2.b_exp)+bus2.bigint.size();
+	return intbigf(intbigd_fu::divf_f(bigint, bus2.bigint, false), -1, i_exp, b_sign == bus2.b_sign, 'd');
 }
 ////////////////
 ////Power functions:
