@@ -220,9 +220,9 @@ public:
 	//
 	//Rounding and remainder functions:
 	intbigf trunc(const int &digits, const bool &is_point) const;
-	void trunc_self(const int &digits, const bool &is_point);
+	intbigf trunc_self(const int &digits, const bool &is_point);
 	intbigf round(const int &digits, const bool &is_point) const;
-	void round_self(const int &digits, const bool &is_point);
+	intbigf round_self(const int &digits, const bool &is_point);
 	//Operators:
 	operator int() const;
 	operator string() const;
@@ -743,10 +743,11 @@ intbigf intbigf::trunc(const int &digits, const bool &is_point = false) const
 	return ret;
 }
 //round_self
-void intbigf::trunc_self(const int &digits, const bool &is_point = false)
+intbigf intbigf::trunc_self(const int &digits, const bool &is_point = false)
 {
 	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 2);
 	else intbigd_fu::significant_fix(bigint, i_dummy, digits, 2);
+	return *this;
 }
 //round
 intbigf intbigf::round(const int &digits, const bool &is_point = false) const
@@ -757,10 +758,11 @@ intbigf intbigf::round(const int &digits, const bool &is_point = false) const
 	return ret;
 }
 //round_self
-void intbigf::round_self(const int &digits, const bool &is_point = false)
+intbigf intbigf::round_self(const int &digits, const bool &is_point = false)
 {
 	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 1);
 	else intbigd_fu::significant_fix(bigint, i_dummy, digits, 1);
+	return *this;
 }
 ////////////////
 //Operators:
