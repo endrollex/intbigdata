@@ -45,27 +45,33 @@ void cout_default() {cout_type = 1;}
 void scientific(unsigned i_value = 16) {cout_type = 2; cout_scientific = i_value;}
 void fixed(int i_value = 64) {cout_type = 3; if (i_value < 0) i_value = -i_value; cout_fixed = i_value;}
 ////////////////
-//pre_fcalc, prepare calc point float, add sub
+//pre_faddsub, prepare calc point float, add sub
 ////////////////
 ////////////////
 template <typename Tve> 
-inline void pre_fcalc(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
-	int &i_offset, int &i_exp, int b_poi1, int b_poi2, const int &b_exp1, const int &b_exp2) {
-	int b_poi1_o = b_poi1, b_poi2_o = b_poi2;
-	if (b_exp1 > b_exp2) b_poi1 += b_exp1-b_exp2;
-	if (b_exp2 > b_exp1) b_poi2 += b_exp2-b_exp1;
-	i_offset = (static_cast<int>(bus1.size())-b_poi1)-(static_cast<int>(bus2.size())-b_poi2);
+inline int pre_faddsub(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
+	int &i_offset, int &i_exp, int b_poi1, int b_poi2, int b_exp1, int b_exp2) {
+	int bd1 = b_poi1+b_exp1, bd2 = b_poi2+b_exp2, size1 = bus1.size(), size2 = bus2.size();
+	i_offset = (size1-bd1)-(size2-bd2);
+	//over precision
+	if (digits_precision_affect == 2) {
+		int ibuff = bd1-bd2;
+		if (ibuff > 0 && ibuff > digits_precision) return 1;
+		if (ibuff < 0 && -ibuff > digits_precision) return 2;
+	}
+	//normal
 	if (i_offset < 0) {
 		bus_temp = bus1;
 		for (int ix = i_offset; ix < 0; ++ix) bus_temp.push_front(0);
-		i_exp = i_offset-(static_cast<int>(bus1.size())-b_poi1_o)+b_exp1;
+		i_exp = i_offset-(size1-b_poi1)+b_exp1;
 	}
 	if (i_offset > 0) {
 		bus_temp = bus2;
 		for (int ix = i_offset; ix > 0; --ix) bus_temp.push_front(0);
-		i_exp = -i_offset-(static_cast<int>(bus2.size())-b_poi2_o)+b_exp2;
+		i_exp = -i_offset-(size2-b_poi2)+b_exp2;
 	}
-	if (i_offset == 0) {i_exp = -(static_cast<int>(bus1.size())-b_poi1_o)+b_exp1;}
+	if (i_offset == 0) {i_exp = -(size1-b_poi1)+b_exp1;}
+	return 0;
 }
 ////////////////
 //significant_fix
@@ -522,36 +528,40 @@ bool intbigf::is_not_corrupt() const
 //add
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
-	int i_offset, i_exp, i_absob;
+	int i_offset, i_exp, ibuff;
 	deque<char> bus_temp;
-	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	if (ibuff == 1) return *this;
+	if (ibuff == 2) return bus2;
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
 	if (b_sign == bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
-		i_absob = intbigd_fu::abso_big(*bus1_p, *bus2_p);
-		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
-		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, 'n');
+		ibuff = intbigd_fu::abso_big(*bus1_p, *bus2_p);
+		if (ibuff == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (ibuff == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, 'n');
 	}
 	return intbigf();
 }
 //sub
 inline intbigf intbigf::sub(const intbigf &bus2) const
 {
-	int i_offset, i_exp, i_absob;
+	int i_offset, i_exp, ibuff;
 	deque<char> bus_temp;
-	intbigd_fu::pre_fcalc(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	if (ibuff == 1) return *this;
+	if (ibuff == 2) return bus2;	
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
 	if (b_sign != bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
-		i_absob = intbigd_fu::abso_big(*bus1_p, *bus2_p);
-		if (i_absob == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
-		if (i_absob == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, 'n');
+		ibuff = intbigd_fu::abso_big(*bus1_p, *bus2_p);
+		if (ibuff == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (ibuff == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, 'n');
 	}
 	return intbigf();
 }
