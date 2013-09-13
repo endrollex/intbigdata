@@ -53,8 +53,8 @@ inline int pre_faddsub(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 	int &i_offset, int &i_exp, int b_poi1, int b_poi2, int b_exp1, int b_exp2) {
 	int bd1 = b_poi1+b_exp1, bd2 = b_poi2+b_exp2, size1 = bus1.size(), size2 = bus2.size();
 	i_offset = (size1-bd1)-(size2-bd2);
-	//over precision
-	if (digits_precision_affect == 2) {
+	//over precision, if round
+	if (digits_precision_affect == 2 && digits_limit_type == 1) {
 		int ibuff = bd1-bd2;
 		if (ibuff > 0 && ibuff > digits_precision) return 1;
 		if (ibuff < 0 && -ibuff > digits_precision) return 2;
