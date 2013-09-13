@@ -531,8 +531,8 @@ inline intbigf intbigf::add(const intbigf &bus2) const
 	int i_offset, i_exp, ibuff;
 	deque<char> bus_temp;
 	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
-	if (ibuff == 1) return *this;
-	if (ibuff == 2) return bus2;
+	if (ibuff == 1) return intbigf(bigint, b_poi, b_exp, b_sign, 'n');
+	if (ibuff == 2) return intbigf(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
@@ -551,8 +551,8 @@ inline intbigf intbigf::sub(const intbigf &bus2) const
 	int i_offset, i_exp, ibuff;
 	deque<char> bus_temp;
 	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
-	if (ibuff == 1) return *this;
-	if (ibuff == 2) return bus2;	
+	if (ibuff == 1) return intbigf(bigint, b_poi, b_exp, b_sign, 'n');
+	if (ibuff == 2) return intbigf(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
 	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
