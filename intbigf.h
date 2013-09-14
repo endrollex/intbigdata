@@ -82,16 +82,17 @@ void significant_fix(
 	Tve &bigint, int &digits_offset, const int &i_sigd = digits_precision, const int &force_round = 0, const bool &is_div = false)
 {
 	//digits_offset is for div only
-	int ibuff;
+	int i_five = 5, ibuff;
 	bool is_round = false;
 	if (digits_limit_type == 1 || force_round == 1) is_round = true;
 	if (force_round == 2) is_round = false;
+	if (force_round == 3) {is_round = true; i_five = 0;}
 	if (is_round) {
 		if (static_cast<int>(bigint.size()) > i_sigd) {
 			ibuff = bigint.size()-i_sigd-1;
 			if (is_div) digits_offset -= ibuff+1;
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
-			if (bigint[bigint.size()-i_sigd-1] >= 5) {
+			if (bigint[bigint.size()-i_sigd-1] >= i_five) {
 				bigint.pop_front();
 				bigint = add_f(bigint, Tve(1, 1));
 			}
@@ -223,6 +224,8 @@ public:
 	intbigf trunc_self(const int &digits, const bool &is_point);
 	intbigf round(const int &digits, const bool &is_point) const;
 	intbigf round_self(const int &digits, const bool &is_point);
+	intbigf ceil(const int &digits, const bool &is_point) const;
+	intbigf floor(const int &digits, const bool &is_point) const;
 	//Operators:
 	operator int() const;
 	operator string() const;
@@ -734,7 +737,7 @@ intbigf intbigf::pow_frac(const int &nume, const int &deno, const bool &sign = t
 ////////////////
 ////Rounding and remainder functions:
 ////////////////////////////////
-//round
+//trunc
 intbigf intbigf::trunc(const int &digits, const bool &is_point = false) const
 {
 	intbigf ret(*this);
@@ -742,7 +745,7 @@ intbigf intbigf::trunc(const int &digits, const bool &is_point = false) const
 	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, 2);
 	return ret;
 }
-//round_self
+//trunc_self
 intbigf intbigf::trunc_self(const int &digits, const bool &is_point = false)
 {
 	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 2);
@@ -763,6 +766,26 @@ intbigf intbigf::round_self(const int &digits, const bool &is_point = false)
 	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 1);
 	else intbigd_fu::significant_fix(bigint, i_dummy, digits, 1);
 	return *this;
+}
+//ceil
+intbigf intbigf::ceil(const int &digits, const bool &is_point = false) const
+{
+	intbigf ret(*this);
+	int round_type = 3;
+	if (!b_sign) round_type = 2;
+	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
+	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, round_type);
+	return ret;
+}
+//floor
+intbigf intbigf::floor(const int &digits, const bool &is_point = false) const
+{
+	intbigf ret(*this);
+	int round_type = 2;
+	if (!b_sign) round_type = 3;
+	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
+	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, round_type);
+	return ret;
 }
 ////////////////
 //Operators:
