@@ -826,7 +826,7 @@ intbigf::operator double() const
 //operator intbigdata()
 intbigf::operator intbigdata() const
 {
-	return intbigdata(vector<char>(bigint.begin()+(bigint.size()-b_poi+b_exp), bigint.end()), b_sign, 'n');
+	return intbigdata(string(this->trunc(0, true)));
 }
 //istream &operator>>
 istream &operator>>(istream &in, intbigf &bus1)

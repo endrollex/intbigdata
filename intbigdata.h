@@ -442,7 +442,7 @@ public:
 	bool is_not_corrupt() const;	
 //private:
 	//Constructors:
-	intbigdata(const std::deque<char> &di1): b_sign(true), bigint(di1.begin(), di1.end()) {};
+	intbigdata(const std::deque<char> &di1, const bool &bsn = true): b_sign(bsn), bigint(di1.begin(), di1.end()) {};
 };
 //nonmember operators overload
 //overload operators:
