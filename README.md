@@ -7,7 +7,8 @@ intbigdata - slow calculate big number library
 
 Introduction:
 -------------
-* If BigDecimal is a sports car, then this project is a tricycle.
+* Calculate big number or big float.
+* intbigdata has very poor performance.
 
 How to Use:
 -----------
