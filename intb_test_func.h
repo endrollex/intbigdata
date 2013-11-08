@@ -30,5 +30,56 @@ Tve karatsuba(const Tve &num1, const Tve &num2)
 	base2p.push_back(1);
 	return add_f(add_f(mul_f(z2, base1p), mul_f(z1, base2p)), z0);
 }
+////////////////
+//test
+////////////////
+////////////////
+double ln_calc_test(const double &z, const int &n)
+{
+	double ret = 0.0;
+	double zs1 = z-1;
+	for (int ix = 1; ix != n+1; ++ix) {
+		if (ix%2 == 1) ret += pow(zs1, ix)/ix;
+		else ret -= pow(zs1, ix)/ix;
+	}
+	return ret;
+}
+////////////////
+//test
+////////////////
+////////////////
+intbigf ln_calc_test2(const intbigf &z, const int &n)
+{
+	intbigf ret = 0.0;
+	intbigf zs1 = z-1;
+	for (int ix = 1; ix != n+1; ++ix) {
+		if (ix%2 == 1) ret += zs1.pow(ix)/ix;
+		else ret -= zs1.pow(ix)/ix;
+	}
+	return ret;
+}
+////////////////
+//test
+////////////////
+////////////////
+intbigf ln_calc_test3(const intbigf &z, const int &n)
+{
+	intbigf ret = 0.0;
+	intbigf zs1 = (z-1)/(z+1);
+	for (int ix = 1; ix < n+1; ix += 2) {
+		ret += zs1.pow_int(ix)/ix;
+	}
+	return 2*ret;
+}
+////////////////
+//test
+////////////////
+////////////////
+template <typename Tve>
+void e_info(const Tve &ibf)
+{
+	cout << ibf << " s " << ibf.size() << " p " << ibf.b_poi << " e " << ibf.b_exp << endl;
+}
+//
 }
 #endif

@@ -1,9 +1,9 @@
 ////////////////
-//intbigdata.h, slow calculate big number, environment: C++03 x86
-//craft by endrollex, 2012.10.03, 2013.07.14
+//intbigdata.h, calculate big number, environment: C++03 x86
+//craft by endrollex, 2012.10.03-2013.07.14
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
-//           that means the intbigdata.h is less efficient.
+//           that means the intbigdata.h has very poor performance.
 ////////////////
 ////////////////
 #ifndef INTBIGDATA_H

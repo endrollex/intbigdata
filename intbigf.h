@@ -1,9 +1,9 @@
 ////////////////
-//intbigf.h, slow calculate big float number, environment: C++03 x86
-//craft by endrollex, 2013.7.3
+//intbigf.h, calculate big float, environment: C++03 x86
+//craft by endrollex, 2013.7.3-
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
-//           that means the intbigf.h is poor efficient.
+//           that means the intbigf.h has very poor performance.
 ////////////////
 ////////////////
 #ifndef INTBIGDAF_H
