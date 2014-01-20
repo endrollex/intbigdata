@@ -4,26 +4,25 @@
 using namespace std;
 int main()
 {
-        //three init methods
-        intbigf test1(2);
-        intbigf test2("-44867916611904333479495141036159177872720902");
-        intbigf test3 = "2.00e400";
- 
-        //operator like int
-        test2 = test1 * test3;
-        //power functions
-        test1 = test1.pow(1024);
-        test2 = test3.root(2);
+	//some init methods
+	intbigf ib1(2);
+	intbigf ib2("-44867916611904333479495141036159177872720902");
+	intbigf ib3 = "6.72e9";
 
-        //output I/O stream
-        cout << "square root of 2e400 = " << test2 << "\n" << endl;
-        cout << "2^1024 = "<< test1 << "\n" << endl;
-        //scientific notation output
-        cout << "2^1024 scientific notation: " << test1.scientific() << "\n" << endl;
-        
-        //set precision for float
-        intbigd_fu::precision(128);
-        cout << "square root of 3: " << intbigf(3).root(2) << endl;
+	//operator like int
+	ib2 = ib1*ib2;
+	//power functions
+	ib1 = ib1.pow(1024);
+	ib2 = ib3.root(3);
 
-        return 0;
+	//set precision for float
+	intbigd_fu::precision(256);
+	//output
+	cout << "square root of 2: " << intbigf(2).root(2) << "\n" << endl;
+	//scientific notation
+	cout << "2^1024 (scientific notation): " << ib1.scientific() << "\n" << endl;
+	//
+	cout << "1234^1234: " << intbigdata(1234).pow(1234) << endl;
+
+	return 0;
 }
