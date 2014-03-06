@@ -1085,5 +1085,4 @@ inline unsigntp intbigf::max_size() const
 //exception or cerr: div, save_file, load_file, root_int
 ////////////////
 ////////////////
-//Confucius: Yu Su Ze Bu Da
 #endif
