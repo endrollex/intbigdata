@@ -3,7 +3,7 @@ intbigdata
 
 C++
 
-intbigdata - calculate big number
+intbigdata - calculate big number library
 
 Introduction:
 -------------
