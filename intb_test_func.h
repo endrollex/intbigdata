@@ -31,7 +31,7 @@ Tve karatsuba(const Tve &num1, const Tve &num2)
 	return add_f(add_f(mul_f(z2, base1p), mul_f(z1, base2p)), z0);
 }
 ////////////////
-//test
+//test ln
 ////////////////
 ////////////////
 double ln_calc_test(const double &z, const int &n)
@@ -45,7 +45,7 @@ double ln_calc_test(const double &z, const int &n)
 	return ret;
 }
 ////////////////
-//test
+//test ln
 ////////////////
 ////////////////
 intbigf ln_calc_test2(const intbigf &z, const int &n)
@@ -59,7 +59,7 @@ intbigf ln_calc_test2(const intbigf &z, const int &n)
 	return ret;
 }
 ////////////////
-//test
+//test ln
 ////////////////
 ////////////////
 intbigf ln_calc_test3(const intbigf &z, const int &n)
@@ -72,7 +72,7 @@ intbigf ln_calc_test3(const intbigf &z, const int &n)
 	return 2*ret;
 }
 ////////////////
-//test
+//echo float info
 ////////////////
 ////////////////
 template <typename Tve>
