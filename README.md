@@ -22,4 +22,4 @@ How to Use:
 * intbigdata type can be used like int.
 * intbigf type is designed for numerical computing.
 * Compile sample.cc to see some of functions.
-* Complete functions please refer to source.
+* Complete functions please refer to source files.

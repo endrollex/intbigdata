@@ -1,6 +1,6 @@
 ////////////////
 //intb_test_func.h
-//Some functions are being tested in intbigdata.h
+//Some functions are being tested in intbigdata.h and intbigf.h
 ////////////////
 ////////////////
 #ifndef INTB_TEST_FUNC_H
