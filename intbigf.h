@@ -659,7 +659,7 @@ intbigf intbigf::root_int(const int &n_o) const
 		proc2.assign(pick_t.begin(), pick_t.begin()+size_fix-offset1);
 	}
 	//
-	for (int ix = 0; ix != preci+offset2; ++ix) proc2.push_front(0);
+	for (int ix = 0; ix != preci-offset2; ++ix) proc2.push_front(0);
 	base_pn.push_back(1);
 	deque<char>::const_reverse_iterator rit = proc2.rbegin();
 	bool proc_go = false;
@@ -709,8 +709,8 @@ intbigf intbigf::pow(const double &ib, const bool &is_root = false) const
 	if (ib < 0) dou1 = -dou1;
 	int i2 = 1, i1, i_gcd;
 	//float*10 will lost precision sometimes
-	while (dou1-static_cast<int>(dou1+0.000001) > 0) {i2 *= 10; dou1 *= 10.0;}
-	i1 = static_cast<int>(dou1+0.000001);
+	while (dou1-static_cast<int>(dou1+0.000001f) > 0) {i2 *= 10; dou1 *= 10.0f;}
+	i1 = static_cast<int>(dou1+0.000001f);
 	i_gcd = intbigd_fu::gcd(i1, i2);
 	i1 = i1/i_gcd;
 	i2 = i2/i_gcd;

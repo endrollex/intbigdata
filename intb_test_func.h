@@ -78,7 +78,7 @@ intbigf ln_calc_test3(const intbigf &z, const int &n)
 template <typename Tve>
 void e_info(const Tve &ibf)
 {
-	cout << ibf << " s " << ibf.size() << " p " << ibf.b_poi << " e " << ibf.b_exp << endl;
+	cout << ibf << "\nsize " << ibf.size() << " poi " << ibf.b_poi << " exp " << ibf.b_exp << endl;
 }
 //
 }
