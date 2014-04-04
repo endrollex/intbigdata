@@ -8,14 +8,15 @@ intbigdata - calculate big number library
 Introduction:
 -------------
 * Calculate big integer or big float.
-* intbigdata has very poor performance.
-* This project is not finished yet.
+* intbigdata has very poor performance, and it is not completed.
+Writing it is a happy job, however, I will not spend too much time reinventing the wheel.
+* This is my first project something useless, but a start of a journey.
 
 Files Explanation:
--------------
+------------------
 * intbigdata.h: Big integer header
 * intbigf.h: Big float header
-* intb_test_func.h: Testing function, working...
+* intb_test_func.h: Testing function, not good implement
 
 How to Use:
 -----------
