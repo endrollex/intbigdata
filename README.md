@@ -9,8 +9,7 @@ Introduction:
 -------------
 * Calculate big integer or big float.
 * intbigdata has very poor performance, and it is not completed.
-Writing it is a happy job, however, I will not spend too much time reinventing the wheel.
-* This is my first project something useless, but a start of a journey.
+* This is my first project. Writing it is a happy job, however, I will not spend too much time reinventing the wheel.
 
 Files Explanation:
 ------------------
