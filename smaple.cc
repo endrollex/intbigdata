@@ -2,6 +2,9 @@
 #include <string>
 #include "intbigf.h"//use library
 using namespace std;
+//using class
+using intbigd::intbigdata;
+using intbigd::intbigf;
 int main()
 {
 	//some init methods
@@ -18,17 +21,17 @@ int main()
 	ib1 = ib1.pow(1024);
 	ib2 = ib3.root(3);
 	//set precision for float
-	intbigd_fu::precision(128);
+	intbigd::intbigd_fu::precision(128);
 	//output
 	cout << "square root of 2: " << intbigf(2).root(2) << "\n" << endl;
 	//scientific notation
 	cout << "2^1024 (scientific notation): " << ib1.scientific() << "\n" << endl;
 	//float pow, set precision range and method
-	intbigd_fu::precision_affect_div(64);
-	intbigd_fu::precision_affect_all(32);
-	cout << "29^2.34: " << intbigf(29).pow(2.34) <<  "\n"  << endl;
+	intbigd::intbigd_fu::precision_affect_div(64);
+	intbigd::intbigd_fu::precision_affect_all(32);
+	cout << "29^2.3: " << intbigf(29).pow(2.3) <<  "\n"  << endl;
 	//big number
-	cout << "1234^1234: " << intbigdata(1234).pow(1234) << endl;
+	cout << "123^123: " << intbigdata(123).pow(123) << endl;
 	//complete functions please refer to source files.
  	return 0;
 }

@@ -1,6 +1,6 @@
 ////////////////
 //intbigf.h, calculate big float, environment: C++03 x86
-//craft by endrollex, 2013.7.3-
+//craft by endrollex, start work 2013.07.03
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
 //           that means the intbigf.h has very poor performance.
@@ -9,6 +9,10 @@
 #ifndef INTBIGDAF_H
 #define INTBIGDAF_H
 #include "intbigdata.h"
+//
+namespace intbigd
+{
+//skip tab
 namespace intbigd_fu
 {
 //skip tab
@@ -113,12 +117,12 @@ void significant_fix(
 //significant_fix_point
 ////////////////
 ////////////////
-void significant_fix_point(deque<char> &bigint, const int &poi_exp, const int &fix_point = 6, const int &force_round = 0)
+void significant_fix_point(std::deque<char> &bigint, const int &poi_exp, const int &fix_point = 6, const int &force_round = 0)
 {
 	int i_sigd = poi_exp+fix_point;
 	significant_fix(bigint, i_sigd, i_sigd, force_round);//first i_sigd is dummy
 }
-////////////////deque use
+////////////////std::deque use
 //divf_f, y = a/b (b!=0)
 ////////////////
 ////////////////from div_f
@@ -136,7 +140,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 	}
 	//if rounding
 	if (digits_limit_type == 1) ++i_sigd;
-	//deque
+	//std::deque
 	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
 	di_p_siz = di_p.size();
 	for (int ix= 0; ix != i_sigd+ibuff; ++ix) di_p.push_front(0);
@@ -191,14 +195,15 @@ int gcd(const int &v1_o, const int &v2_o)
 	while (v2 != 0) {int temp = v2; v2 = v1%v2; v1 = temp;}
 	return v1;
 }
-}
+}//namespace intbigd_fu
+//
 //do not inherit
 class intbigf
 {
 public:
 	//Constructors:
 	intbigf(): b_sign(true), bigint(1, 0), b_poi(1), b_exp(0) {};
-	intbigf(const std::string &str1);//structure form string, can deal with scientific notation
+	intbigf(const std::string &str1);//structure form std::string, can deal with scientific notation
 	intbigf(const double &dou1_o);
 	intbigf(const int &us1_o, const int &dummy);
 	intbigf(const intbigdata &bus1);
@@ -228,7 +233,7 @@ public:
 	intbigf floor(const int &digits, const bool &is_point) const;
 	//Operators:
 	operator int() const;
-	operator string() const;
+	operator std::string() const;
 	operator double() const;
 	operator intbigdata() const;
 	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
@@ -309,7 +314,7 @@ template <typename Tve> inline intbigf operator/(const Tve &ib1, const intbigf &
 //global var
 ////////////////
 ////////////////
-const intbigf intbigf_one(deque<char>(1, 1), 1, 0, true, 'n');
+const intbigf intbigf_one(std::deque<char>(1, 1), 1, 0, true, 'n');
 bool normal_stream = false;
 int i_dummy = 0;
 // (\__/)
@@ -318,8 +323,8 @@ int i_dummy = 0;
 ////////////////
 //Constructors:
 ////////////////////////////////
-//structure2 deque
-intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
+//structure2 std::deque
+intbigf::intbigf(const std::deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	const bool &bsn = true, const char &check_data = 'n')
 {
 	//sign
@@ -360,27 +365,27 @@ intbigf::intbigf(const deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	//is zero
 	if (bigint.size() == 1 && bigint[0] == 0) {b_sign = true; b_poi = 1; b_exp = 0;}
 }
-//structure3 string
+//structure3 std::string
 intbigf::intbigf(const std::string &str1)
 {
 	//"0123456789" will check converting
-	string s_number("0123456789"), s_expo;
+	std::string s_number("0123456789"), s_expo;
 	bool b_do_e = false, ignore_e = true;
 	//judge scientific notation
-	string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp, s_ixbu;
+	std::string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp, s_ixbu;
 	//'#', hide parameter, force ignore scientific notation
 	if (str1[str1.size()-1] != '#') {
 		s_ixe = str1.find_first_of("Ee");
 		s_ixn = str1.find_last_of(s_number);
-		if (s_ixe != string::npos && s_ixn != string::npos) {
+		if (s_ixe != std::string::npos && s_ixn != std::string::npos) {
 			if (s_ixn > s_ixe) ignore_e = false;
 		}
 	}
 	//scientific notation, 0 <= exponent <= 2147483647
 	if (!ignore_e) {
-		string s_expo(str1, s_ixe+1), str1_p(str1, 0, s_ixe);
+		std::string s_expo(str1, s_ixe+1), str1_p(str1, 0, s_ixe);
 		s_expo += '#';
-		//fix string data
+		//fix std::string data
 		int i_expo = static_cast<int>(intbigdata(s_expo));
 		str1_p += '#';
 		*this = intbigf(str1_p);
@@ -397,7 +402,7 @@ intbigf::intbigf(const std::string &str1)
 		for (s_ixn = str1.size(); s_ixn != 0; --s_ixn) {
 			//point
 			s_ixn2 = s_number.find(str1[s_ixn-1]);
-			if (s_ixn2 != string::npos) {bigint.push_back(s_ixn2); ++s_ixbu;}
+			if (s_ixn2 != std::string::npos) {bigint.push_back(s_ixn2); ++s_ixbu;}
 			if (s_ixp == 0 && str1[s_ixn-1] == '.') s_ixp = s_ixbu;
 		}
 		if (bigint.empty()) bigint.push_back(0);
@@ -405,7 +410,7 @@ intbigf::intbigf(const std::string &str1)
 		if (s_ixp != 0) {
 			s_ixp = s_ixbu-s_ixp;
 			s_ixbu = 0;
-			deque<char>::const_reverse_iterator v_it;
+			std::deque<char>::const_reverse_iterator v_it;
 			for (v_it = bigint.rbegin(); v_it != bigint.rend(); ++v_it) {
 				if (*v_it != 0) break;
 				++s_ixbu;
@@ -442,15 +447,15 @@ intbigf::intbigf(const int &us1_o, const int &dummy)
 	//remove tail zero
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 }
-//structure5 c style string
+//structure5 c style std::string
 intbigf::intbigf(const char *cstr1)
 {
-	*this = intbigf(string(cstr1));
+	*this = intbigf(std::string(cstr1));
 }
 //structure7 double
 intbigf::intbigf(const double &dou1_o)
 {
-	ostringstream ostri;
+	std::ostringstream ostri;
 	normal_stream = true;
 	ostri << dou1_o;
 	normal_stream = false;
@@ -459,7 +464,7 @@ intbigf::intbigf(const double &dou1_o)
 //structure8 intbigdata
 intbigf::intbigf(const intbigdata &bus1)
 {
-	*this = intbigf(deque<char>(bus1.bigint.begin(), bus1.bigint.end()), -1, 0, bus1.b_sign, 'n');
+	*this = intbigf(std::deque<char>(bus1.bigint.begin(), bus1.bigint.end()), -1, 0, bus1.b_sign, 'n');
 }
 ////////////////
 //Compare:
@@ -490,7 +495,7 @@ inline bool intbigf::is_zero() const
 void intbigf::fix_data()
 {
 	if (bigint.empty()) bigint.push_back(0);
-	deque<char>::reverse_iterator rit_de = bigint.rbegin();
+	std::deque<char>::reverse_iterator rit_de = bigint.rbegin();
 	while (rit_de != bigint.rend()) {
 		if (*rit_de < 0) *rit_de = -*rit_de;
 		if (*rit_de > 9) *rit_de = *rit_de%10;
@@ -509,7 +514,7 @@ void intbigf::fix_data()
 bool intbigf::is_not_corrupt() const
 {
 	if (bigint.empty()) return false;
-	deque<char>::const_reverse_iterator rit_de = bigint.rbegin();
+	std::deque<char>::const_reverse_iterator rit_de = bigint.rbegin();
 	while (rit_de != bigint.rend()) {
 		if (*rit_de < 0 || *rit_de > 9) return false;
 		++rit_de;
@@ -532,11 +537,11 @@ bool intbigf::is_not_corrupt() const
 inline intbigf intbigf::add(const intbigf &bus2) const
 {
 	int i_offset, i_exp, ibuff;
-	deque<char> bus_temp;
+	std::deque<char> bus_temp;
 	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
 	if (ibuff == 1) return intbigf(bigint, b_poi, b_exp, b_sign, 'n');
 	if (ibuff == 2) return intbigf(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
-	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
+	const std::deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
@@ -552,11 +557,11 @@ inline intbigf intbigf::add(const intbigf &bus2) const
 inline intbigf intbigf::sub(const intbigf &bus2) const
 {
 	int i_offset, i_exp, ibuff;
-	deque<char> bus_temp;
+	std::deque<char> bus_temp;
 	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
 	if (ibuff == 1) return intbigf(bigint, b_poi, b_exp, b_sign, 'n');
 	if (ibuff == 2) return intbigf(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
-	const deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
+	const std::deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
@@ -626,7 +631,7 @@ intbigf intbigf::root_int(const int &n_o) const
 		iwhobig = 1, offset1 = 0, offset_f = 0, ibuff;
 	if (n < 0) n = -n;
 	if (n%2 == 1) y.b_sign = b_sign;
-	else if (!b_sign) cerr << "intbigdata.h: imaginary number" << endl;
+	else if (!b_sign) std::cerr << "intbigdata.h: imaginary number" << std::endl;
 	//
 	if (rad_p > 0) {
 		offset1 = rad_p%n;
@@ -644,7 +649,7 @@ intbigf intbigf::root_int(const int &n_o) const
 	if (preci < 0) preci = 0;
 	else preci = preci*n;
 	//take apart
-	deque<char> base_pn(n, 0), beta(1, 0), proc1, proc2, base_y, pick_t, pick_t_setp, pick1, pick2;
+	std::deque<char> base_pn(n, 0), beta(1, 0), proc1, proc2, base_y, pick_t, pick_t_setp, pick1, pick2;
 	if (size_fix == bigint.size()) {
 		ibuff = size_fix-offset1;
 		if (ibuff < 0) ibuff = 0;
@@ -661,7 +666,7 @@ intbigf intbigf::root_int(const int &n_o) const
 	//
 	for (int ix = 0; ix != preci-offset2; ++ix) proc2.push_front(0);
 	base_pn.push_back(1);
-	deque<char>::const_reverse_iterator rit = proc2.rbegin();
+	std::deque<char>::const_reverse_iterator rit = proc2.rbegin();
 	bool proc_go = false;
 	y.b_poi = rad_p/n;
 	if (offset1 != 0) ++y.b_poi;
@@ -794,18 +799,18 @@ intbigf intbigf::floor(const int &digits, const bool &is_point = false) const
 intbigf::operator int() const
 {
 	int ret;
-	ostringstream ostri;
+	std::ostringstream ostri;
 	normal_stream = true;
 	ostri << *this;
 	normal_stream = false;
-	istringstream istri(ostri.str());
+	std::istringstream istri(ostri.str());
 	istri >> ret;
 	return ret;
 }
-//operator string()
-intbigf::operator string() const
+//operator std::string()
+intbigf::operator std::string() const
 {
-	ostringstream ostri;
+	std::ostringstream ostri;
 	normal_stream = true;
 	ostri << *this;
 	normal_stream = false;
@@ -815,35 +820,35 @@ intbigf::operator string() const
 intbigf::operator double() const
 {
 	double ret;
-	ostringstream ostri;
+	std::ostringstream ostri;
 	normal_stream = true;
 	ostri << *this;
 	normal_stream = false;
-	istringstream istri(ostri.str());
+	std::istringstream istri(ostri.str());
 	istri >> ret;
 	return ret;
 }
 //operator intbigdata()
 intbigf::operator intbigdata() const
 {
-	return intbigdata(string(this->trunc(0, true)));
+	return intbigdata(std::string(this->trunc(0, true)));
 }
-//istream &operator>>
-istream &operator>>(istream &in, intbigf &bus1)
+//std::istream &operator>>
+std::istream &operator>>(std::istream &in, intbigf &bus1)
 {
-	string str1;
+	std::string str1;
 	bus1.bigint.clear();
 	in >> str1;
 	//sign
 	bus1.b_sign = true;
 	if (str1[0] == '-') bus1.b_sign = false;
-	string::reverse_iterator s_it = str1.rbegin();
+	std::string::reverse_iterator s_it = str1.rbegin();
 	if (in) bus1 = intbigf(str1);
 	else bus1.bigint.push_back(0);
 	return in;
 }
-//ostream &operator<<
-ostream &operator<<(ostream &out, const intbigf &bus1)
+//std::ostream &operator<<
+std::ostream &operator<<(std::ostream &out, const intbigf &bus1)
 {
 	//scientific
 	if (intbigd_fu::cout_type == 2 && !normal_stream) {
@@ -870,7 +875,7 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 		}
 		i_poi_fix = intbigd_fu::cout_fixed-static_cast<int>(((*intf_p).bigint.size())-ibuff);
 	}
-	deque<char>::const_reverse_iterator rit_de = (*intf_p).bigint.rbegin();
+	std::deque<char>::const_reverse_iterator rit_de = (*intf_p).bigint.rbegin();
 	//sign
 	if ((*intf_p).b_sign == false) out << '-';
 	ibuff = (*intf_p).b_poi+bus1.b_exp;
@@ -909,7 +914,7 @@ ostream &operator<<(ostream &out, const intbigf &bus1)
 //assign1
 inline void intbigf::assign(const intbigdata &bus2)
 {
-	*this = intbigf(deque<char>(bus2.bigint.begin(), bus2.bigint.end()), -1, 0, bus2.b_sign, 'n');
+	*this = intbigf(std::deque<char>(bus2.bigint.begin(), bus2.bigint.end()), -1, 0, bus2.b_sign, 'n');
 }
 //assign2 overload
 inline void intbigf::assign(const intbigf &bus2)
@@ -921,7 +926,7 @@ inline void intbigf::assign(const intbigf &bus2)
 	b_exp = bus2.b_exp;	
 }
 //assign3 overload
-inline void intbigf::assign(const string &str1)
+inline void intbigf::assign(const std::string &str1)
 {
 	*this = intbigf(str1);
 }
@@ -938,7 +943,7 @@ inline void intbigf::assign(const double &us1)
 //assign6 overload
 inline void intbigf::assign(const char *cstr1)
 {
-	*this = intbigf(string(cstr1));
+	*this = intbigf(std::string(cstr1));
 }
 //swap
 inline void intbigf::swap(intbigf &bus2)
@@ -965,9 +970,9 @@ inline void intbigf::clear()
 //Class operators:
 ////////////////////////////////
 //scientific
-string intbigf::scientific(const int &i_point = 6) const
+std::string intbigf::scientific(const int &i_point = 6) const
 {
-	string s_number("0123456789"), s_temp, s_scient;
+	std::string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
 	//decimal point reserve
 	if (i_point < 1) i1_get = 6;
@@ -978,11 +983,11 @@ string intbigf::scientific(const int &i_point = 6) const
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
-		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, deque<char>(1, 1));
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, std::deque<char>(1, 1));
 	}
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;
-	deque<char>::reverse_iterator d_it = i_round.bigint.rbegin();
+	std::deque<char>::reverse_iterator d_it = i_round.bigint.rbegin();
 	for (; d_it != i_round.bigint.rbegin()+(i_round.bigint.size()-ix1); ++d_it) {
 		s_temp += s_number[*d_it];
 	}
@@ -1003,45 +1008,45 @@ string intbigf::scientific(const int &i_point = 6) const
 	return s_scient;
 }
 //save_file
-int intbigf::save_file(const string file_name_o = "auto", const string file_msg_o = "nomessage") const
+int intbigf::save_file(const std::string file_name_o = "auto", const std::string file_msg_o = "nomessage") const
 {
-	string file_name(file_name_o), file_msg("//");
+	std::string file_name(file_name_o), file_msg("//");
 	if (file_name == "auto") {
 		file_name.assign("num_");
 		file_name += this->scientific(6);
 		file_name += ".txt";
 	}
-	ofstream outfile(file_name.c_str());
-	if (!outfile) {cerr << "intbigdata.h: open file failed" << endl; return -1;}
+	std::ofstream outfile(file_name.c_str());
+	if (!outfile) {std::cerr << "intbigdata.h: open file failed" << std::endl; return -1;}
 	if (file_msg_o != "nomessage") {
 		file_msg += file_msg_o;
-		outfile << file_msg << endl;
+		outfile << file_msg << std::endl;
 	}
-	outfile << static_cast<string>(*this);
+	outfile << static_cast<std::string>(*this);
 	outfile.close();
 	outfile.clear();
 	return 0;
 }
 //load_file
-int intbigf::load_file(const string &file_name)
+int intbigf::load_file(const std::string &file_name)
 {
-	string::size_type pos1, pos2;
+	std::string::size_type pos1, pos2;
 	int is_comm = 0;
-	string s_line, s_lineadd;
-	ifstream infile(file_name.c_str());
-	if (!infile) {cerr << "intbigf.h: open file faile" << endl; return -1;}
+	std::string s_line, s_lineadd;
+	std::ifstream infile(file_name.c_str());
+	if (!infile) {std::cerr << "intbigf.h: open file faile" << std::endl; return -1;}
 	while (getline(infile, s_line)) {
 		//ignore comments
 		pos1 = s_line.find("//");
-		if (pos1 != string::npos) s_line.assign(s_line.begin(), s_line.begin()+pos1);
+		if (pos1 != std::string::npos) s_line.assign(s_line.begin(), s_line.begin()+pos1);
 		pos1 = s_line.find("/*");
 		pos2 = s_line.find("*/");
-		if (pos1 != string::npos && pos2 != string::npos) s_line.replace(pos1, pos2-pos1+2, "");
-		if (pos1 != string::npos && pos2 == string::npos) {
+		if (pos1 != std::string::npos && pos2 != std::string::npos) s_line.replace(pos1, pos2-pos1+2, "");
+		if (pos1 != std::string::npos && pos2 == std::string::npos) {
 			s_line.assign(s_line.begin(), s_line.begin()+pos1);
 			is_comm = 1;
 		}
-		if (pos1 == string::npos && pos2 != string::npos) {
+		if (pos1 == std::string::npos && pos2 != std::string::npos) {
 			s_line.assign(s_line.begin()+pos2+2, s_line.end());
 			is_comm = 0;
 		}
@@ -1064,9 +1069,9 @@ double intbigf::get_double() const
 	return double(*this);
 }
 //get_string
-string intbigf::get_string() const
+std::string intbigf::get_string() const
 {
-	return string(*this);
+	return std::string(*this);
 }
 ////////////////
 //Capacity:
@@ -1081,8 +1086,10 @@ inline unsigntp intbigf::max_size() const
 {
 	return bigint.max_size();
 }
+}//namespace intbigd
+//
 ////////////////
-//exception or cerr: div, save_file, load_file, root_int
+//exception or std::cerr: div, save_file, load_file, root_int
 ////////////////
 ////////////////
 #endif

@@ -1,6 +1,6 @@
 ////////////////
 //intbigdata.h, calculate big number, environment: C++03 x86
-//craft by endrollex, 2012.10.03-2013.07.14
+//craft by endrollex, start work 2012.10.03
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
 //           that means the intbigdata.h has very poor performance.
@@ -8,25 +8,19 @@
 ////////////////
 #ifndef INTBIGDATA_H
 #define INTBIGDATA_H
-#include <iostream>
+#include <ostream>
 #include <fstream>//save_file, load_file
 #include <deque>
 #include <vector>
 #include <string>
 #include <iterator>
 #include <sstream>
-using std::deque;
-using std::vector;
-using std::string;
-using std::istream;
-using std::ostream;
-using std::ofstream;
-using std::ifstream;
-using std::cerr;
-using std::endl;
-using std::ostringstream;
-using std::istringstream;
-typedef vector<char>::size_type unsigntp;
+//
+namespace intbigd
+{
+//skip tab
+typedef std::vector<char>::size_type unsigntp;
+//
 namespace intbigd_fu
 {
 //skip tab
@@ -35,7 +29,7 @@ namespace intbigd_fu
 //add_f
 ////////////////
 ////////////////
-template <typename Tve>//Tve: vector<char>, deque<char>...
+template <typename Tve>//Tve: std::vector<char>, std::deque<char>...
 Tve add_f(const Tve &bigint, const Tve &di2)
 {
 	Tve de_res;
@@ -254,7 +248,7 @@ void mul_fself(Tve &bigint, const Tve &di2)
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
 	bigint.swap(de_res);
 }
-////////////////deque use
+////////////////std::deque use
 //div_f, y = a/b (a>=b && b!=0)
 ////////////////
 ////////////////
@@ -262,8 +256,8 @@ template <typename Tve>
 Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 {
 	unsigntp difsize = bigint.size()-di2.size()+1;
-	//deque
-	deque<char> bu1(bigint.begin()+difsize, bigint.end()), de_res;
+	//std::deque
+	std::deque<char> bu1(bigint.begin()+difsize, bigint.end()), de_res;
 	Tve di_p(bigint.begin(), bigint.begin()+difsize), ve_res;
 	unsigntp ix1, ix2;
 	//sub_reverse_
@@ -340,7 +334,8 @@ Tve pow_f(const Tve &bus1, const unsigned &exp)
 	for (unsigned ixc = 1; ixc != exp; ++ixc) mul_fself(ret, bus1);
 	return ret;
 }
-}
+}//namespace intbigd_fu
+//
 ////////////////
 //class intbigdata
 ////////////////
@@ -358,7 +353,7 @@ class intbigdata
 public:
 	//Constructors:
 	intbigdata(): b_sign(true), bigint(1, 0) {};
-	intbigdata(const std::string &str1);//structure form string, can deal with scientific notation
+	intbigdata(const std::string &str1);//structure form std::string, can deal with scientific notation
 	intbigdata(const int &us1_o);
 	intbigdata(const char *cstr1);
 	intbigdata(const unsigned &us1_o, const int &dummy);//explicit convert unsigned to intbigdata
@@ -377,10 +372,10 @@ public:
 	//
 	//Operators:
 	operator int() const;
-	operator string() const;
+	operator std::string() const;
 	friend std::istream &operator>>(std::istream &in, intbigdata &bus1);
 	friend std::ostream &operator<<(std::ostream &out, const intbigdata &bus1);
-	//memo: defining own copy constructors need string and also int, otherwise will cause ambiguous with copy 0
+	//memo: defining own copy constructors need std::string and also int, otherwise will cause ambiguous with copy 0
 	//use synthesized copy constructors
 	//
 	//overload operators:
@@ -434,7 +429,7 @@ public:
 	unsigntp max_size() const;
 	//Objects:
 	bool b_sign;//positive : bool b_sign = ture, negative : b_sign = false, zero: b_sign = ture
-	std::vector<char> bigint;//sample: if int i = 190, convert to vector<char> d: 091
+	std::vector<char> bigint;//sample: if int i = 190, convert to std::vector<char> d: 091
 	//Compare:
 	int who_big(const intbigdata &bus2) const;
 	bool is_zero() const;
@@ -468,8 +463,8 @@ template <typename Tve> inline intbigdata operator%(const Tve &ib1, const intbig
 ////////////////
 //Constructors:
 ////////////////////////////////
-//structure2 vector
-intbigdata::intbigdata(const vector<char> &di1, const bool &bsn = true, const char &check_data = 'n')
+//structure2 std::vector
+intbigdata::intbigdata(const std::vector<char> &di1, const bool &bsn = true, const char &check_data = 'n')
 {
 	//sign
 	b_sign = bsn;
@@ -478,36 +473,36 @@ intbigdata::intbigdata(const vector<char> &di1, const bool &bsn = true, const ch
 	//check data and fix
 	if (check_data == 'y') this->fix_data();
 }
-//structure3 string
+//structure3 std::string
 intbigdata::intbigdata(const std::string &str1)
 {
 	//"0123456789" will check converting
-	string s_number("0123456789"), s_expo;
+	std::string s_number("0123456789"), s_expo;
 	bool b_do_e = false, ignore_e = true;
 	//judge scientific notation
-	string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp;
+	std::string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp;
 	//'#', hide parameter, force ignore scientific notation
 	if (str1[str1.size()-1] != '#') {
 		s_ixe = str1.find_first_of("Ee");
 		s_ixn = str1.find_last_of(s_number);
-		if (s_ixe != string::npos && s_ixn != string::npos) {
+		if (s_ixe != std::string::npos && s_ixn != std::string::npos) {
 			if (s_ixn > s_ixe) ignore_e = false;
 		}
 	}
 	//scientific notation, 0 <= exponent <= 2147483647
 	if (!ignore_e) {
-		string s_expo(str1, s_ixe+1), str1_p;
+		std::string s_expo(str1, s_ixe+1), str1_p;
 		s_expo += '#';
-		//fix string data
+		//fix std::string data
 		int i_expo = static_cast<int>(intbigdata(s_expo)), ibuff;
-		s_ixp = string::npos;
+		s_ixp = std::string::npos;
 		for (s_ixn = 0; s_ixn != s_ixe; ++s_ixn) {
 			s_ixn2 = s_number.find(str1[s_ixn]);
-			if (s_ixn2 != string::npos) str1_p += str1[s_ixn];
+			if (s_ixn2 != std::string::npos) str1_p += str1[s_ixn];
 			//point
-			if (s_ixp == string::npos && str1[s_ixn] == '.') s_ixp = str1_p.size();
+			if (s_ixp == std::string::npos && str1[s_ixn] == '.') s_ixp = str1_p.size();
 		}
-		if (s_ixp != string::npos) ibuff = static_cast<int>(str1_p.size()-s_ixp);
+		if (s_ixp != std::string::npos) ibuff = static_cast<int>(str1_p.size()-s_ixp);
 		else ibuff = str1_p.size()-1;
 		ibuff = i_expo-ibuff;
 		if (str1_p.size() == 0) str1_p += '1';
@@ -529,12 +524,12 @@ intbigdata::intbigdata(const std::string &str1)
 		else b_sign = true;
 		//point, no need trim
 		s_ixp = str1.find_first_of('.');
-		if (s_ixp == string::npos) s_ixp = 0;
+		if (s_ixp == std::string::npos) s_ixp = 0;
 		else s_ixp = str1.size()-s_ixp;
-		string::const_reverse_iterator s_it;
+		std::string::const_reverse_iterator s_it;
 		for (s_it = str1.rbegin()+s_ixp; s_it != str1.rend(); ++s_it) {
 			s_ixn = s_number.find(*s_it);
-			if (s_ixn != string::npos) bigint.push_back(s_ixn);
+			if (s_ixn != std::string::npos) bigint.push_back(s_ixn);
 		}
 		if (bigint.empty()) bigint.push_back(0);
 		//remove zero
@@ -553,10 +548,10 @@ intbigdata::intbigdata(const int &us1_o)
 	while (us1 != 0) {bigint.push_back(us1%10); us1 /= 10;}
 	if (us1_o == 0) bigint.push_back(0);
 }
-//structure5 c style string
+//structure5 c style std::string
 intbigdata::intbigdata(const char *cstr1)
 {
-	*this = intbigdata(string(cstr1));
+	*this = intbigdata(std::string(cstr1));
 }
 //structure6 unsigned
 intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
@@ -592,7 +587,7 @@ inline bool intbigdata::is_zero() const
 void intbigdata::fix_data()
 {
 	if (bigint.empty()) bigint.push_back(0);
-	vector<char>::reverse_iterator rit_de = bigint.rbegin();
+	std::vector<char>::reverse_iterator rit_de = bigint.rbegin();
 	while (rit_de != bigint.rend()) {
 		if (*rit_de < 0) *rit_de = -*rit_de;
 		if (*rit_de > 9) *rit_de = *rit_de%10;
@@ -608,7 +603,7 @@ void intbigdata::fix_data()
 bool intbigdata::is_not_corrupt() const
 {
 	if (bigint.empty()) return false;
-	vector<char>::const_reverse_iterator rit_de = bigint.rbegin();
+	std::vector<char>::const_reverse_iterator rit_de = bigint.rbegin();
 	while (rit_de != bigint.rend()) {
 		if (*rit_de < 0 || *rit_de > 9) return false;
 		++rit_de;
@@ -696,15 +691,15 @@ inline intbigdata intbigdata::pow(const intbigdata &bus2) const
 	for (int ixc = 1; ixc != ixpow; ++ixc) intbigd_fu::mul_fself(ret.bigint, bigint);
 	return ret;
 }
-////////////////deque use
+////////////////std::deque use
 //sqrt, method: digit-by-digit calculation
 intbigdata intbigdata::sqrt() const
 {
-	//deque
-	deque<char> rema;//remainder
-	vector<char>::const_reverse_iterator v_it = bigint.rbegin();
+	//std::deque
+	std::deque<char> rema;//remainder
+	std::vector<char>::const_reverse_iterator v_it = bigint.rbegin();
 	//sign
-	if (b_sign == false) cerr << "intbigdata.h: imaginary number" << endl;
+	if (b_sign == false) std::cerr << "intbigdata.h: imaginary number" << std::endl;
 	//initialize value
 	if (bigint.size()%2 == 1) {rema.push_front(0); rema.push_front(*v_it++);}
 	else {rema.push_front(*v_it++); rema.push_front(*v_it++);}
@@ -712,8 +707,8 @@ intbigdata intbigdata::sqrt() const
 	while (ix*ix <= i_temp) ++ix;
 	if (ix != 0) --ix;
 	intbigdata ib_rootsqr(ix*ix), ib_20, ib_20p, di_temp, ib_root_res;
-	//deque
-	deque<char> de_root(1, ix);
+	//std::deque
+	std::deque<char> de_root(1, ix);
 	ib_20.bigint.push_back(2);
 	intbigd_fu::sub_fself_contra(ib_rootsqr.bigint, rema);
 	//iterate
@@ -767,17 +762,17 @@ intbigdata intbigdata::sqrt() const
 intbigdata::operator int() const
 {
 	int ret;
-	ostringstream ostri;
+	std::ostringstream ostri;
 	ostri << *this;
-	istringstream istri(ostri.str());
+	std::istringstream istri(ostri.str());
 	istri >> ret;
 	return ret;	
 }
-//operator string()
-intbigdata::operator string() const
+//operator std::string()
+intbigdata::operator std::string() const
 {
-	string s_number("0123456789"), str_res, s_buff;
-	vector<char>::const_reverse_iterator rit_de;
+	std::string s_number("0123456789"), str_res, s_buff;
+	std::vector<char>::const_reverse_iterator rit_de;
 	//sign
 	if (b_sign == false) str_res.assign("-");
 	for (rit_de = bigint.rbegin(); rit_de != bigint.rend(); ++rit_de) {
@@ -785,21 +780,21 @@ intbigdata::operator string() const
 	}
 	return str_res;
 }
-//istream &operator>>
-istream &operator>>(istream &in, intbigdata &bus1)
+//std::istream &operator>>
+std::istream &operator>>(std::istream &in, intbigdata &bus1)
 {
-	string s_number("0123456789"), str1;
-	string::size_type s_ix;
+	std::string s_number("0123456789"), str1;
+	std::string::size_type s_ix;
 	bus1.bigint.clear();
 	in >> str1;
 	//sign
 	bus1.b_sign = true;
 	if (str1[0] == '-') bus1.b_sign = false;
-	string::reverse_iterator s_it = str1.rbegin();
+	std::string::reverse_iterator s_it = str1.rbegin();
 	if (in) {
 		for (; s_it != str1.rend(); ++s_it) {
 			s_ix = s_number.find(*s_it);
-			if (s_ix != string::npos) bus1.bigint.push_back(s_ix);
+			if (s_ix != std::string::npos) bus1.bigint.push_back(s_ix);
 		}
 		if (bus1.bigint.size() == 0) bus1.bigint.push_back(0);
 		//remove zero
@@ -810,10 +805,10 @@ istream &operator>>(istream &in, intbigdata &bus1)
 	else bus1.bigint.push_back(0);
 	return in;
 }
-//ostream &operator<<
-ostream &operator<<(ostream &out, const intbigdata &bus1)
+//std::ostream &operator<<
+std::ostream &operator<<(std::ostream &out, const intbigdata &bus1)
 {
-	vector<char>::const_reverse_iterator rit_de = bus1.bigint.rbegin();
+	std::vector<char>::const_reverse_iterator rit_de = bus1.bigint.rbegin();
 	//sign
 	if (bus1.b_sign == false) out << '-';
 	while (rit_de != bus1.bigint.rend()) out << (int)*rit_de++;
@@ -853,7 +848,7 @@ inline intbigdata intbigdata::operator--(int)
 //Modifiers:
 ////////////////////////////////
 //assign1
-inline void intbigdata::assign(const vector<char> &di2, const bool &bsn = true, const char &check_data = 'y')
+inline void intbigdata::assign(const std::vector<char> &di2, const bool &bsn = true, const char &check_data = 'y')
 {
 	//sign
 	b_sign = bsn;
@@ -870,7 +865,7 @@ inline void intbigdata::assign(const intbigdata &bus2)
 	bigint = bus2.bigint;
 }
 //assign3 overload
-inline void intbigdata::assign(const string &str1)
+inline void intbigdata::assign(const std::string &str1)
 {
 	*this = intbigdata(str1);
 }
@@ -887,7 +882,7 @@ inline void intbigdata::assign_unsigned(const unsigned &us1)
 //assign6 overload
 inline void intbigdata::assign(const char *cstr1)
 {
-	*this = intbigdata(string(cstr1));
+	*this = intbigdata(std::string(cstr1));
 }
 //swap
 inline void intbigdata::swap(intbigdata &bus2)
@@ -907,9 +902,9 @@ inline void intbigdata::clear()
 //Class operators:
 ////////////////////////////////
 //scientific
-string intbigdata::scientific(const int &i_point = 6) const
+std::string intbigdata::scientific(const int &i_point = 6) const
 {
-	string s_number("0123456789"), s_temp, s_scient;
+	std::string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
 	if (bigint.size() == 1) {s_scient = s_number[bigint[0]]; s_scient += "e+0"; return s_scient;}
 	//decimal point reserve
@@ -921,11 +916,11 @@ string intbigdata::scientific(const int &i_point = 6) const
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
-		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, vector<char>(1, 1));
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, std::vector<char>(1, 1));
 	}
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;
-	vector<char>::reverse_iterator d_it = i_round.bigint.rbegin();
+	std::vector<char>::reverse_iterator d_it = i_round.bigint.rbegin();
 	for (; d_it != i_round.bigint.rbegin()+(i_round.bigint.size()-ix1); ++d_it) {
 		s_temp += s_number[*d_it];
 	}	
@@ -940,21 +935,21 @@ string intbigdata::scientific(const int &i_point = 6) const
 	return s_scient;
 }
 //save_file
-int intbigdata::save_file(const string file_name_o = "auto", const string file_msg_o = "nomessage") const
+int intbigdata::save_file(const std::string file_name_o = "auto", const std::string file_msg_o = "nomessage") const
 {
-	string file_name(file_name_o), file_msg("//");
+	std::string file_name(file_name_o), file_msg("//");
 	if (file_name == "auto") {
 		file_name.assign("num_");
 		file_name += this->scientific(6);
 		file_name += ".txt";
 	}
-	ofstream outfile(file_name.c_str());
-	if (!outfile) {cerr << "intbigdata.h: open file failed" << endl; return -1;}
+	std::ofstream outfile(file_name.c_str());
+	if (!outfile) {std::cerr << "intbigdata.h: open file failed" << std::endl; return -1;}
 	if (file_msg_o != "nomessage") {
 		file_msg += file_msg_o;
-		outfile << file_msg << endl;
+		outfile << file_msg << std::endl;
 	}
-	vector<char>::const_reverse_iterator vi_rit = bigint.rbegin();
+	std::vector<char>::const_reverse_iterator vi_rit = bigint.rbegin();
 	//sign
 	if (b_sign == false) outfile << '-';
 	while (vi_rit != bigint.rend())	outfile << (int)*vi_rit++;
@@ -963,25 +958,25 @@ int intbigdata::save_file(const string file_name_o = "auto", const string file_m
 	return 0;
 }
 //load_file
-int intbigdata::load_file(const string &file_name)
+int intbigdata::load_file(const std::string &file_name)
 {
-	string::size_type pos1, pos2;
+	std::string::size_type pos1, pos2;
 	int is_comm = 0;
-	string s_line, s_lineadd;
-	ifstream infile(file_name.c_str());
-	if (!infile) {cerr << "intbigdata.h: open file faile" << endl; return -1;}
+	std::string s_line, s_lineadd;
+	std::ifstream infile(file_name.c_str());
+	if (!infile) {std::cerr << "intbigdata.h: open file faile" << std::endl; return -1;}
 	while (getline(infile, s_line)) {
 		//ignore comments
 		pos1 = s_line.find("//");
-		if (pos1 != string::npos) s_line.assign(s_line.begin(), s_line.begin()+pos1);
+		if (pos1 != std::string::npos) s_line.assign(s_line.begin(), s_line.begin()+pos1);
 		pos1 = s_line.find("/*");
 		pos2 = s_line.find("*/");
-		if (pos1 != string::npos && pos2 != string::npos) s_line.replace(pos1, pos2-pos1+2, "");
-		if (pos1 != string::npos && pos2 == string::npos) {
+		if (pos1 != std::string::npos && pos2 != std::string::npos) s_line.replace(pos1, pos2-pos1+2, "");
+		if (pos1 != std::string::npos && pos2 == std::string::npos) {
 			s_line.assign(s_line.begin(), s_line.begin()+pos1);
 			is_comm = 1;
 		}
-		if (pos1 == string::npos && pos2 != string::npos) {
+		if (pos1 == std::string::npos && pos2 != std::string::npos) {
 			s_line.assign(s_line.begin()+pos2+2, s_line.end());
 			is_comm = 0;
 		}
@@ -1002,16 +997,16 @@ int intbigdata::get_int() const
 unsigned intbigdata::get_unsigned() const
 {
 	unsigned ret;
-	ostringstream ostri;
+	std::ostringstream ostri;
 	ostri << *this;
-	istringstream istri(ostri.str());
+	std::istringstream istri(ostri.str());
 	istri >> ret;
 	return ret;		
 }
 //get_string
-string intbigdata::get_string() const
+std::string intbigdata::get_string() const
 {
-	return string(*this);
+	return std::string(*this);
 }
 ////////////////
 //Capacity:
@@ -1026,8 +1021,10 @@ inline unsigntp intbigdata::max_size() const
 {
 	return bigint.max_size();
 }
+}//namespace intbigd
+//
 ////////////////
-//exception or cerr: div, mod, sqrt, save_file, load_file
+//exception or std::cerr: div, mod, sqrt, save_file, load_file
 ////////////////
 ////////////////
 #endif
