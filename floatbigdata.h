@@ -1,19 +1,19 @@
 ////////////////
-//intbigf.h, calculate big float, environment: C++03 x86
+//floatbigdata.h, calculate big float, environment: C++03 x86
 //craft by endrollex, start work 2013.07.03
 //http://endrollex.com/
 //ATTENTION: This is an immature project with very simple arithemtic method,
-//           that means the intbigf.h has very poor performance.
+//           that means the floatbigdata.h has very poor performance.
 ////////////////
 ////////////////
-#ifndef INTBIGDAF_H
-#define INTBIGDAF_H
+#ifndef FLOATBIGDATA_H
+#define FLOATBIGDATA_H
 #include "intbigdata.h"
 //
-namespace intbigd
+namespace bigdata
 {
 //skip tab
-namespace intbigd_fu
+namespace h_func
 {
 //skip tab
 ////////////////
@@ -195,82 +195,82 @@ int gcd(const int &v1_o, const int &v2_o)
 	while (v2 != 0) {int temp = v2; v2 = v1%v2; v1 = temp;}
 	return v1;
 }
-}//namespace intbigd_fu
+}//namespace h_func
 //
 //do not inherit
-class intbigf
+class floatbigdata
 {
 public:
 	//Constructors:
-	intbigf(): b_sign(true), bigint(1, 0), b_poi(1), b_exp(0) {};
-	intbigf(const std::string &str1);//structure form std::string, can deal with scientific notation
-	intbigf(const double &dou1_o);
-	intbigf(const int &us1_o, const int &dummy);
-	intbigf(const intbigdata &bus1);
-	intbigf(const char *cstr1);
-	intbigf(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);//inconvenience
-	~intbigf() {};
+	floatbigdata(): b_sign(true), bigint(1, 0), b_poi(1), b_exp(0) {};
+	floatbigdata(const std::string &str1);//structure form std::string, can deal with scientific notation
+	floatbigdata(const double &dou1_o);
+	floatbigdata(const int &us1_o, const int &dummy);
+	floatbigdata(const intbigdata &bus1);
+	floatbigdata(const char *cstr1);
+	floatbigdata(const std::deque<char> &di1, const int &bpi, const int &bep, const bool &bsn, const char &check_data);//inconvenience
+	~floatbigdata() {};
 	//Traditional arithmetics:
-	intbigf add(const intbigf &bus2) const;
-	intbigf sub(const intbigf &bus2) const;
-	intbigf mul(const intbigf &bus2) const;
-	void mul_self(const intbigf &bus2);
-	intbigf div(const intbigf &bus2) const;
+	floatbigdata add(const floatbigdata &bus2) const;
+	floatbigdata sub(const floatbigdata &bus2) const;
+	floatbigdata mul(const floatbigdata &bus2) const;
+	void mul_self(const floatbigdata &bus2);
+	floatbigdata div(const floatbigdata &bus2) const;
 	//Power functions:
-	intbigf pow_int(const int &ib) const;
-	intbigf root_int(const int &n) const;
-	intbigf pow(const double &ib, const bool &is_root) const;
-	intbigf root(const double &ib) const;
-	intbigf pow_frac(const int &nume, const int &deno, const bool &sign);
+	floatbigdata pow_int(const int &ib) const;
+	floatbigdata root_int(const int &n) const;
+	floatbigdata pow(const double &ib, const bool &is_root) const;
+	floatbigdata root(const double &ib) const;
+	floatbigdata pow_frac(const int &nume, const int &deno, const bool &sign);
 	//Exponential and logarithmic functions:
 	//
 	//Rounding and remainder functions:
-	intbigf trunc(const int &digits, const bool &is_point) const;
-	intbigf trunc_self(const int &digits, const bool &is_point);
-	intbigf round(const int &digits, const bool &is_point) const;
-	intbigf round_self(const int &digits, const bool &is_point);
-	intbigf ceil(const int &digits, const bool &is_point) const;
-	intbigf floor(const int &digits, const bool &is_point) const;
+	floatbigdata trunc(const int &digits, const bool &is_point) const;
+	floatbigdata trunc_self(const int &digits, const bool &is_point);
+	floatbigdata round(const int &digits, const bool &is_point) const;
+	floatbigdata round_self(const int &digits, const bool &is_point);
+	floatbigdata ceil(const int &digits, const bool &is_point) const;
+	floatbigdata floor(const int &digits, const bool &is_point) const;
 	//Operators:
 	operator int() const;
 	operator std::string() const;
 	operator double() const;
 	operator intbigdata() const;
-	friend std::istream &operator>>(std::istream &in, intbigf &bus1);
-	friend std::ostream &operator<<(std::ostream &out, const intbigf &bus1);
+	friend std::istream &operator>>(std::istream &in, floatbigdata &bus1);
+	friend std::ostream &operator<<(std::ostream &out, const floatbigdata &bus1);
 	//overload operators:
-	intbigf &operator+=(const intbigf &bus2) {return *this = this->add(bus2);}
-	intbigf &operator-=(const intbigf &bus2) {return *this = this->sub(bus2);}
-	intbigf &operator*=(const intbigf &bus2) {return *this = this->mul(bus2);}
-	intbigf &operator/=(const intbigf &bus2) {return *this = this->div(bus2);}
-	friend bool operator==(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 0;}
-	template <typename Tve> friend bool operator==(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 0;}
-	template <typename Tve> friend bool operator==(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 0;}
-	friend bool operator!=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != 0;}
-	template <typename Tve> friend bool operator!=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 0;}
-	template <typename Tve> friend bool operator!=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 0;}
-	friend bool operator>(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == 1;}
-	template <typename Tve> friend bool operator>(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 1;}
-	template <typename Tve> friend bool operator>(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == 1;}	
-	friend bool operator>=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != -1;}
-	template <typename Tve> friend bool operator>=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != -1;}
-	template <typename Tve> friend bool operator>=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != -1;}
-	friend bool operator<(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) == -1;}
-	template <typename Tve> friend bool operator<(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) == -1;}
-	template <typename Tve> friend bool operator<(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) == -1;}
-	friend bool operator<=(const intbigf &bus1, const intbigf &bus2) {return bus1.who_big(bus2) != 1;}
-	template <typename Tve> friend bool operator<=(const intbigf &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 1;}
-	template <typename Tve> friend bool operator<=(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).who_big(bus2) != 1;}
-	intbigf &operator+() {return *this;}
-	intbigf &operator-() {b_sign = !b_sign; return *this;}
+	floatbigdata &operator+=(const floatbigdata &bus2) {return *this = this->add(bus2);}
+	floatbigdata &operator-=(const floatbigdata &bus2) {return *this = this->sub(bus2);}
+	floatbigdata &operator*=(const floatbigdata &bus2) {return *this = this->mul(bus2);}
+	floatbigdata &operator/=(const floatbigdata &bus2) {return *this = this->div(bus2);}
+	friend bool operator==(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.who_big(bus2) == 0;}
+	template <typename Tve> friend bool operator==(const floatbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 0;}
+	template <typename Tve> friend bool operator==(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).who_big(bus2) == 0;}
+	friend bool operator!=(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.who_big(bus2) != 0;}
+	template <typename Tve> friend bool operator!=(const floatbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 0;}
+	template <typename Tve> friend bool operator!=(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).who_big(bus2) != 0;}
+	friend bool operator>(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.who_big(bus2) == 1;}
+	template <typename Tve> friend bool operator>(const floatbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) == 1;}
+	template <typename Tve> friend bool operator>(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).who_big(bus2) == 1;}	
+	friend bool operator>=(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.who_big(bus2) != -1;}
+	template <typename Tve> friend bool operator>=(const floatbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) != -1;}
+	template <typename Tve> friend bool operator>=(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).who_big(bus2) != -1;}
+	friend bool operator<(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.who_big(bus2) == -1;}
+	template <typename Tve> friend bool operator<(const floatbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) == -1;}
+	template <typename Tve> friend bool operator<(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).who_big(bus2) == -1;}
+	friend bool operator<=(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.who_big(bus2) != 1;}
+	template <typename Tve> friend bool operator<=(const floatbigdata &bus1, const Tve &ib2) {return bus1.who_big(ib2) != 1;}
+	template <typename Tve> friend bool operator<=(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).who_big(bus2) != 1;}
+	floatbigdata &operator+() {return *this;}
+	floatbigdata &operator-() {b_sign = !b_sign; return *this;}
 	//Modifiers:
 	void assign(const intbigdata &bus2);
-	void assign(const intbigf &bus2);
+	void assign(const floatbigdata &bus2);
 	void assign(const std::string &str1);
 	void assign_int(const int &us1);
 	void assign(const double &us1);
 	void assign(const char *cstr1);
-	void swap(intbigf &bus2);
+	void swap(floatbigdata &bus2);
 	void clear();
 	//Class operators:
 	std::string scientific(const int &i_point) const;//scientific notation
@@ -288,33 +288,33 @@ public:
 	int b_poi;//point position
 	int b_exp;//exponent
 	//Compare:
-	int who_big(const intbigf &bus2) const;
+	int who_big(const floatbigdata &bus2) const;
 	bool is_zero() const;
 	void fix_data();
 	bool is_not_corrupt() const;	
 private:
 	//Constructors:
-	intbigf(const std::vector<char> &di1, const bool &di1_sign);
+	floatbigdata(const std::vector<char> &di1, const bool &di1_sign);
 };
 //nonmember operators overload
 //overload operators:
-inline intbigf operator+(const intbigf &bus1, const intbigf &bus2) {return bus1.add(bus2);}
-template <typename Tve> inline intbigf operator+(const intbigf &bus1, const Tve &ib2) {return bus1.add(ib2);}
-template <typename Tve> inline intbigf operator+(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).add(bus2);}
-inline intbigf operator-(const intbigf &bus1, const intbigf &bus2) {return bus1.sub(bus2);}
-template <typename Tve> inline intbigf operator-(const intbigf &bus1, const Tve &ib2) {return bus1.sub(ib2);}
-template <typename Tve> inline intbigf operator-(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).sub(bus2);}
-inline intbigf operator*(const intbigf &bus1, const intbigf &bus2) {return bus1.mul(bus2);}
-template <typename Tve> inline intbigf operator*(const intbigf &bus1, const Tve &ib2) {return bus1.mul(ib2);}
-template <typename Tve> inline intbigf operator*(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).mul(bus2);}
-inline intbigf operator/(const intbigf &bus1, const intbigf &bus2) {return bus1.div(bus2);}
-template <typename Tve> inline intbigf operator/(const intbigf &bus1, const Tve &ib2) {return bus1.div(ib2);}
-template <typename Tve> inline intbigf operator/(const Tve &ib1, const intbigf &bus2) {return intbigf(ib1).div(bus2);}
+inline floatbigdata operator+(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.add(bus2);}
+template <typename Tve> inline floatbigdata operator+(const floatbigdata &bus1, const Tve &ib2) {return bus1.add(ib2);}
+template <typename Tve> inline floatbigdata operator+(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).add(bus2);}
+inline floatbigdata operator-(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.sub(bus2);}
+template <typename Tve> inline floatbigdata operator-(const floatbigdata &bus1, const Tve &ib2) {return bus1.sub(ib2);}
+template <typename Tve> inline floatbigdata operator-(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).sub(bus2);}
+inline floatbigdata operator*(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.mul(bus2);}
+template <typename Tve> inline floatbigdata operator*(const floatbigdata &bus1, const Tve &ib2) {return bus1.mul(ib2);}
+template <typename Tve> inline floatbigdata operator*(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).mul(bus2);}
+inline floatbigdata operator/(const floatbigdata &bus1, const floatbigdata &bus2) {return bus1.div(bus2);}
+template <typename Tve> inline floatbigdata operator/(const floatbigdata &bus1, const Tve &ib2) {return bus1.div(ib2);}
+template <typename Tve> inline floatbigdata operator/(const Tve &ib1, const floatbigdata &bus2) {return floatbigdata(ib1).div(bus2);}
 ////////////////
 //global var
 ////////////////
 ////////////////
-const intbigf intbigf_one(std::deque<char>(1, 1), 1, 0, true, 'n');
+const floatbigdata floatbigdata_one(std::deque<char>(1, 1), 1, 0, true, 'n');
 bool normal_stream = false;
 int i_dummy = 0;
 // (\__/)
@@ -324,7 +324,7 @@ int i_dummy = 0;
 //Constructors:
 ////////////////////////////////
 //structure2 std::deque
-intbigf::intbigf(const std::deque<char> &di1, const int &bpi = 0, const int &bep = 0,
+floatbigdata::floatbigdata(const std::deque<char> &di1, const int &bpi = 0, const int &bep = 0,
 	const bool &bsn = true, const char &check_data = 'n')
 {
 	//sign
@@ -358,15 +358,15 @@ intbigf::intbigf(const std::deque<char> &di1, const int &bpi = 0, const int &bep
 	}
 	//other lim
 	else {
-		if (intbigd_fu::digits_precision_affect == 2) {
-			intbigd_fu::significant_fix(bigint, i_dummy);
+		if (h_func::digits_precision_affect == 2) {
+			h_func::significant_fix(bigint, i_dummy);
 		}
 	}
 	//is zero
 	if (bigint.size() == 1 && bigint[0] == 0) {b_sign = true; b_poi = 1; b_exp = 0;}
 }
 //structure3 std::string
-intbigf::intbigf(const std::string &str1)
+floatbigdata::floatbigdata(const std::string &str1)
 {
 	//"0123456789" will check converting
 	std::string s_number("0123456789"), s_expo;
@@ -388,7 +388,7 @@ intbigf::intbigf(const std::string &str1)
 		//fix std::string data
 		int i_expo = static_cast<int>(intbigdata(s_expo));
 		str1_p += '#';
-		*this = intbigf(str1_p);
+		*this = floatbigdata(str1_p);
 		b_exp += i_expo;
 	}
 	//normal number
@@ -434,7 +434,7 @@ intbigf::intbigf(const std::string &str1)
 	}
 }
 //structure4 int
-intbigf::intbigf(const int &us1_o, const int &dummy)
+floatbigdata::floatbigdata(const int &us1_o, const int &dummy)
 {
 	int ibuff, us1;
 	//sign
@@ -448,29 +448,29 @@ intbigf::intbigf(const int &us1_o, const int &dummy)
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 }
 //structure5 c style std::string
-intbigf::intbigf(const char *cstr1)
+floatbigdata::floatbigdata(const char *cstr1)
 {
-	*this = intbigf(std::string(cstr1));
+	*this = floatbigdata(std::string(cstr1));
 }
 //structure7 double
-intbigf::intbigf(const double &dou1_o)
+floatbigdata::floatbigdata(const double &dou1_o)
 {
 	std::ostringstream ostri;
 	normal_stream = true;
 	ostri << dou1_o;
 	normal_stream = false;
-	*this = intbigf(ostri.str());
+	*this = floatbigdata(ostri.str());
 }
 //structure8 intbigdata
-intbigf::intbigf(const intbigdata &bus1)
+floatbigdata::floatbigdata(const intbigdata &bus1)
 {
-	*this = intbigf(std::deque<char>(bus1.bigint.begin(), bus1.bigint.end()), -1, 0, bus1.b_sign, 'n');
+	*this = floatbigdata(std::deque<char>(bus1.bigint.begin(), bus1.bigint.end()), -1, 0, bus1.b_sign, 'n');
 }
 ////////////////
 //Compare:
 ////////////////////////////////
 //who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
-inline int intbigf::who_big(const intbigf &bus2) const
+inline int floatbigdata::who_big(const floatbigdata &bus2) const
 {
 	//sign
 	if (b_sign == true && bus2.b_sign == false) return 1;
@@ -480,19 +480,19 @@ inline int intbigf::who_big(const intbigf &bus2) const
 	if (bus2.b_poi > b_poi) b_exp2 += bus2.b_poi-b_poi;
 	if (b_sign) {if (b_exp1 > b_exp2) return 1; if (b_exp2 > b_exp1) return -1;}
 	if (!b_sign) {if (b_exp1 < b_exp2) return 1; if (b_exp2 < b_exp1) return -1;}
-	i_who_big = intbigd_fu::abso_big(bigint, bus2.bigint);
+	i_who_big = h_func::abso_big(bigint, bus2.bigint);
 	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
 	return i_who_big;
 }
 //is_zero
-inline bool intbigf::is_zero() const
+inline bool floatbigdata::is_zero() const
 {
 	if (bigint.size() == 1 && bigint[0] == 0) return true;
 	//skip check sign, point, exponent
 	return false;
 }
 //fix_data
-void intbigf::fix_data()
+void floatbigdata::fix_data()
 {
 	if (bigint.empty()) bigint.push_back(0);
 	std::deque<char>::reverse_iterator rit_de = bigint.rbegin();
@@ -511,7 +511,7 @@ void intbigf::fix_data()
 	if (b_poi < 0) b_poi = 0;
 }
 //is_not_corrupt
-bool intbigf::is_not_corrupt() const
+bool floatbigdata::is_not_corrupt() const
 {
 	if (bigint.empty()) return false;
 	std::deque<char>::const_reverse_iterator rit_de = bigint.rbegin();
@@ -534,80 +534,80 @@ bool intbigf::is_not_corrupt() const
 //arithmetic encapsulate
 //add, sub, mul, div, pow
 //add
-inline intbigf intbigf::add(const intbigf &bus2) const
+inline floatbigdata floatbigdata::add(const floatbigdata &bus2) const
 {
 	int i_offset, i_exp, ibuff;
 	std::deque<char> bus_temp;
-	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
-	if (ibuff == 1) return intbigf(bigint, b_poi, b_exp, b_sign, 'n');
-	if (ibuff == 2) return intbigf(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
+	ibuff = h_func::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	if (ibuff == 1) return floatbigdata(bigint, b_poi, b_exp, b_sign, 'n');
+	if (ibuff == 2) return floatbigdata(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
 	const std::deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	if (b_sign == bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+	if (b_sign == bus2.b_sign) return floatbigdata(h_func::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
-		ibuff = intbigd_fu::abso_big(*bus1_p, *bus2_p);
-		if (ibuff == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
-		if (ibuff == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, 'n');
+		ibuff = h_func::abso_big(*bus1_p, *bus2_p);
+		if (ibuff == 1) return floatbigdata(h_func::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (ibuff == -1) return floatbigdata(h_func::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, 'n');
 	}
-	return intbigf();
+	return floatbigdata();
 }
 //sub
-inline intbigf intbigf::sub(const intbigf &bus2) const
+inline floatbigdata floatbigdata::sub(const floatbigdata &bus2) const
 {
 	int i_offset, i_exp, ibuff;
 	std::deque<char> bus_temp;
-	ibuff = intbigd_fu::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
-	if (ibuff == 1) return intbigf(bigint, b_poi, b_exp, b_sign, 'n');
-	if (ibuff == 2) return intbigf(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
+	ibuff = h_func::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	if (ibuff == 1) return floatbigdata(bigint, b_poi, b_exp, b_sign, 'n');
+	if (ibuff == 2) return floatbigdata(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
 	const std::deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	if (b_sign != bus2.b_sign) return intbigf(intbigd_fu::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+	if (b_sign != bus2.b_sign) return floatbigdata(h_func::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
-		ibuff = intbigd_fu::abso_big(*bus1_p, *bus2_p);
-		if (ibuff == 1) return intbigf(intbigd_fu::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
-		if (ibuff == -1) return intbigf(intbigd_fu::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, 'n');
+		ibuff = h_func::abso_big(*bus1_p, *bus2_p);
+		if (ibuff == 1) return floatbigdata(h_func::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (ibuff == -1) return floatbigdata(h_func::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, 'n');
 	}
-	return intbigf();
+	return floatbigdata();
 }
 //mul
-inline intbigf intbigf::mul(const intbigf &bus2) const
+inline floatbigdata floatbigdata::mul(const floatbigdata &bus2) const
 {
 	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
 	//sign
-	return intbigf(intbigd_fu::mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'n');
+	return floatbigdata(h_func::mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'n');
 }
 //mul_self
-inline void intbigf::mul_self(const intbigf &bus2)
+inline void floatbigdata::mul_self(const floatbigdata &bus2)
 {
 	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
-	intbigd_fu::mul_fself(bigint, bus2.bigint);
+	h_func::mul_fself(bigint, bus2.bigint);
 	//sign
 	b_poi = bigint.size();
 	b_exp = i_exp;
 	b_sign = (b_sign == bus2.b_sign);
 	//remove tail zero
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
-	if (intbigd_fu::digits_precision_affect == 2) intbigd_fu::significant_fix(bigint, i_dummy);
+	if (h_func::digits_precision_affect == 2) h_func::significant_fix(bigint, i_dummy);
 }
 //div
-inline intbigf intbigf::div(const intbigf &bus2) const
+inline floatbigdata floatbigdata::div(const floatbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
 	//
 	int i_exp = (b_poi+b_exp)-bigint.size()-(bus2.b_poi+bus2.b_exp)+bus2.bigint.size();
-	return intbigf(intbigd_fu::divf_f(bigint, bus2.bigint, false), -1, i_exp, b_sign == bus2.b_sign, 'd');
+	return floatbigdata(h_func::divf_f(bigint, bus2.bigint, false), -1, i_exp, b_sign == bus2.b_sign, 'd');
 }
 ////////////////
 ////Power functions:
 ////////////////////////////////
 //pow_int
-intbigf intbigf::pow_int(const int &ib) const
+floatbigdata floatbigdata::pow_int(const int &ib) const
 {
-	intbigf ret;
+	floatbigdata ret;
 	int ibx = ib;
 	if (ib == 0) {ret.bigint[0] = 1; return ret;}
 	if (ib < 0) ibx = -ibx;
@@ -616,17 +616,17 @@ intbigf intbigf::pow_int(const int &ib) const
 	for (int ixc = 1; ixc != ibx; ++ixc) {
 		ret.mul_self(*this);
 	}
-	if (ib < 0) return intbigf_one.div(ret);
+	if (ib < 0) return floatbigdata_one.div(ret);
 	return ret;
 }
 //root_int, method: paper-and-pencil nth roots
-intbigf intbigf::root_int(const int &n_o) const
+floatbigdata floatbigdata::root_int(const int &n_o) const
 {
 	if (n_o == 0) throw intbigdata_error();
 	if (n_o == 1) return *this;
-	if (n_o == -1) return intbigf_one.div(*this);
+	if (n_o == -1) return floatbigdata_one.div(*this);
 	//wikipedia.org: paper-and-pencil nth roots
-	intbigf y;
+	floatbigdata y;
 	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0,
 		iwhobig = 1, offset1 = 0, offset_f = 0, ibuff;
 	if (n < 0) n = -n;
@@ -645,7 +645,7 @@ intbigf intbigf::root_int(const int &n_o) const
 		else offset2 = (size_fix-offset1)%n;
 		if (offset2 < 0) offset2 = -offset2;
 	}
-	preci = intbigd_fu::digits_precision+1-(size_fix+offset1+offset2+offset_f)/n;
+	preci = h_func::digits_precision+1-(size_fix+offset1+offset2+offset_f)/n;
 	if (preci < 0) preci = 0;
 	else preci = preci*n;
 	//take apart
@@ -681,15 +681,15 @@ intbigf intbigf::root_int(const int &n_o) const
 		base_y = y.bigint;
 		if (y.bigint.size() == 1 && y.bigint[0] == 0) base_y = y.bigint;
 		else base_y.push_front(0);
-		pick2 = intbigd_fu::mul_f(base_pn, intbigd_fu::pow_f(y.bigint, n));
+		pick2 = h_func::mul_f(base_pn, h_func::pow_f(y.bigint, n));
 		beta[0] = 0;
 		//
 		while (iwhobig == 1) {
 			pick_t_setp = pick_t;
 			++beta[0];
-			pick1 = intbigd_fu::pow_f(intbigd_fu::add_f(base_y, beta), n);
-			pick_t = intbigd_fu::sub_f(pick1, pick2);
-			iwhobig = intbigd_fu::abso_big(proc1, pick_t);
+			pick1 = h_func::pow_f(h_func::add_f(base_y, beta), n);
+			pick_t = h_func::sub_f(pick1, pick2);
+			iwhobig = h_func::abso_big(proc1, pick_t);
 		}
 		//
 		if (iwhobig == 0) {
@@ -698,17 +698,17 @@ intbigf intbigf::root_int(const int &n_o) const
 			else y.bigint.push_back(beta[0]);
 		}
 		else {
-			intbigd_fu::sub_fself(proc1, pick_t_setp);
+			h_func::sub_fself(proc1, pick_t_setp);
 			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = --beta[0];
 			else y.bigint.push_front(--beta[0]);
 		}
 		proc_go = true;
 	}
-	if (n_o < 0) return intbigf_one.div(y);
+	if (n_o < 0) return floatbigdata_one.div(y);
 	return y;
 }
 //pow
-intbigf intbigf::pow(const double &ib, const bool &is_root = false) const
+floatbigdata floatbigdata::pow(const double &ib, const bool &is_root = false) const
 {
 	float dou1 = ib;
 	if (ib < 0) dou1 = -dou1;
@@ -716,87 +716,87 @@ intbigf intbigf::pow(const double &ib, const bool &is_root = false) const
 	//float*10 will lost precision sometimes
 	while (dou1-static_cast<int>(dou1+0.000001) > 0) {i2 *= 10; dou1 *= 10.0;}
 	i1 = static_cast<int>(dou1+0.000001);
-	i_gcd = intbigd_fu::gcd(i1, i2);
+	i_gcd = h_func::gcd(i1, i2);
 	i1 = i1/i_gcd;
 	i2 = i2/i_gcd;
 	if (is_root) {i_gcd = i1; i1 = i2; i2 = i_gcd;}
 	//
-	intbigf ret(*this);
+	floatbigdata ret(*this);
 	if (ib > 0) return (ret.root_int(i2)).pow_int(i1);
-	if (ib < 0) return intbigf_one.div((ret.root_int(i2)).pow_int(i1));
-	return intbigf_one;
+	if (ib < 0) return floatbigdata_one.div((ret.root_int(i2)).pow_int(i1));
+	return floatbigdata_one;
 }
 //root
-inline intbigf intbigf::root(const double &ib) const
+inline floatbigdata floatbigdata::root(const double &ib) const
 {
 	return this->pow(ib, true);
 }
 //pow_frac
-intbigf intbigf::pow_frac(const int &nume, const int &deno, const bool &sign = true)
+floatbigdata floatbigdata::pow_frac(const int &nume, const int &deno, const bool &sign = true)
 {
-	intbigf ret(*this);
+	floatbigdata ret(*this);
 	if (sign) return (ret.root_int(deno)).pow_int(nume);
-	if (!sign) return intbigf_one.div((ret.root_int(deno)).pow_int(nume));
-	return intbigf_one;
+	if (!sign) return floatbigdata_one.div((ret.root_int(deno)).pow_int(nume));
+	return floatbigdata_one;
 }
 ////////////////
 ////Rounding and remainder functions:
 ////////////////////////////////
 //trunc
-intbigf intbigf::trunc(const int &digits, const bool &is_point = false) const
+floatbigdata floatbigdata::trunc(const int &digits, const bool &is_point = false) const
 {
-	intbigf ret(*this);
-	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 2);
-	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, 2);
+	floatbigdata ret(*this);
+	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 2);
+	else h_func::significant_fix(ret.bigint, i_dummy, digits, 2);
 	return ret;
 }
 //trunc_self
-intbigf intbigf::trunc_self(const int &digits, const bool &is_point = false)
+floatbigdata floatbigdata::trunc_self(const int &digits, const bool &is_point = false)
 {
-	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 2);
-	else intbigd_fu::significant_fix(bigint, i_dummy, digits, 2);
+	if (is_point) h_func::significant_fix_point(bigint, b_poi+b_exp, digits, 2);
+	else h_func::significant_fix(bigint, i_dummy, digits, 2);
 	return *this;
 }
 //round
-intbigf intbigf::round(const int &digits, const bool &is_point = false) const
+floatbigdata floatbigdata::round(const int &digits, const bool &is_point = false) const
 {
-	intbigf ret(*this);
-	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 1);
-	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, 1);
+	floatbigdata ret(*this);
+	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 1);
+	else h_func::significant_fix(ret.bigint, i_dummy, digits, 1);
 	return ret;
 }
 //round_self
-intbigf intbigf::round_self(const int &digits, const bool &is_point = false)
+floatbigdata floatbigdata::round_self(const int &digits, const bool &is_point = false)
 {
-	if (is_point) intbigd_fu::significant_fix_point(bigint, b_poi+b_exp, digits, 1);
-	else intbigd_fu::significant_fix(bigint, i_dummy, digits, 1);
+	if (is_point) h_func::significant_fix_point(bigint, b_poi+b_exp, digits, 1);
+	else h_func::significant_fix(bigint, i_dummy, digits, 1);
 	return *this;
 }
 //ceil
-intbigf intbigf::ceil(const int &digits, const bool &is_point = false) const
+floatbigdata floatbigdata::ceil(const int &digits, const bool &is_point = false) const
 {
-	intbigf ret(*this);
+	floatbigdata ret(*this);
 	int round_type = 3;
 	if (!b_sign) round_type = 2;
-	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
-	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, round_type);
+	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
+	else h_func::significant_fix(ret.bigint, i_dummy, digits, round_type);
 	return ret;
 }
 //floor
-intbigf intbigf::floor(const int &digits, const bool &is_point = false) const
+floatbigdata floatbigdata::floor(const int &digits, const bool &is_point = false) const
 {
-	intbigf ret(*this);
+	floatbigdata ret(*this);
 	int round_type = 2;
 	if (!b_sign) round_type = 3;
-	if (is_point) intbigd_fu::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
-	else intbigd_fu::significant_fix(ret.bigint, i_dummy, digits, round_type);
+	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
+	else h_func::significant_fix(ret.bigint, i_dummy, digits, round_type);
 	return ret;
 }
 ////////////////
 //Operators:
 ////////////////////////////////
 //operator int()
-intbigf::operator int() const
+floatbigdata::operator int() const
 {
 	int ret;
 	std::ostringstream ostri;
@@ -808,7 +808,7 @@ intbigf::operator int() const
 	return ret;
 }
 //operator std::string()
-intbigf::operator std::string() const
+floatbigdata::operator std::string() const
 {
 	std::ostringstream ostri;
 	normal_stream = true;
@@ -817,7 +817,7 @@ intbigf::operator std::string() const
 	return ostri.str();
 }
 //operator double()
-intbigf::operator double() const
+floatbigdata::operator double() const
 {
 	double ret;
 	std::ostringstream ostri;
@@ -829,12 +829,12 @@ intbigf::operator double() const
 	return ret;
 }
 //operator intbigdata()
-intbigf::operator intbigdata() const
+floatbigdata::operator intbigdata() const
 {
 	return intbigdata(std::string(this->trunc(0, true)));
 }
 //std::istream &operator>>
-std::istream &operator>>(std::istream &in, intbigf &bus1)
+std::istream &operator>>(std::istream &in, floatbigdata &bus1)
 {
 	std::string str1;
 	bus1.bigint.clear();
@@ -843,37 +843,37 @@ std::istream &operator>>(std::istream &in, intbigf &bus1)
 	bus1.b_sign = true;
 	if (str1[0] == '-') bus1.b_sign = false;
 	std::string::reverse_iterator s_it = str1.rbegin();
-	if (in) bus1 = intbigf(str1);
+	if (in) bus1 = floatbigdata(str1);
 	else bus1.bigint.push_back(0);
 	return in;
 }
 //std::ostream &operator<<
-std::ostream &operator<<(std::ostream &out, const intbigf &bus1)
+std::ostream &operator<<(std::ostream &out, const floatbigdata &bus1)
 {
 	//scientific
-	if (intbigd_fu::cout_type == 2 && !normal_stream) {
-		out << bus1.scientific(intbigd_fu::cout_scientific);
+	if (h_func::cout_type == 2 && !normal_stream) {
+		out << bus1.scientific(h_func::cout_scientific);
 		return out;
 	}
-	const intbigf *intf_p = &bus1;
-	intbigf intf_temp;
+	const floatbigdata *intf_p = &bus1;
+	floatbigdata intf_temp;
 	int i_poi_fix = 0, ibuff;
 	bool poi_couted = false;
 	//fixed
-	if (intbigd_fu::cout_type == 3 && !normal_stream) {
+	if (h_func::cout_type == 3 && !normal_stream) {
 		ibuff = bus1.b_poi+bus1.b_exp;
-		if (-ibuff <= intbigd_fu::cout_fixed && static_cast<int>(bus1.bigint.size())-ibuff > intbigd_fu::cout_fixed) {
+		if (-ibuff <= h_func::cout_fixed && static_cast<int>(bus1.bigint.size())-ibuff > h_func::cout_fixed) {
 			intf_temp = bus1;
-			if (intbigd_fu::digits_limit_type == 1) intf_temp.round_self(intbigd_fu::cout_fixed, true);
-			else intf_temp.trunc_self(intbigd_fu::cout_fixed, true);
+			if (h_func::digits_limit_type == 1) intf_temp.round_self(h_func::cout_fixed, true);
+			else intf_temp.trunc_self(h_func::cout_fixed, true);
 			intf_p = &intf_temp;
 		}
-		if (-ibuff > intbigd_fu::cout_fixed) {
+		if (-ibuff > h_func::cout_fixed) {
 			//is zero
 			intf_p = &intf_temp;
 			ibuff = 1;
 		}
-		i_poi_fix = intbigd_fu::cout_fixed-static_cast<int>(((*intf_p).bigint.size())-ibuff);
+		i_poi_fix = h_func::cout_fixed-static_cast<int>(((*intf_p).bigint.size())-ibuff);
 	}
 	std::deque<char>::const_reverse_iterator rit_de = (*intf_p).bigint.rbegin();
 	//sign
@@ -912,12 +912,12 @@ std::ostream &operator<<(std::ostream &out, const intbigf &bus1)
 //Modifiers:
 ////////////////////////////////
 //assign1
-inline void intbigf::assign(const intbigdata &bus2)
+inline void floatbigdata::assign(const intbigdata &bus2)
 {
-	*this = intbigf(std::deque<char>(bus2.bigint.begin(), bus2.bigint.end()), -1, 0, bus2.b_sign, 'n');
+	*this = floatbigdata(std::deque<char>(bus2.bigint.begin(), bus2.bigint.end()), -1, 0, bus2.b_sign, 'n');
 }
 //assign2 overload
-inline void intbigf::assign(const intbigf &bus2)
+inline void floatbigdata::assign(const floatbigdata &bus2)
 {
 	//sign
 	b_sign = bus2.b_sign;
@@ -926,27 +926,27 @@ inline void intbigf::assign(const intbigf &bus2)
 	b_exp = bus2.b_exp;	
 }
 //assign3 overload
-inline void intbigf::assign(const std::string &str1)
+inline void floatbigdata::assign(const std::string &str1)
 {
-	*this = intbigf(str1);
+	*this = floatbigdata(str1);
 }
 //assign4 overload
-inline void intbigf::assign_int(const int &us1)
+inline void floatbigdata::assign_int(const int &us1)
 {
-	*this = intbigf(us1);
+	*this = floatbigdata(us1);
 }
 //assign5 overload 
-inline void intbigf::assign(const double &us1)
+inline void floatbigdata::assign(const double &us1)
 {
-	*this = intbigf(us1);
+	*this = floatbigdata(us1);
 }
 //assign6 overload
-inline void intbigf::assign(const char *cstr1)
+inline void floatbigdata::assign(const char *cstr1)
 {
-	*this = intbigf(std::string(cstr1));
+	*this = floatbigdata(std::string(cstr1));
 }
 //swap
-inline void intbigf::swap(intbigf &bus2)
+inline void floatbigdata::swap(floatbigdata &bus2)
 {
 	bigint.swap(bus2.bigint);
 	bool b_temp = b_sign;
@@ -959,7 +959,7 @@ inline void intbigf::swap(intbigf &bus2)
 	bus2.b_exp = b_exp_t;
 }
 //clear, assign 0
-inline void intbigf::clear()
+inline void floatbigdata::clear()
 {
 	bigint.assign(1, 0);
 	b_sign = true;
@@ -970,7 +970,7 @@ inline void intbigf::clear()
 //Class operators:
 ////////////////////////////////
 //scientific
-std::string intbigf::scientific(const int &i_point = 6) const
+std::string floatbigdata::scientific(const int &i_point = 6) const
 {
 	std::string s_number("0123456789"), s_temp, s_scient;
 	unsigntp i1_get = i_point, ixsz = bigint.size()-1, ix1;
@@ -979,11 +979,11 @@ std::string intbigf::scientific(const int &i_point = 6) const
 	if (static_cast<unsigned>(i_point) > ixsz) i1_get = ixsz;
 	//sign
 	if (b_sign == false) s_scient += '-';
-	intbigf i_round;
+	floatbigdata i_round;
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
-		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = intbigd_fu::add_f(i_round.bigint, std::deque<char>(1, 1));
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = h_func::add_f(i_round.bigint, std::deque<char>(1, 1));
 	}
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;
@@ -1008,7 +1008,7 @@ std::string intbigf::scientific(const int &i_point = 6) const
 	return s_scient;
 }
 //save_file
-int intbigf::save_file(const std::string file_name_o = "auto", const std::string file_msg_o = "nomessage") const
+int floatbigdata::save_file(const std::string file_name_o = "auto", const std::string file_msg_o = "nomessage") const
 {
 	std::string file_name(file_name_o), file_msg("//");
 	if (file_name == "auto") {
@@ -1028,13 +1028,13 @@ int intbigf::save_file(const std::string file_name_o = "auto", const std::string
 	return 0;
 }
 //load_file
-int intbigf::load_file(const std::string &file_name)
+int floatbigdata::load_file(const std::string &file_name)
 {
 	std::string::size_type pos1, pos2;
 	int is_comm = 0;
 	std::string s_line, s_lineadd;
 	std::ifstream infile(file_name.c_str());
-	if (!infile) {std::cerr << "intbigf.h: open file faile" << std::endl; return -1;}
+	if (!infile) {std::cerr << "floatbigdata.h: open file faile" << std::endl; return -1;}
 	while (getline(infile, s_line)) {
 		//ignore comments
 		pos1 = s_line.find("//");
@@ -1059,17 +1059,17 @@ int intbigf::load_file(const std::string &file_name)
 	return 0;
 }
 //get_int
-int intbigf::get_int() const
+int floatbigdata::get_int() const
 {
 	return int(*this);
 }
 //get_double
-double intbigf::get_double() const
+double floatbigdata::get_double() const
 {
 	return double(*this);
 }
 //get_string
-std::string intbigf::get_string() const
+std::string floatbigdata::get_string() const
 {
 	return std::string(*this);
 }
@@ -1077,12 +1077,12 @@ std::string intbigf::get_string() const
 //Capacity:
 ////////////////////////////////
 //size
-inline unsigntp intbigf::size() const
+inline unsigntp floatbigdata::size() const
 {
 	return bigint.size();
 }
 //max_size
-inline unsigntp intbigf::max_size() const
+inline unsigntp floatbigdata::max_size() const
 {
 	return bigint.max_size();
 }

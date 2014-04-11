@@ -1,11 +1,11 @@
 ////////////////
-//intb_test_func.h
-//Some functions are being tested in intbigdata.h and intbigf.h
+//bigdata_test.h
+//Some functions are being tested in intbigdata.h and floatbigdata.h
 ////////////////
 ////////////////
-#ifndef INTB_TEST_FUNC_H
-#define INTB_TEST_FUNC_H
-namespace intbigd {namespace intbigd_fu
+#ifndef BIGDATA_TEST_H
+#define BIGDATA_TEST_H
+namespace bigdata {namespace h_func
 {
 //skip tab
 ////////////////
@@ -48,10 +48,10 @@ double ln_calc_test(const double &z, const int &n)
 //test ln
 ////////////////
 ////////////////
-intbigf ln_calc_test2(const intbigf &z, const int &n)
+floatbigdata ln_calc_test2(const floatbigdata &z, const int &n)
 {
-	intbigf ret = 0.0;
-	intbigf zs1 = z-1;
+	floatbigdata ret = 0.0;
+	floatbigdata zs1 = z-1;
 	for (int ix = 1; ix != n+1; ++ix) {
 		if (ix%2 == 1) ret += zs1.pow(ix)/ix;
 		else ret -= zs1.pow(ix)/ix;
@@ -62,10 +62,10 @@ intbigf ln_calc_test2(const intbigf &z, const int &n)
 //test ln
 ////////////////
 ////////////////
-intbigf ln_calc_test3(const intbigf &z, const int &n)
+floatbigdata ln_calc_test3(const floatbigdata &z, const int &n)
 {
-	intbigf ret = 0.0;
-	intbigf zs1 = (z-1)/(z+1);
+	floatbigdata ret = 0.0;
+	floatbigdata zs1 = (z-1)/(z+1);
 	for (int ix = 1; ix < n+1; ix += 2) {
 		ret += zs1.pow_int(ix)/ix;
 	}
@@ -75,7 +75,7 @@ intbigf ln_calc_test3(const intbigf &z, const int &n)
 //echo float info
 ////////////////
 ////////////////
-void echo_i(const intbigf &ibf)
+void echo_i(const floatbigdata &ibf)
 {
 	std::cout << ibf << "\nsize " << ibf.size() << " poi " << ibf.b_poi << " exp " << ibf.b_exp << std::endl;
 }
