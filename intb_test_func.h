@@ -5,7 +5,7 @@
 ////////////////
 #ifndef INTB_TEST_FUNC_H
 #define INTB_TEST_FUNC_H
-namespace intbigd_fu
+namespace intbigd {namespace intbigd_fu
 {
 //skip tab
 ////////////////
@@ -75,11 +75,10 @@ intbigf ln_calc_test3(const intbigf &z, const int &n)
 //echo float info
 ////////////////
 ////////////////
-template <typename Tve>
-void e_info(const Tve &ibf)
+void echo_i(const intbigf &ibf)
 {
-	cout << ibf << "\nsize " << ibf.size() << " poi " << ibf.b_poi << " exp " << ibf.b_exp << endl;
+	std::cout << ibf << "\nsize " << ibf.size() << " poi " << ibf.b_poi << " exp " << ibf.b_exp << std::endl;
 }
 //
-}
+}}
 #endif
