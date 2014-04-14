@@ -13,9 +13,6 @@
 namespace bigdata
 {
 //skip tab
-namespace h_func
-{
-//skip tab
 ////////////////
 //global var, significant digits, rounding or truncation, cout type
 ////////////////
@@ -195,8 +192,6 @@ int gcd(const int &v1_o, const int &v2_o)
 	while (v2 != 0) {int temp = v2; v2 = v1%v2; v1 = temp;}
 	return v1;
 }
-}//namespace h_func
-//
 //do not inherit
 class floatbigdata
 {
@@ -358,8 +353,8 @@ floatbigdata::floatbigdata(const std::deque<char> &di1, const int &bpi = 0, cons
 	}
 	//other lim
 	else {
-		if (h_func::digits_precision_affect == 2) {
-			h_func::significant_fix(bigint, i_dummy);
+		if (digits_precision_affect == 2) {
+			significant_fix(bigint, i_dummy);
 		}
 	}
 	//is zero
@@ -480,7 +475,7 @@ inline int floatbigdata::who_big(const floatbigdata &bus2) const
 	if (bus2.b_poi > b_poi) b_exp2 += bus2.b_poi-b_poi;
 	if (b_sign) {if (b_exp1 > b_exp2) return 1; if (b_exp2 > b_exp1) return -1;}
 	if (!b_sign) {if (b_exp1 < b_exp2) return 1; if (b_exp2 < b_exp1) return -1;}
-	i_who_big = h_func::abso_big(bigint, bus2.bigint);
+	i_who_big = abso_big(bigint, bus2.bigint);
 	if (b_sign == false && bus2.b_sign == false) i_who_big = -i_who_big;
 	return i_who_big;
 }
@@ -538,18 +533,18 @@ inline floatbigdata floatbigdata::add(const floatbigdata &bus2) const
 {
 	int i_offset, i_exp, ibuff;
 	std::deque<char> bus_temp;
-	ibuff = h_func::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	ibuff = pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
 	if (ibuff == 1) return floatbigdata(bigint, b_poi, b_exp, b_sign, 'n');
 	if (ibuff == 2) return floatbigdata(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
 	const std::deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	if (b_sign == bus2.b_sign) return floatbigdata(h_func::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+	if (b_sign == bus2.b_sign) return floatbigdata(add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
-		ibuff = h_func::abso_big(*bus1_p, *bus2_p);
-		if (ibuff == 1) return floatbigdata(h_func::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
-		if (ibuff == -1) return floatbigdata(h_func::sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, 'n');
+		ibuff = abso_big(*bus1_p, *bus2_p);
+		if (ibuff == 1) return floatbigdata(sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (ibuff == -1) return floatbigdata(sub_f(*bus2_p, *bus1_p), -1, i_exp, bus2.b_sign, 'n');
 	}
 	return floatbigdata();
 }
@@ -558,18 +553,18 @@ inline floatbigdata floatbigdata::sub(const floatbigdata &bus2) const
 {
 	int i_offset, i_exp, ibuff;
 	std::deque<char> bus_temp;
-	ibuff = h_func::pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
+	ibuff = pre_faddsub(bigint, bus2.bigint, bus_temp, i_offset, i_exp, b_poi, bus2.b_poi, b_exp, bus2.b_exp);
 	if (ibuff == 1) return floatbigdata(bigint, b_poi, b_exp, b_sign, 'n');
 	if (ibuff == 2) return floatbigdata(bus2.bigint, bus2.b_poi, bus2.b_exp, bus2.b_sign, 'n');
 	const std::deque<char> *bus1_p = &bigint, *bus2_p = &bus2.bigint;
 	if (i_offset < 0) bus1_p = &bus_temp;
 	if (i_offset > 0) bus2_p = &bus_temp;
 	//sign
-	if (b_sign != bus2.b_sign) return floatbigdata(h_func::add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+	if (b_sign != bus2.b_sign) return floatbigdata(add_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
 	else {
-		ibuff = h_func::abso_big(*bus1_p, *bus2_p);
-		if (ibuff == 1) return floatbigdata(h_func::sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
-		if (ibuff == -1) return floatbigdata(h_func::sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, 'n');
+		ibuff = abso_big(*bus1_p, *bus2_p);
+		if (ibuff == 1) return floatbigdata(sub_f(*bus1_p, *bus2_p), -1, i_exp, b_sign, 'n');
+		if (ibuff == -1) return floatbigdata(sub_f(*bus2_p, *bus1_p), -1, i_exp, !bus2.b_sign, 'n');
 	}
 	return floatbigdata();
 }
@@ -578,20 +573,20 @@ inline floatbigdata floatbigdata::mul(const floatbigdata &bus2) const
 {
 	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
 	//sign
-	return floatbigdata(h_func::mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'n');
+	return floatbigdata(mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'n');
 }
 //mul_self
 inline void floatbigdata::mul_self(const floatbigdata &bus2)
 {
 	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
-	h_func::mul_fself(bigint, bus2.bigint);
+	mul_fself(bigint, bus2.bigint);
 	//sign
 	b_poi = bigint.size();
 	b_exp = i_exp;
 	b_sign = (b_sign == bus2.b_sign);
 	//remove tail zero
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
-	if (h_func::digits_precision_affect == 2) h_func::significant_fix(bigint, i_dummy);
+	if (digits_precision_affect == 2) significant_fix(bigint, i_dummy);
 }
 //div
 inline floatbigdata floatbigdata::div(const floatbigdata &bus2) const
@@ -599,7 +594,7 @@ inline floatbigdata floatbigdata::div(const floatbigdata &bus2) const
 	if (bus2.is_zero()) throw intbigdata_error();
 	//
 	int i_exp = (b_poi+b_exp)-bigint.size()-(bus2.b_poi+bus2.b_exp)+bus2.bigint.size();
-	return floatbigdata(h_func::divf_f(bigint, bus2.bigint, false), -1, i_exp, b_sign == bus2.b_sign, 'd');
+	return floatbigdata(divf_f(bigint, bus2.bigint, false), -1, i_exp, b_sign == bus2.b_sign, 'd');
 }
 ////////////////
 ////Power functions:
@@ -645,7 +640,7 @@ floatbigdata floatbigdata::root_int(const int &n_o) const
 		else offset2 = (size_fix-offset1)%n;
 		if (offset2 < 0) offset2 = -offset2;
 	}
-	preci = h_func::digits_precision+1-(size_fix+offset1+offset2+offset_f)/n;
+	preci = digits_precision+1-(size_fix+offset1+offset2+offset_f)/n;
 	if (preci < 0) preci = 0;
 	else preci = preci*n;
 	//take apart
@@ -681,15 +676,15 @@ floatbigdata floatbigdata::root_int(const int &n_o) const
 		base_y = y.bigint;
 		if (y.bigint.size() == 1 && y.bigint[0] == 0) base_y = y.bigint;
 		else base_y.push_front(0);
-		pick2 = h_func::mul_f(base_pn, h_func::pow_f(y.bigint, n));
+		pick2 = mul_f(base_pn, pow_f(y.bigint, n));
 		beta[0] = 0;
 		//
 		while (iwhobig == 1) {
 			pick_t_setp = pick_t;
 			++beta[0];
-			pick1 = h_func::pow_f(h_func::add_f(base_y, beta), n);
-			pick_t = h_func::sub_f(pick1, pick2);
-			iwhobig = h_func::abso_big(proc1, pick_t);
+			pick1 = pow_f(add_f(base_y, beta), n);
+			pick_t = sub_f(pick1, pick2);
+			iwhobig = abso_big(proc1, pick_t);
 		}
 		//
 		if (iwhobig == 0) {
@@ -698,7 +693,7 @@ floatbigdata floatbigdata::root_int(const int &n_o) const
 			else y.bigint.push_back(beta[0]);
 		}
 		else {
-			h_func::sub_fself(proc1, pick_t_setp);
+			sub_fself(proc1, pick_t_setp);
 			if (y.bigint.size() == 1 && y.bigint[0] == 0) y.bigint[0] = --beta[0];
 			else y.bigint.push_front(--beta[0]);
 		}
@@ -716,7 +711,7 @@ floatbigdata floatbigdata::pow(const double &ib, const bool &is_root = false) co
 	//float*10 will lost precision sometimes
 	while (dou1-static_cast<int>(dou1+0.000001) > 0) {i2 *= 10; dou1 *= 10.0;}
 	i1 = static_cast<int>(dou1+0.000001);
-	i_gcd = h_func::gcd(i1, i2);
+	i_gcd = gcd(i1, i2);
 	i1 = i1/i_gcd;
 	i2 = i2/i_gcd;
 	if (is_root) {i_gcd = i1; i1 = i2; i2 = i_gcd;}
@@ -746,30 +741,30 @@ floatbigdata floatbigdata::pow_frac(const int &nume, const int &deno, const bool
 floatbigdata floatbigdata::trunc(const int &digits, const bool &is_point = false) const
 {
 	floatbigdata ret(*this);
-	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 2);
-	else h_func::significant_fix(ret.bigint, i_dummy, digits, 2);
+	if (is_point) significant_fix_point(ret.bigint, b_poi+b_exp, digits, 2);
+	else significant_fix(ret.bigint, i_dummy, digits, 2);
 	return ret;
 }
 //trunc_self
 floatbigdata floatbigdata::trunc_self(const int &digits, const bool &is_point = false)
 {
-	if (is_point) h_func::significant_fix_point(bigint, b_poi+b_exp, digits, 2);
-	else h_func::significant_fix(bigint, i_dummy, digits, 2);
+	if (is_point) significant_fix_point(bigint, b_poi+b_exp, digits, 2);
+	else significant_fix(bigint, i_dummy, digits, 2);
 	return *this;
 }
 //round
 floatbigdata floatbigdata::round(const int &digits, const bool &is_point = false) const
 {
 	floatbigdata ret(*this);
-	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, 1);
-	else h_func::significant_fix(ret.bigint, i_dummy, digits, 1);
+	if (is_point) significant_fix_point(ret.bigint, b_poi+b_exp, digits, 1);
+	else significant_fix(ret.bigint, i_dummy, digits, 1);
 	return ret;
 }
 //round_self
 floatbigdata floatbigdata::round_self(const int &digits, const bool &is_point = false)
 {
-	if (is_point) h_func::significant_fix_point(bigint, b_poi+b_exp, digits, 1);
-	else h_func::significant_fix(bigint, i_dummy, digits, 1);
+	if (is_point) significant_fix_point(bigint, b_poi+b_exp, digits, 1);
+	else significant_fix(bigint, i_dummy, digits, 1);
 	return *this;
 }
 //ceil
@@ -778,8 +773,8 @@ floatbigdata floatbigdata::ceil(const int &digits, const bool &is_point = false)
 	floatbigdata ret(*this);
 	int round_type = 3;
 	if (!b_sign) round_type = 2;
-	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
-	else h_func::significant_fix(ret.bigint, i_dummy, digits, round_type);
+	if (is_point) significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
+	else significant_fix(ret.bigint, i_dummy, digits, round_type);
 	return ret;
 }
 //floor
@@ -788,8 +783,8 @@ floatbigdata floatbigdata::floor(const int &digits, const bool &is_point = false
 	floatbigdata ret(*this);
 	int round_type = 2;
 	if (!b_sign) round_type = 3;
-	if (is_point) h_func::significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
-	else h_func::significant_fix(ret.bigint, i_dummy, digits, round_type);
+	if (is_point) significant_fix_point(ret.bigint, b_poi+b_exp, digits, round_type);
+	else significant_fix(ret.bigint, i_dummy, digits, round_type);
 	return ret;
 }
 ////////////////
@@ -851,8 +846,8 @@ std::istream &operator>>(std::istream &in, floatbigdata &bus1)
 std::ostream &operator<<(std::ostream &out, const floatbigdata &bus1)
 {
 	//scientific
-	if (h_func::cout_type == 2 && !normal_stream) {
-		out << bus1.scientific(h_func::cout_scientific);
+	if (cout_type == 2 && !normal_stream) {
+		out << bus1.scientific(cout_scientific);
 		return out;
 	}
 	const floatbigdata *intf_p = &bus1;
@@ -860,20 +855,20 @@ std::ostream &operator<<(std::ostream &out, const floatbigdata &bus1)
 	int i_poi_fix = 0, ibuff;
 	bool poi_couted = false;
 	//fixed
-	if (h_func::cout_type == 3 && !normal_stream) {
+	if (cout_type == 3 && !normal_stream) {
 		ibuff = bus1.b_poi+bus1.b_exp;
-		if (-ibuff <= h_func::cout_fixed && static_cast<int>(bus1.bigint.size())-ibuff > h_func::cout_fixed) {
+		if (-ibuff <= cout_fixed && static_cast<int>(bus1.bigint.size())-ibuff > cout_fixed) {
 			intf_temp = bus1;
-			if (h_func::digits_limit_type == 1) intf_temp.round_self(h_func::cout_fixed, true);
-			else intf_temp.trunc_self(h_func::cout_fixed, true);
+			if (digits_limit_type == 1) intf_temp.round_self(cout_fixed, true);
+			else intf_temp.trunc_self(cout_fixed, true);
 			intf_p = &intf_temp;
 		}
-		if (-ibuff > h_func::cout_fixed) {
+		if (-ibuff > cout_fixed) {
 			//is zero
 			intf_p = &intf_temp;
 			ibuff = 1;
 		}
-		i_poi_fix = h_func::cout_fixed-static_cast<int>(((*intf_p).bigint.size())-ibuff);
+		i_poi_fix = cout_fixed-static_cast<int>(((*intf_p).bigint.size())-ibuff);
 	}
 	std::deque<char>::const_reverse_iterator rit_de = (*intf_p).bigint.rbegin();
 	//sign
@@ -983,7 +978,7 @@ std::string floatbigdata::scientific(const int &i_point = 6) const
 	//round
 	i_round.bigint.assign(bigint.begin()+(ixsz-i1_get), bigint.end());
 	if (i1_get != ixsz) {
-		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = h_func::add_f(i_round.bigint, std::deque<char>(1, 1));
+		if (bigint[ixsz-i1_get-1] > 4) i_round.bigint = add_f(i_round.bigint, std::deque<char>(1, 1));
 	}
 	//remove tail zero
 	for (ix1 = 0; ix1 != i_round.bigint.size(); ++ix1) if (i_round.bigint[ix1] != 0) break;

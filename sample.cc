@@ -21,14 +21,14 @@ int main()
 	fb1 = fb1.pow(1024);
 	fb2 = fb3.root(3);
 	//set precision for float
-	bigdata::h_func::precision(128);
+	bigdata::precision(128);
 	//output
 	cout << "square root of 2: " << floatbigdata(2).root(2) << "\n" << endl;
 	//scientific notation
 	cout << "2^1024 (scientific notation): " << fb1.scientific() << "\n" << endl;
 	//float pow, set precision range and method
-	bigdata::h_func::precision_affect_div(64);
-	bigdata::h_func::precision_affect_all(32);
+	bigdata::precision_affect_div(64);
+	bigdata::precision_affect_all(32);
 	cout << "29^2.3: " << floatbigdata(29).pow(2.3) <<  "\n"  << endl;
 	//big number
 	cout << "123^123: " << intbigdata(123).pow(123) << endl;
