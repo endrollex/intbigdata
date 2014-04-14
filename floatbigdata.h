@@ -988,8 +988,9 @@ std::string floatbigdata::scientific(const int &i_point = 6) const
 	}
 	if (s_temp.empty()) s_temp = '0';
 	s_scient += s_temp[0];
-	if (s_temp.size() != 1) {s_scient += '.';
-	s_scient.append(s_temp, 1, s_temp.size()-1);
+	if (s_temp.size() != 1) {
+		s_scient += '.';
+		s_scient.append(s_temp, 1, s_temp.size()-1);
 	}
 	s_scient += "e";
 	//s_temp clear
