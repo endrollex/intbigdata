@@ -52,7 +52,8 @@ void fixed(int i_value = 64) {cout_type = 3; if (i_value < 0) i_value = -i_value
 template <typename Tve> 
 inline int pre_faddsub(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 	int &i_offset, int &i_exp, int b_poi1, int b_poi2, int b_exp1, int b_exp2) {
-	int bd1 = b_poi1+b_exp1, bd2 = b_poi2+b_exp2, size1 = bus1.size(), size2 = bus2.size();
+	int bd1 = static_cast<int>(b_poi1+b_exp1), bd2 = static_cast<int>(b_poi2+b_exp2),
+		size1 = static_cast<int>(bus1.size()), size2 = static_cast<int>(bus2.size());
 	i_offset = (size1-bd1)-(size2-bd2);
 	//over precision, if round
 	if (digits_precision_affect == 2 && digits_limit_type == 1) {
@@ -90,7 +91,7 @@ void significant_fix(
 	if (force_round == 3) {is_round = true; i_five = 0;}
 	if (is_round) {
 		if (static_cast<int>(bigint.size()) > i_sigd) {
-			ibuff = bigint.size()-i_sigd-1;
+			ibuff = static_cast<int>(bigint.size()-i_sigd-1);
 			if (is_div) digits_offset -= ibuff+1;
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
 			if (bigint[bigint.size()-i_sigd-1] >= i_five) {
@@ -102,7 +103,7 @@ void significant_fix(
 	}
 	else {
 		if (static_cast<int>(bigint.size()) > i_sigd) {
-			ibuff = bigint.size()-i_sigd;
+			ibuff = static_cast<char>(bigint.size()-i_sigd);
 			digits_offset -= ibuff;
 			while (ibuff > 0) {bigint.pop_front(); --ibuff;}
 		}
@@ -127,19 +128,19 @@ template <typename Tve>
 Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 {
 	int ibuff = 0, di_p_cou = 0, di_p_siz, difsize, i_sigd;
-	unsigntp ix1, ix2;	
+	unsigntp ix2;	
 	difsize = static_cast<int>(bigint.size())-static_cast<int>(di2.size())+1;
 	i_sigd= digits_precision-difsize+1;
 	if (i_sigd < 0) i_sigd = 0;
 	if (difsize < 1) {
 		ibuff = -difsize+2;
-		difsize = bigint.size();
+		difsize = static_cast<int>(bigint.size());
 	}
 	//if rounding
 	if (digits_limit_type == 1) ++i_sigd;
 	//std::deque
 	Tve bu1(bigint.begin()+difsize, bigint.end()), di_p(bigint.begin(), bigint.begin()+difsize), de_res;
-	di_p_siz = di_p.size();
+	di_p_siz = static_cast<int>(di_p.size());
 	for (int ix= 0; ix != i_sigd+ibuff; ++ix) di_p.push_front(0);
 	//sub_reverse_
 	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
@@ -157,7 +158,7 @@ Tve divf_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 				++ix2;
 			}
 			else {
-				de_res.push_front(ix2);
+				de_res.push_front(static_cast<char>(ix2));
 				ix2 = 10;
 			}
 		}
@@ -326,7 +327,7 @@ floatbigdata::floatbigdata(const std::deque<char> &di1, const int &bpi = 0, cons
 	b_sign = bsn;
 	bigint = di1;
 	b_poi = bpi;
-	if (bpi == -1) b_poi = bigint.size();
+	if (bpi == -1) b_poi = static_cast<int>(bigint.size());
 	b_exp = bep;
 	if (bigint.empty()) {bigint.push_back(0); b_sign = true; b_poi = 1; b_exp = 0;}	
 	//check data and fix
@@ -365,7 +366,7 @@ floatbigdata::floatbigdata(const std::string &str1)
 {
 	//"0123456789" will check converting
 	std::string s_number("0123456789"), s_expo;
-	bool b_do_e = false, ignore_e = true;
+	bool ignore_e = true;
 	//judge scientific notation
 	std::string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp, s_ixbu;
 	//'#', hide parameter, force ignore scientific notation
@@ -397,7 +398,7 @@ floatbigdata::floatbigdata(const std::string &str1)
 		for (s_ixn = str1.size(); s_ixn != 0; --s_ixn) {
 			//point
 			s_ixn2 = s_number.find(str1[s_ixn-1]);
-			if (s_ixn2 != std::string::npos) {bigint.push_back(s_ixn2); ++s_ixbu;}
+			if (s_ixn2 != std::string::npos) {bigint.push_back(static_cast<char>(s_ixn2)); ++s_ixbu;}
 			if (s_ixp == 0 && str1[s_ixn-1] == '.') s_ixp = s_ixbu;
 		}
 		if (bigint.empty()) bigint.push_back(0);
@@ -431,13 +432,14 @@ floatbigdata::floatbigdata(const std::string &str1)
 //structure4 int
 floatbigdata::floatbigdata(const int &us1_o, const int &dummy)
 {
-	int ibuff, us1;
+	int us1, d = dummy;
+	++d;
 	//sign
 	if (us1_o < 0) {b_sign = false; us1 = -us1_o;}
 	else {b_sign = true; us1 = us1_o;}
 	while (us1 != 0) {bigint.push_back(us1%10); us1 /= 10;}
 	if (us1_o == 0) bigint.push_back(0);
-	b_poi = bigint.size();
+	b_poi = static_cast<int>(bigint.size());
 	b_exp = 0;
 	//remove tail zero
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
@@ -496,7 +498,6 @@ void floatbigdata::fix_data()
 		if (*rit_de > 9) *rit_de = *rit_de%10;
 		++rit_de;
 	}
-	unsigntp ix2 = bigint.size()-1;
 	//remove tail zero
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
@@ -571,17 +572,17 @@ inline floatbigdata floatbigdata::sub(const floatbigdata &bus2) const
 //mul
 inline floatbigdata floatbigdata::mul(const floatbigdata &bus2) const
 {
-	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
+	int i_exp = static_cast<int>((b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size());
 	//sign
 	return floatbigdata(mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'n');
 }
 //mul_self
 inline void floatbigdata::mul_self(const floatbigdata &bus2)
 {
-	int i_exp = (b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size();
+	int i_exp = static_cast<int>((b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size());
 	mul_fself(bigint, bus2.bigint);
 	//sign
-	b_poi = bigint.size();
+	b_poi = static_cast<int>(bigint.size());
 	b_exp = i_exp;
 	b_sign = (b_sign == bus2.b_sign);
 	//remove tail zero
@@ -593,7 +594,7 @@ inline floatbigdata floatbigdata::div(const floatbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
 	//
-	int i_exp = (b_poi+b_exp)-bigint.size()-(bus2.b_poi+bus2.b_exp)+bus2.bigint.size();
+	int i_exp = static_cast<int>((b_poi+b_exp)-bigint.size()-(bus2.b_poi+bus2.b_exp)+bus2.bigint.size());
 	return floatbigdata(divf_f(bigint, bus2.bigint, false), -1, i_exp, b_sign == bus2.b_sign, 'd');
 }
 ////////////////
@@ -622,7 +623,7 @@ floatbigdata floatbigdata::root_int(const int &n_o) const
 	if (n_o == -1) return floatbigdata_one.div(*this);
 	//wikipedia.org: paper-and-pencil nth roots
 	floatbigdata y;
-	int n = n_o, size_fix = bigint.size(), rad_p = b_poi+b_exp, preci = 0, offset2 = 0,
+	int n = n_o, size_fix = static_cast<int>(bigint.size()), rad_p = b_poi+b_exp, preci = 0, offset2 = 0,
 		iwhobig = 1, offset1 = 0, offset_f = 0, ibuff;
 	if (n < 0) n = -n;
 	if (n%2 == 1) y.b_sign = b_sign;
@@ -705,7 +706,7 @@ floatbigdata floatbigdata::root_int(const int &n_o) const
 //pow
 floatbigdata floatbigdata::pow(const double &ib, const bool &is_root = false) const
 {
-	float dou1 = ib;
+	float dou1 = static_cast<float>(ib);
 	if (ib < 0) dou1 = -dou1;
 	int i2 = 1, i1, i_gcd;
 	//float*10 will lost precision sometimes
@@ -894,7 +895,7 @@ std::ostream &operator<<(std::ostream &out, const floatbigdata &bus1)
 			else {
 				ibuff = ibuff-static_cast<int>((*intf_p).bigint.size());
 				while (rit_de != (*intf_p).bigint.rend()) out << (int)*rit_de++;
-				for (unsigned ix = 0; ix != ibuff; ++ix) out << '0';
+				for (int ix = 0; ix != ibuff; ++ix) out << '0';
 			}
 		}
 		else while (rit_de != (*intf_p).bigint.rend()) out << (int)*rit_de++;

@@ -40,8 +40,8 @@ Tve add_f(const Tve &bigint, const Tve &di2)
 		if (d_it2 != di2.end()) {ip2 = *d_it2; ++d_it2;}
 		else {ip2 = 0; irun2 = false;}
 		ipadd = ip1+ip2+ip3;
-		if (ipadd < 10) {de_res.push_back(ipadd); ip3 = 0;}
-		else {de_res.push_back(ipadd-10); ip3 = 1;}
+		if (ipadd < 10) {de_res.push_back(static_cast<char>(ipadd)); ip3 = 0;}
+		else {de_res.push_back(static_cast<char>(ipadd-10)); ip3 = 1;}
 	}
 	//remove zero, irun will generate zero
 	while (de_res.back() == 0 && de_res.size() != 1) de_res.pop_back();
@@ -59,13 +59,13 @@ void sub_fself(Tve &bigint, const Tve &di2)
 	int ibuff = 0;
 	while (d_it1 != bigint.end()) {
 		if (d_it2 != di2.end()) {
-			*d_it1 -= *d_it2+ibuff;
+			*d_it1 -= static_cast<char>(*d_it2+ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			++d_it2;
 		}
 		else {
-			*d_it1 -= ibuff;
+			*d_it1 -= static_cast<char>(ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			else d_it1 = bigint.end()-1;
@@ -88,13 +88,13 @@ Tve sub_f(const Tve &bigint, const Tve &di2)
 	int ibuff = 0;
 	while (d_it1 != ret.end()) {
 		if (d_it2 != di2.end()) {
-			*d_it1 -= *d_it2+ibuff;
+			*d_it1 -= static_cast<char>(*d_it2+ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			++d_it2;
 		}
 		else {
-			*d_it1 -= ibuff;
+			*d_it1 -= static_cast<char>(ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			else d_it1 = ret.end()-1;
@@ -117,13 +117,13 @@ void sub_fself_contra(const Tve2 &bigint, Tve &di1)
 	int ibuff = 0;
 	while (d_it1 != di1.end()) {
 		if (d_it2 != bigint.end()) {
-			*d_it1 -= *d_it2+ibuff;
+			*d_it1 -= static_cast<char>(*d_it2+ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			++d_it2;
 		}
 		else {
-			*d_it1 -= ibuff;
+			*d_it1 -= static_cast<char>(ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			else d_it1 = di1.end()-1;
@@ -145,13 +145,13 @@ void sub_ffordiv(Tve &di1, const Tve2 &di2)
 	int ibuff = 0;
 	while (d_it1 != di1.end()) {
 		if (d_it2 != di2.end()) {
-			*d_it1 -= *d_it2+ibuff;
+			*d_it1 -= static_cast<char>(*d_it2+ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			++d_it2;
 		}
 		else {
-			*d_it1 -= ibuff;
+			*d_it1 -= static_cast<char>(ibuff);
 			ibuff = 0;
 			if (*d_it1 < 0) {*d_it1 += 10; ++ibuff;}
 			else d_it1 = di1.end()-1;
@@ -183,17 +183,17 @@ Tve mul_f(const Tve &bigint, const Tve2 &di2)
 		//skip tab
 		if (ixadd+1 <= de_res.size()) {
 		i_buff = de_res[ixadd]+ipos1;
-		if (i_buff < 10) de_res[ixadd] += ipos1;
+		if (i_buff < 10) de_res[ixadd] += static_cast<char>(ipos1);
 		else {
 			ipos_x = i_buff/10;
 			de_res[ixadd] = i_buff%10;
 			ipos2 += ipos_x;
 		}}
-		else de_res.push_back(ipos1);
+		else de_res.push_back(static_cast<char>(ipos1));
 		//step2
 		if (ipos2 != 0) {
-			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += ipos2;
-			else de_res.push_back(ipos2);
+			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += static_cast<char>(ipos2);
+			else de_res.push_back(static_cast<char>(ipos2));
 		}
 		++ix1;		
 	}
@@ -225,17 +225,17 @@ void mul_fself(Tve &bigint, const Tve &di2)
 		//skip tab
 		if (ixadd+1 <= de_res.size()) {
 		i_buff = de_res[ixadd]+ipos1;
-		if (i_buff < 10) de_res[ixadd] += ipos1;
+		if (i_buff < 10) de_res[ixadd] += static_cast<char>(ipos1);
 		else {
 			ipos_x = i_buff/10;
 			de_res[ixadd] = i_buff%10;
 			ipos2 += ipos_x;
 		}}
-		else de_res.push_back(ipos1);
+		else de_res.push_back(static_cast<char>(ipos1));
 		//step2
 		if (ipos2 != 0) {
-			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += ipos2;
-			else de_res.push_back(ipos2);
+			if (ixadd+2 <= de_res.size()) de_res[ixadd+1] += static_cast<char>(ipos2);
+			else de_res.push_back(static_cast<char>(ipos2));
 		}
 		++ix1;
 	}
@@ -257,7 +257,7 @@ Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 	//std::deque
 	std::deque<char> bu1(bigint.begin()+difsize, bigint.end()), de_res;
 	Tve di_p(bigint.begin(), bigint.begin()+difsize), ve_res;
-	unsigntp ix1, ix2;
+	unsigntp ix2;
 	//sub_reverse_
 	for(typename Tve::reverse_iterator d_it = di_p.rbegin(); d_it != di_p.rend(); ++d_it) {
 		bu1.push_front(*d_it);
@@ -272,7 +272,7 @@ Tve div_f(const Tve &bigint, const Tve &di2, const bool &b_is_mod = false)
 				++ix2;
 			}
 			else {
-				de_res.push_front(ix2);
+				de_res.push_front(static_cast<char>(ix2));
 				ix2 = 10;
 			}
 		}
@@ -474,7 +474,7 @@ intbigdata::intbigdata(const std::string &str1)
 {
 	//"0123456789" will check converting
 	std::string s_number("0123456789"), s_expo;
-	bool b_do_e = false, ignore_e = true;
+	bool ignore_e = true;
 	//judge scientific notation
 	std::string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp;
 	//'#', hide parameter, force ignore scientific notation
@@ -499,7 +499,7 @@ intbigdata::intbigdata(const std::string &str1)
 			if (s_ixp == std::string::npos && str1[s_ixn] == '.') s_ixp = str1_p.size();
 		}
 		if (s_ixp != std::string::npos) ibuff = static_cast<int>(str1_p.size()-s_ixp);
-		else ibuff = str1_p.size()-1;
+		else ibuff = static_cast<int>(str1_p.size()-1);
 		ibuff = i_expo-ibuff;
 		if (str1_p.size() == 0) str1_p += '1';
 		if (ibuff < 0) {
@@ -525,7 +525,7 @@ intbigdata::intbigdata(const std::string &str1)
 		std::string::const_reverse_iterator s_it;
 		for (s_it = str1.rbegin()+s_ixp; s_it != str1.rend(); ++s_it) {
 			s_ixn = s_number.find(*s_it);
-			if (s_ixn != std::string::npos) bigint.push_back(s_ixn);
+			if (s_ixn != std::string::npos) bigint.push_back(static_cast<char>(s_ixn));
 		}
 		if (bigint.empty()) bigint.push_back(0);
 		//remove zero
@@ -537,7 +537,7 @@ intbigdata::intbigdata(const std::string &str1)
 //structure4 int
 intbigdata::intbigdata(const int &us1_o)
 {
-	int ibuff, us1;
+	int us1;
 	//sign
 	if (us1_o < 0) {b_sign = false; us1 = -us1_o;}
 	else {b_sign = true; us1 = us1_o;}
@@ -552,7 +552,9 @@ intbigdata::intbigdata(const char *cstr1)
 //structure6 unsigned
 intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 {
-	unsigned ibuff, us1;
+	int d = dummy;
+	++d;
+	unsigned us1;
 	//sign
 	b_sign = true;
 	us1 = us1_o;
@@ -589,7 +591,6 @@ void intbigdata::fix_data()
 		if (*rit_de > 9) *rit_de = *rit_de%10;
 		++rit_de;
 	}
-	unsigntp ix2 = bigint.size()-1;
 	//remove zero
 	while (bigint.back() == 0 && bigint.size() != 1) bigint.pop_back();
 	//zero no sign
@@ -704,7 +705,7 @@ intbigdata intbigdata::sqrt() const
 	if (ix != 0) --ix;
 	intbigdata ib_rootsqr(ix*ix), ib_20, ib_20p, di_temp, ib_root_res;
 	//std::deque
-	std::deque<char> de_root(1, ix);
+	std::deque<char> de_root(1, static_cast<char>(ix));
 	ib_20.bigint.push_back(2);
 	sub_fself_contra(ib_rootsqr.bigint, rema);
 	//iterate
@@ -726,7 +727,7 @@ intbigdata intbigdata::sqrt() const
 		if (ix > 9) ix = 9;
 		//try division end, ix = try quetient
 		//_division 2, find the part of the root
-		ib_20p.bigint[0] = ix;
+		ib_20p.bigint[0] = static_cast<char>(ix);
 		i_temp = 1;
 		//note:
 		if (ix == 1 && di_temp.is_zero()) {i_temp = 2; ib_20p.bigint[0] = 0;}
@@ -790,7 +791,7 @@ std::istream &operator>>(std::istream &in, intbigdata &bus1)
 	if (in) {
 		for (; s_it != str1.rend(); ++s_it) {
 			s_ix = s_number.find(*s_it);
-			if (s_ix != std::string::npos) bus1.bigint.push_back(s_ix);
+			if (s_ix != std::string::npos) bus1.bigint.push_back(static_cast<char>(s_ix));
 		}
 		if (bus1.bigint.size() == 0) bus1.bigint.push_back(0);
 		//remove zero
