@@ -432,8 +432,8 @@ floatbigdata::floatbigdata(const std::string &str1)
 //structure4 int
 floatbigdata::floatbigdata(const int &us1_o, const int &dummy)
 {
-	int us1, d = dummy;
-	++d;
+	DUMMY(dummy);
+	int us1;
 	//sign
 	if (us1_o < 0) {b_sign = false; us1 = -us1_o;}
 	else {b_sign = true; us1 = us1_o;}
