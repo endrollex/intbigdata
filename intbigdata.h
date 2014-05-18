@@ -15,6 +15,7 @@
 #include <string>
 #include <iterator>
 #include <sstream>
+#define DUMMY(x) (x)
 //
 namespace bigdata
 {
@@ -552,8 +553,7 @@ intbigdata::intbigdata(const char *cstr1)
 //structure6 unsigned
 intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 {
-	int d = dummy;
-	++d;
+	DUMMY(dummy);
 	unsigned us1;
 	//sign
 	b_sign = true;
