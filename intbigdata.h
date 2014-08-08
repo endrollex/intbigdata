@@ -546,7 +546,7 @@ intbigdata::intbigdata(const int &us1_o)
 	if (us1_o == 0) bigint.push_back(0);
 }
 //structure5 c style std::string
-intbigdata::intbigdata(const char *cstr1)
+inline intbigdata::intbigdata(const char *cstr1)
 {
 	*this = intbigdata(std::string(cstr1));
 }
@@ -643,7 +643,7 @@ intbigdata intbigdata::sub(const intbigdata &bus2) const
 	return intbigdata();
 }
 //mul
-intbigdata intbigdata::mul(const intbigdata &bus2) const
+inline intbigdata intbigdata::mul(const intbigdata &bus2) const
 {
 	//sign
 	return intbigdata(mul_f(bigint, bus2.bigint), b_sign == bus2.b_sign, 'n');
@@ -986,7 +986,7 @@ int intbigdata::load_file(const std::string &file_name)
 	return 0;
 }
 //get_int
-int intbigdata::get_int() const
+inline int intbigdata::get_int() const
 {
 	return int(*this);
 }
@@ -1001,7 +1001,7 @@ unsigned intbigdata::get_unsigned() const
 	return ret;		
 }
 //get_string
-std::string intbigdata::get_string() const
+inline std::string intbigdata::get_string() const
 {
 	return std::string(*this);
 }
