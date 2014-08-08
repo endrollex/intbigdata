@@ -25,3 +25,8 @@ How to Use:
 * floatbigdate type is designed for numerical computing.
 * Compile sample.cc to see some of functions.
 * Complete functions please refer to source files.
+
+Copyright and License:
+----------------------
+The code in this project may be freely used in any software.
+It is provided as-is, with no warranty of any kind.
