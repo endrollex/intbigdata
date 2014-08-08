@@ -565,7 +565,7 @@ intbigdata::intbigdata(const unsigned &us1_o, const int &dummy)
 //Compare:
 ////////////////////////////////
 //who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
-inline int intbigdata::who_big(const intbigdata &bus2) const
+int intbigdata::who_big(const intbigdata &bus2) const
 {
 	//sign
 	if (b_sign == true && bus2.b_sign == false) return 1;
@@ -575,7 +575,7 @@ inline int intbigdata::who_big(const intbigdata &bus2) const
 	return i_who_big;
 }
 //is_zero
-inline bool intbigdata::is_zero() const
+bool intbigdata::is_zero() const
 {
 	if (bigint.size() == 1 && bigint[0] == 0) return true;
 	//skip check sign
@@ -617,7 +617,7 @@ bool intbigdata::is_not_corrupt() const
 //arithmetic encapsulate
 //add, sub, mul, div, pow, mod
 //add
-inline intbigdata intbigdata::add(const intbigdata &bus2) const
+intbigdata intbigdata::add(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
@@ -630,7 +630,7 @@ inline intbigdata intbigdata::add(const intbigdata &bus2) const
 	return intbigdata();
 }
 //sub
-inline intbigdata intbigdata::sub(const intbigdata &bus2) const
+intbigdata intbigdata::sub(const intbigdata &bus2) const
 {
 	int i_absob;
 	//sign
@@ -643,13 +643,13 @@ inline intbigdata intbigdata::sub(const intbigdata &bus2) const
 	return intbigdata();
 }
 //mul
-inline intbigdata intbigdata::mul(const intbigdata &bus2) const
+intbigdata intbigdata::mul(const intbigdata &bus2) const
 {
 	//sign
 	return intbigdata(mul_f(bigint, bus2.bigint), b_sign == bus2.b_sign, 'n');
 }
 //div
-inline intbigdata intbigdata::div(const intbigdata &bus2) const
+intbigdata intbigdata::div(const intbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
 	int iabsobig = abso_big(bigint, bus2.bigint);
@@ -658,7 +658,7 @@ inline intbigdata intbigdata::div(const intbigdata &bus2) const
 	return intbigdata(div_f(bigint, bus2.bigint, false), b_sign == bus2.b_sign, 'n');
 }
 //mod
-inline intbigdata intbigdata::mod(const intbigdata &bus2) const
+intbigdata intbigdata::mod(const intbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
 	int iabsobig = abso_big(bigint, bus2.bigint);
@@ -673,7 +673,7 @@ inline intbigdata intbigdata::mod(const intbigdata &bus2) const
 ////////////////////////////////
 //pow, exponent's value is int
 //large result of pow spends some time
-inline intbigdata intbigdata::pow(const intbigdata &bus2) const
+intbigdata intbigdata::pow(const intbigdata &bus2) const
 {
 	intbigdata ret;
 	int ixpow = static_cast<int>(bus2);
@@ -812,21 +812,21 @@ std::ostream &operator<<(std::ostream &out, const intbigdata &bus1)
 	return out;
 }
 //operator++
-inline intbigdata &intbigdata::operator++()
+intbigdata &intbigdata::operator++()
 {
 	intbigdata bu_d;
 	bu_d.bigint[0] = 1;
 	return *this = this->add(bu_d);
 }
 //operator--
-inline intbigdata &intbigdata::operator--()
+intbigdata &intbigdata::operator--()
 {
 	intbigdata bu_d;
 	bu_d.bigint[0] = 1;
 	return *this = this->sub(bu_d);
 }
 //operator++(int) postfix
-inline intbigdata intbigdata::operator++(int)
+intbigdata intbigdata::operator++(int)
 {
 	intbigdata ret(bigint, b_sign, 'n'), bu_d;
 	bu_d.bigint[0] = 1;
@@ -834,7 +834,7 @@ inline intbigdata intbigdata::operator++(int)
 	return ret;
 }
 //operator--(int) postfix
-inline intbigdata intbigdata::operator--(int)
+intbigdata intbigdata::operator--(int)
 {
 	intbigdata ret(bigint, b_sign, 'n'), bu_d;
 	bu_d.bigint[0] = 1;
@@ -845,7 +845,7 @@ inline intbigdata intbigdata::operator--(int)
 //Modifiers:
 ////////////////////////////////
 //assign1
-inline void intbigdata::assign(const std::vector<char> &di2, const bool &bsn = true, const char &check_data = 'y')
+void intbigdata::assign(const std::vector<char> &di2, const bool &bsn = true, const char &check_data = 'y')
 {
 	//sign
 	b_sign = bsn;
@@ -855,7 +855,7 @@ inline void intbigdata::assign(const std::vector<char> &di2, const bool &bsn = t
 	if (check_data != 'n') this->fix_data();
 }
 //assign2 overload
-inline void intbigdata::assign(const intbigdata &bus2)
+void intbigdata::assign(const intbigdata &bus2)
 {
 	//sign
 	b_sign = bus2.b_sign;
@@ -882,7 +882,7 @@ inline void intbigdata::assign(const char *cstr1)
 	*this = intbigdata(std::string(cstr1));
 }
 //swap
-inline void intbigdata::swap(intbigdata &bus2)
+void intbigdata::swap(intbigdata &bus2)
 {
 	bigint.swap(bus2.bigint);
 	bool b_temp = b_sign;
@@ -890,7 +890,7 @@ inline void intbigdata::swap(intbigdata &bus2)
 	bus2.b_sign = b_temp;	
 }
 //clear, assign 0
-inline void intbigdata::clear()
+void intbigdata::clear()
 {
 	bigint.assign(1, 0);
 	b_sign = true;

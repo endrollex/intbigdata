@@ -50,7 +50,7 @@ void fixed(int i_value = 64) {cout_type = 3; if (i_value < 0) i_value = -i_value
 ////////////////
 ////////////////
 template <typename Tve> 
-inline int pre_faddsub(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
+int pre_faddsub(const Tve &bus1, const Tve &bus2, Tve &bus_temp,
 	int &i_offset, int &i_exp, int b_poi1, int b_poi2, int b_exp1, int b_exp2) {
 	int bd1 = static_cast<int>(b_poi1+b_exp1), bd2 = static_cast<int>(b_poi2+b_exp2),
 		size1 = static_cast<int>(bus1.size()), size2 = static_cast<int>(bus2.size());
@@ -445,7 +445,7 @@ floatbigdata::floatbigdata(const int &us1_o, const int &dummy)
 	while (bigint.front() == 0 && bigint.size() != 1) bigint.pop_front();
 }
 //structure5 c style std::string
-floatbigdata::floatbigdata(const char *cstr1)
+inline floatbigdata::floatbigdata(const char *cstr1)
 {
 	*this = floatbigdata(std::string(cstr1));
 }
@@ -459,7 +459,7 @@ floatbigdata::floatbigdata(const double &dou1_o)
 	*this = floatbigdata(ostri.str());
 }
 //structure8 intbigdata
-floatbigdata::floatbigdata(const intbigdata &bus1)
+inline floatbigdata::floatbigdata(const intbigdata &bus1)
 {
 	*this = floatbigdata(std::deque<char>(bus1.bigint.begin(), bus1.bigint.end()), -1, 0, bus1.b_sign, 'n');
 }
@@ -467,7 +467,7 @@ floatbigdata::floatbigdata(const intbigdata &bus1)
 //Compare:
 ////////////////////////////////
 //who_big, compare value, return 1 = first big, -1 = second big, 0 = equal
-inline int floatbigdata::who_big(const floatbigdata &bus2) const
+int floatbigdata::who_big(const floatbigdata &bus2) const
 {
 	//sign
 	if (b_sign == true && bus2.b_sign == false) return 1;
@@ -482,7 +482,7 @@ inline int floatbigdata::who_big(const floatbigdata &bus2) const
 	return i_who_big;
 }
 //is_zero
-inline bool floatbigdata::is_zero() const
+bool floatbigdata::is_zero() const
 {
 	if (bigint.size() == 1 && bigint[0] == 0) return true;
 	//skip check sign, point, exponent
@@ -530,7 +530,7 @@ bool floatbigdata::is_not_corrupt() const
 //arithmetic encapsulate
 //add, sub, mul, div, pow
 //add
-inline floatbigdata floatbigdata::add(const floatbigdata &bus2) const
+floatbigdata floatbigdata::add(const floatbigdata &bus2) const
 {
 	int i_offset, i_exp, ibuff;
 	std::deque<char> bus_temp;
@@ -550,7 +550,7 @@ inline floatbigdata floatbigdata::add(const floatbigdata &bus2) const
 	return floatbigdata();
 }
 //sub
-inline floatbigdata floatbigdata::sub(const floatbigdata &bus2) const
+floatbigdata floatbigdata::sub(const floatbigdata &bus2) const
 {
 	int i_offset, i_exp, ibuff;
 	std::deque<char> bus_temp;
@@ -570,14 +570,14 @@ inline floatbigdata floatbigdata::sub(const floatbigdata &bus2) const
 	return floatbigdata();
 }
 //mul
-inline floatbigdata floatbigdata::mul(const floatbigdata &bus2) const
+floatbigdata floatbigdata::mul(const floatbigdata &bus2) const
 {
 	int i_exp = static_cast<int>((b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size());
 	//sign
 	return floatbigdata(mul_f(bigint, bus2.bigint), -1, i_exp, b_sign == bus2.b_sign, 'n');
 }
 //mul_self
-inline void floatbigdata::mul_self(const floatbigdata &bus2)
+void floatbigdata::mul_self(const floatbigdata &bus2)
 {
 	int i_exp = static_cast<int>((b_poi+b_exp)-bigint.size()+(bus2.b_poi+bus2.b_exp)-bus2.bigint.size());
 	mul_fself(bigint, bus2.bigint);
@@ -590,7 +590,7 @@ inline void floatbigdata::mul_self(const floatbigdata &bus2)
 	if (digits_precision_affect == 2) significant_fix(bigint, i_dummy);
 }
 //div
-inline floatbigdata floatbigdata::div(const floatbigdata &bus2) const
+floatbigdata floatbigdata::div(const floatbigdata &bus2) const
 {
 	if (bus2.is_zero()) throw intbigdata_error();
 	//
@@ -913,7 +913,7 @@ inline void floatbigdata::assign(const intbigdata &bus2)
 	*this = floatbigdata(std::deque<char>(bus2.bigint.begin(), bus2.bigint.end()), -1, 0, bus2.b_sign, 'n');
 }
 //assign2 overload
-inline void floatbigdata::assign(const floatbigdata &bus2)
+void floatbigdata::assign(const floatbigdata &bus2)
 {
 	//sign
 	b_sign = bus2.b_sign;
@@ -942,7 +942,7 @@ inline void floatbigdata::assign(const char *cstr1)
 	*this = floatbigdata(std::string(cstr1));
 }
 //swap
-inline void floatbigdata::swap(floatbigdata &bus2)
+void floatbigdata::swap(floatbigdata &bus2)
 {
 	bigint.swap(bus2.bigint);
 	bool b_temp = b_sign;
@@ -955,7 +955,7 @@ inline void floatbigdata::swap(floatbigdata &bus2)
 	bus2.b_exp = b_exp_t;
 }
 //clear, assign 0
-inline void floatbigdata::clear()
+void floatbigdata::clear()
 {
 	bigint.assign(1, 0);
 	b_sign = true;
@@ -1056,17 +1056,17 @@ int floatbigdata::load_file(const std::string &file_name)
 	return 0;
 }
 //get_int
-int floatbigdata::get_int() const
+inline int floatbigdata::get_int() const
 {
 	return int(*this);
 }
 //get_double
-double floatbigdata::get_double() const
+inline double floatbigdata::get_double() const
 {
 	return double(*this);
 }
 //get_string
-std::string floatbigdata::get_string() const
+inline std::string floatbigdata::get_string() const
 {
 	return std::string(*this);
 }
