@@ -28,5 +28,5 @@ How to Use:
 
 Copyright and License:
 ----------------------
-The code in this project may be freely used in any software.
+The code in this project is freely used in any software.
 It is provided as-is, with no warranty of any kind.
