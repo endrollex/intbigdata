@@ -3,12 +3,12 @@ intbigdata
 
 C++
 
-intbigdata - calculate big number library
+intbigdata - big number hand calculation library
 
 Introduction:
 -------------
-* Calculate big integer or big float.
-* intbigdata has very poor performance, and it is using very simple arithemtic method.
+* Calculate big integer or big float by immature arithemtic method.
+* intbigdata has very poor performance.
 * This is my first project. Writing it is a happy job,
   however, I will not spend too much time reinventing the wheel.
 
