@@ -1,8 +1,6 @@
 intbigdata
 ==========
-
-C++
-
+C++  
 intbigdata - big number hand calculation library
 
 Introduction:
@@ -14,10 +12,10 @@ Introduction:
 
 Files Explanation:
 ------------------
-* intbigdata.h: Big integer header
-* floatbigdate.h: Big float header
-* bigdate_test.h: Testing function, not good implement
-* sample.cc: Sample code
+* **intbigdata.h**: Big integer header
+* **floatbigdate.h**: Big float header
+* **bigdate_test.h**: Testing function, not good implement
+* **sample.cc**: Sample code
 
 How to Use:
 -----------
