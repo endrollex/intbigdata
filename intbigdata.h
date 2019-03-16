@@ -474,7 +474,7 @@ intbigdata::intbigdata(const std::vector<char> &di1, const bool &bsn = true, con
 intbigdata::intbigdata(const std::string &str1)
 {
 	//"0123456789" will check converting
-	std::string s_number("0123456789"), s_expo;
+	std::string s_number("0123456789");
 	bool ignore_e = true;
 	//judge scientific notation
 	std::string::size_type s_ixe = 0, s_ixn, s_ixn2, s_ixp;

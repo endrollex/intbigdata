@@ -15,7 +15,7 @@ Files Explanation:
 * **intbigdata.h**: Big integer header
 * **floatbigdate.h**: Big float header
 * **bigdate_test.h**: Testing function, not good implement
-* **sample.cc**: Sample code
+* **sample.cc**: Sample code (cl /EHsc /Zi /W4 sample.cc)
 
 How to Use:
 -----------
